@@ -1,0 +1,46 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id Int [pk, increment]
+  email String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  lastName String
+  firstName String
+  social Json
+  isAdmin Boolean [default: false]
+  Post Post
+  Tokens Token
+}
+
+Table Post {
+  authorId Int
+  content String
+  id Int [pk, increment]
+  published Boolean [default: false]
+  title String [not null]
+  User User
+}
+
+Table Token {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  type TokenType [not null]
+  emailToken String [unique]
+  valid Boolean [not null, default: true]
+  expiration DateTime [not null]
+  user User [not null]
+  userId Int [not null]
+}
+
+Enum TokenType {
+  EMAIL
+  API
+}
+
+Ref: Post.authorId > User.id
+
+Ref: Token.userId > User.id

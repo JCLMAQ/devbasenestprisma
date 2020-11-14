@@ -10,6 +10,8 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "docker": "docker-compose -f '../db/docker-compose.yml' --env-file ../.development.env up -d --build",
+    "start:db": "npm run prisma:generate && npm run prisma-migrate:save && npm run prisma-migrate:up",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -21,9 +23,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "npx prisma generate",
     "prisma:generate:watch": "npx prisma generate --watch",
-    "prisma:save": "npx prisma migrate save --experimental",
-    "prisma:studio": "npx prisma studio",
-    "prisma:up": "npx prisma migrate up --experimental"
+    "prisma:studio": "dotenv -e ../.development.env -- npx prisma studio",
+    "prisma-migrate:up": "dotenv -e ../.development.env -- npx prisma migrate up --experimental",
+    "prisma-migrate:save": "dotenv -e ../.development.env -- npx prisma migrate save --experimental",
+    "seed": "dotenv -e ../.development.env ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^7.5.2",
@@ -34,13 +37,16 @@
     "nestjs-prisma": "^0.7.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.6.3"
+    "rxjs": "^6.6.3",
+    "dotenv-cli": "^4.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.2",
     "@nestjs/schematics": "^7.2.1",
     "@nestjs/testing": "^7.5.2",
     "@prisma/cli": "latest",
+    "prisma-dbml-generator": "^0.3.1",
+    "prisma-json-schema-generator": "^1.1.4",
     "@types/express": "^4.17.9",
     "@types/jest": "^26.0.15",
     "@types/node": "^14.14.7",
