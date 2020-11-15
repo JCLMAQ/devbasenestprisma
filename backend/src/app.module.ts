@@ -11,7 +11,8 @@ import Joi from 'joi';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '../.development.env',
+      // envFilePath: '../.development.env', // Look for .env file in the main directory and not in the backend directory
+      envFilePath: '.env', // Look for .env file in the backend directory
       isGlobal: true, // No need to import ConfigModule in each module
     }
    
