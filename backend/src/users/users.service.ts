@@ -78,5 +78,24 @@ export class UsersService {
       where,
     });
   }
+
+  async returnUserPartial(userEmail) {
+    const user = await this.getOneUserByEmail(userEmail);
+    // const { pwdHash, salt, ...result } = user; // To remove pwdHash and salt from user: result = user less salt and pwdHash
+    const { isAdmin, ...result } = user;
+    console.log('UserStillExist : yes', result)
+    return result;
+  }
+
+  async userExistOrCreate(email: string): Promise<User> { // If user does not exist, create one
+    let user = await this.prisma.user.findOne({ where: { email } })
+    // if (!user) throw new HttpException('User not found', 400);
+    if (!user) {
+      // Create a new user
+      user = await this.prisma.user.create({ data: { email }})
+    }
+      return user; // return the new user or the found user
+  }
+
 }
 
