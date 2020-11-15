@@ -15,5 +15,6 @@
   "bugs": {
     "url": "https://github.com/JCLMAQ/devbasenestprisma/issues"
   },
-  "homepage": "https://github.com/JCLMAQ/devbasenestprisma#readme"
+  "homepage": "https://github.com/JCLMAQ/devbasenestprisma#readme",
+  "devDependencies": {}
 }
