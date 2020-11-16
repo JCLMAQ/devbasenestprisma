@@ -13,12 +13,8 @@ export class UtilitiesService {
     /* 
         Email management utilities    
     */
-    async sendEmailToken(emailData): Promise<boolean> {
-
-// console.log('Email data : ', emailData );
-// console.log(this.configService.get("HOST_EMAIL")," /",this.configService.get("EMAIL_NOREPLY"), " / ", this.configService.get("PWD_NOREPLY"));
-    
-    // Step one: buildup the transporter - connexion to the SMTP
+    async sendEmailToken(emailData): Promise<boolean> {    
+    // Step 1: buildup the transporter - connexion to the SMTP
         // Connexion - transporter data: HOST_EMAIL, EMAIL_PORT, EMAIL_NOREPLY, PWD_NOREPLY
         const transporter = nodemailer.createTransport({
             host: this.configService.get("HOST_EMAIL"),
