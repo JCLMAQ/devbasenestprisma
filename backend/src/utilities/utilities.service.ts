@@ -10,13 +10,14 @@ export class UtilitiesService {
         private configService: ConfigService, 
         ) {}
 
-    // Email management utilities    
-    // Send email with the email token
+    /* 
+        Email management utilities    
+    */
     async sendEmailToken(emailData): Promise<boolean> {
 
-console.log('Email data : ', emailData );
-console.log(this.configService.get("HOST_EMAIL")," /",this.configService.get("EMAIL_NOREPLY"), " / ", this.configService.get("PWD_NOREPLY"));
-        // Step one: buildup the transporter - connexion to the SMTP
+// console.log('Email data : ', emailData );
+// console.log(this.configService.get("HOST_EMAIL")," /",this.configService.get("EMAIL_NOREPLY"), " / ", this.configService.get("PWD_NOREPLY"));
+    // Step one: buildup the transporter - connexion to the SMTP
         // Connexion - transporter data: HOST_EMAIL, EMAIL_PORT, EMAIL_NOREPLY, PWD_NOREPLY
         const transporter = nodemailer.createTransport({
             host: this.configService.get("HOST_EMAIL"),
@@ -26,7 +27,7 @@ console.log(this.configService.get("HOST_EMAIL")," /",this.configService.get("EM
                 pass: this.configService.get("PWD_NOREPLY"), 
             }
         });
-        // Step 2: buildup the email
+    // Step 2: buildup the email
         const {fromEmail, toEmail, subjectEmail, textEmail, htmlEmail } = emailData
         // Email to send with defined transport object
         const mailDetails = await transporter.sendMail({
@@ -36,7 +37,7 @@ console.log(this.configService.get("HOST_EMAIL")," /",this.configService.get("EM
            text: textEmail, // plain text body // `NestJS your token: ${token}.`
            html: htmlEmail // HTML body // html: `Hello <br> Please, use this token to confirm your login : ${token} <br>
         });        
-        // Step 3: Sending email
+    // Step 3: Sending email
         const sendMail = await new Promise<boolean>(async function (resolve, reject) {
             return await transporter.sendMail(mailDetails, async (err, info) => {
                 if (err) return reject(false);
