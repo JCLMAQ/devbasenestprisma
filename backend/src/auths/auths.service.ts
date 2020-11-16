@@ -36,15 +36,17 @@ export class AuthsService {
     }
     // Generate the expiration time of the email token
     async emailTokenExpiration() {
-        const newDate = new Date(new Date().setMinutes(new Date().getMinutes()+this.configService.get("EMAIL_TOKEN_EXPIRATION_MINUTES")));
-        console.log(newDate);
-        return newDate
+      const minutestoAdd = Number(this.configService.get("EMAIL_TOKEN_EXPIRATION_MINUTES"));
+      const currentDate = new Date();
+      const emailTokenExpirationDate = new Date(currentDate.getTime()+ (minutestoAdd*60*1000));
+      return emailTokenExpirationDate
     }
     // Generate the expiration time of the JWT token
     async jwtTokenExpiration() {
-        const newDate = new Date(new Date().setHours(new Date().getHours()+this.configService.get("JWT_TOKEN_EXPIRATION_HOURS")));    
-        console.log(newDate);
-        return newDate
+      const hoursToAdd = Number(this.configService.get("JWT_TOKEN_EXPIRATION_HOURS"));
+      const currentDate = new Date();
+      const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ (hoursToAdd*60*60*1000));
+      return jwtTokenExpirationDate
     }
     // Generate a signed JWT token with the tokenId in the payload
     async generateAuthToken(tokenId: number): Promise<any> {
@@ -95,9 +97,9 @@ export class AuthsService {
   async loginHandler(email: string) {
     // A emailToken (short token) is generated
     const emailToken = await this.generateEmailToken();
-
+    const emailSender = this.configService.get("EMAIL_NOREPLY");
     const emailData = {
-      fromEmail: '"No reply" <project.1@localhost>' ,
+      ffromEmail: `"No reply" <${emailSender}>` ,
       toEmail: email,
       subjectEmail: `Your Token for login.`,
       textEmail: `NestJS your token: ${emailToken}.`,
