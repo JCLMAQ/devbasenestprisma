@@ -13,7 +13,8 @@ export class AuthsController {
 
       console.log('Authcontroler (localstrategy):', email);
       const registration = false;
-      return this.authsService.loginHandler(email, registration);
+      const sendEmailDelay = true // Delay betwwen to send email actif
+      return this.authsService.loginHandler(email, registration, sendEmailDelay);
   }
 
   @Post('auth/registration')
@@ -21,13 +22,13 @@ export class AuthsController {
 
       console.log('Authcontroler (localstrategy) for registraiton:', email);
       const registration = true;
-      return this.authsService.loginHandler(email, registration);
+      const sendEmailDelay = true // Delay betwwen to send email actif
+      return this.authsService.loginHandler(email, registration, sendEmailDelay);
   }
 
 
   @Post('auth/authenticate')
       async authentication(@Body() userCredential: AuthDto) {
-        // async authentication(@Body('userCredentiel') userCredentiel: any) {
         // userCredential has to content the email and the emailToken
         console.log("Usercredential received by POST: ", userCredential);
         const validCredential = await this.authsService.authenticateHandler(userCredential);

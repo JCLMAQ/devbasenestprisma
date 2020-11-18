@@ -98,7 +98,7 @@ export class AuthsService {
     // const {fromEmail, toEmail, subjectEmail, textEmail, htmlEmail } = emailData
 
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
-  async loginHandler(email: string, registration: boolean) {
+  async loginHandler(email: string, registration: boolean, sendEmailDelay) {
     let emailToken = await this.generateEmailToken();
     let tokenAlreadyExist = await this.prismaService.token.findFirst({
       where: {
@@ -149,11 +149,20 @@ export class AuthsService {
         type: { equals:TokenType.EMAIL },
       }
     })
+
     let tokenId = 0
     if(!tokenExist) {
       tokenId = 0;
     } else {
       tokenId = tokenExist.id;
+      const delayToTest = this.configService.get("TIMESTAMPDELAYMINUTE")
+console.log("delay to test: ", delayToTest);
+      const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
+console.log("Test result :" , testResult)
+    // Verify delay between emailbase on the updateAt field
+      if ( testResult) {
+        throw new HttpException('Email with your token already send', 400);
+      }
     }
 
     // If exist: just update it, if does not: create a new one

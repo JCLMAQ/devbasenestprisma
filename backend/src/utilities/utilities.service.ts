@@ -43,4 +43,12 @@ export class UtilitiesService {
         });    
         return sendMail;
     }
+
+    // Delay between the present moment and the past date time
+    async timeStampDelay(dateStampToTest: Date, delayMinutes: number) {
+       const tooshort = (new Date().getTime() - dateStampToTest.getTime()) / 60000 < delayMinutes;
+       // parseInt(this.configService.get("TIMESTAMPDELAYMINUTE"),10)
+       return tooshort;
+    }
+    
 }
