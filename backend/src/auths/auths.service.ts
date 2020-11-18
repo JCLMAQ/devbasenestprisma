@@ -99,10 +99,24 @@ export class AuthsService {
 
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
   async loginHandler(email: string) {
-    // A emailToken (short token) is generated
-    const emailToken = await this.generateEmailToken();
-
-console.log("Email token: ",emailToken);
+    let emailToken = await this.generateEmailToken();
+    let tokenAlreadyExist = await this.prismaService.token.findFirst({
+      where: {
+        emailToken: { equals: emailToken }
+      }
+    });
+    // Create a new emailToken if already exist
+    while (
+      tokenAlreadyExist != null && typeof(tokenAlreadyExist) == "object"
+    ) {
+      emailToken = await this.generateEmailToken();
+      console.log("New token : ", emailToken); 
+        tokenAlreadyExist = await this.prismaService.token.findFirst({
+        where: {
+           emailToken: { equals: emailToken
+        }}});
+    }
+   
 
     const emailSender = this.configService.get("EMAIL_NOREPLY");
     const emailData = {
@@ -121,6 +135,7 @@ console.log("Email token: ",emailToken);
     if(!userFound) {    // need to create one
       userFound = await this.usersService.createUser({email})
     }
+
     // Need to verify that the short token exist or not
     const tokenExist = await this.prismaService.token.findFirst({
       where: {
