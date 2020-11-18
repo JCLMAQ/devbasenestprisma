@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, HttpException } from '@nestjs/common';
 import { AuthsService } from './auths.service';
+import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 
@@ -7,28 +8,25 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 export class AuthsController {
   constructor(private readonly authsService: AuthsService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authsService.create(createAuthDto);
-  }
+  @Post('auth/login')
+    async login(@Body('email') email: string) {
 
-  @Get()
-  findAll() {
-    return this.authsService.findAll();
-  }
+        console.log('Authcontroler (localstrategy):', email);
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authsService.findOne(+id);
-  }
+        return this.authsService.loginHandler(email);
+    }
+    @Post('auth/authenticate')
+      async authentication(@Body() userCredentiel: AuthDto) {
+        // async authentication(@Body('userCredentiel') userCredentiel: any) {
+        // userCredential has to content the email and the emailToken
+        console.log("Usercredential", userCredentiel);
+        const validCredential = await this.authsService.authenticateHandler(userCredentiel);
+        if(!validCredential.validToken) {
+          throw new HttpException('Error on authenticate process', 400);
+        }
+        const authToken = await this.authsService.generateAuthToken(validCredential.tokenId.id);
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authsService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authsService.remove(+id);
-  }
+        return authToken;
+      }
+      
 }
