@@ -16,16 +16,16 @@ export class AuthsController {
       return this.authsService.loginHandler(email);
   }
   @Post('auth/authenticate')
-    async authentication(@Body() userCredential: AuthDto) {
-      // async authentication(@Body('userCredentiel') userCredentiel: any) {
-      // userCredential has to content the email and the emailToken
-      console.log("Usercredential received by POST: ", userCredential);
-      const validCredential = await this.authsService.authenticateHandler(userCredential);
-      if(!validCredential.validToken) {
-        throw new HttpException('Error on authenticate process', 400);
+      async authentication(@Body() userCredential: AuthDto) {
+        // async authentication(@Body('userCredentiel') userCredentiel: any) {
+        // userCredential has to content the email and the emailToken
+        console.log("Usercredential received by POST: ", userCredential);
+        const validCredential = await this.authsService.authenticateHandler(userCredential);
+        if(!validCredential.validToken) {
+          throw new HttpException('Error on authenticate process', 400);
+        }
+        const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.tokenId);
+        return authToken;
       }
-      const authToken = await this.authsService.generateAuthToken(validCredential.tokenId);
-      return authToken;
-    }
 
 }
