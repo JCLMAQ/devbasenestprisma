@@ -155,13 +155,15 @@ export class AuthsService {
       tokenId = 0;
     } else {
       tokenId = tokenExist.id;
-      const delayToTest = this.configService.get("TIMESTAMPDELAYMINUTE")
-console.log("delay to test: ", delayToTest);
-      const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
-console.log("Test result :" , testResult)
-    // Verify delay between emailbase on the updateAt field
-      if ( testResult) {
-        throw new HttpException('Email with your token already send', 400);
+      const delayBetweenEmailEnable = (this.configService.get("DELAYBTWEMAIL_ENABLE") === "1");
+      if(delayBetweenEmailEnable) { 
+        const delayToTest = this.configService.get("DELAYBTWEMAIMINUTE")
+
+              const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
+            // Verify delay between emailbase on the updateAt field
+              if ( testResult) {
+                throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
+              }
       }
     }
 
