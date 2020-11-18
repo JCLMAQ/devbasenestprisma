@@ -98,7 +98,7 @@ export class AuthsService {
     // const {fromEmail, toEmail, subjectEmail, textEmail, htmlEmail } = emailData
 
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
-  async loginHandler(email: string, registration: boolean, sendEmailDelay) {
+  async loginHandler(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean) {
     let emailToken = await this.generateEmailToken();
     let tokenAlreadyExist = await this.prismaService.token.findFirst({
       where: {
@@ -132,15 +132,20 @@ export class AuthsService {
 
     let userFound = await this.usersService.findOneUser({email});
 
-    if(!userFound && !registration) {  
-      throw new HttpException('You have to register first', 400);
-    } 
-    if(userFound && registration) {  
-      throw new HttpException('You are already registered, please sign in...', 400);
-    }
-    if(!userFound && registration) {
-      userFound = await this.usersService.createUser({email}); // registration of a new user
+    if(autoRegistration && !userFound) {
+      userFound = await this.usersService.createUser({email}); // registration auto of a new user
+    } else {
+      if(!userFound && !registration) {  
+        throw new HttpException('You have to register first', 400);
+      } 
+      if(userFound && registration) {  
+        throw new HttpException('You are already registered, please sign in...', 400);
       }
+      if(!userFound && registration) {
+        userFound = await this.usersService.createUser({email}); // registration of a new user
+        }
+    }
+    
   
     // Need to verify that the short token exist or not
     const tokenExist = await this.prismaService.token.findFirst({
@@ -155,7 +160,7 @@ export class AuthsService {
       tokenId = 0;
     } else {
       tokenId = tokenExist.id;
-      const delayBetweenEmailEnable = (this.configService.get("DELAYBTWEMAIL_ENABLE") === "1");
+      const delayBetweenEmailEnable = sendEmailDelay;
       if(delayBetweenEmailEnable) { 
         const delayToTest = this.configService.get("DELAYBTWEMAIMINUTE")
 

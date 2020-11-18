@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, HttpException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AuthsService } from './auths.service';
 import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -6,15 +7,20 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Controller('auths')
 export class AuthsController {
-  constructor(private readonly authsService: AuthsService) {}
+  constructor(
+    private readonly authsService: AuthsService,
+    private configService: ConfigService, 
+    ) {}
 
   @Post('auth/login')
   async login(@Body('email') email: string) {
 
       console.log('Authcontroler (localstrategy):', email);
-      const registration = false;
-      const sendEmailDelay = true // Delay betwwen to send email actif
-      return this.authsService.loginHandler(email, registration, sendEmailDelay);
+      const registration = false; // As we are in the login part
+      const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") === "1"
+      // const sendEmailDelay = true // Delay betwwen to send email actif
+      const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") === "1";
+      return this.authsService.loginHandler(email, registration, sendEmailDelay, autoRegistration);
   }
 
   @Post('auth/registration')
@@ -22,8 +28,10 @@ export class AuthsController {
 
       console.log('Authcontroler (localstrategy) for registraiton:', email);
       const registration = true;
-      const sendEmailDelay = true // Delay betwwen to send email actif
-      return this.authsService.loginHandler(email, registration, sendEmailDelay);
+      // const sendEmailDelay = true // Delay betwwen to send email actif
+      const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") === "1"
+      const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") === "1";
+      return this.authsService.loginHandler(email, registration, sendEmailDelay, autoRegistration);
   }
 
 
