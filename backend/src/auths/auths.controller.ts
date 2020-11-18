@@ -9,24 +9,23 @@ export class AuthsController {
   constructor(private readonly authsService: AuthsService) {}
 
   @Post('auth/login')
-    async login(@Body('email') email: string) {
+  async login(@Body('email') email: string) {
 
-        console.log('Authcontroler (localstrategy):', email);
+      console.log('Authcontroler (localstrategy):', email);
 
-        return this.authsService.loginHandler(email);
-    }
-    @Post('auth/authenticate')
-      async authentication(@Body() userCredentiel: AuthDto) {
-        // async authentication(@Body('userCredentiel') userCredentiel: any) {
-        // userCredential has to content the email and the emailToken
-        console.log("Usercredential", userCredentiel);
-        const validCredential = await this.authsService.authenticateHandler(userCredentiel);
-        if(!validCredential.validToken) {
-          throw new HttpException('Error on authenticate process', 400);
-        }
-        const authToken = await this.authsService.generateAuthToken(validCredential.tokenId.id);
-
-        return authToken;
+      return this.authsService.loginHandler(email);
+  }
+  @Post('auth/authenticate')
+    async authentication(@Body() userCredential: AuthDto) {
+      // async authentication(@Body('userCredentiel') userCredentiel: any) {
+      // userCredential has to content the email and the emailToken
+      console.log("Usercredential received by POST: ", userCredential);
+      const validCredential = await this.authsService.authenticateHandler(userCredential);
+      if(!validCredential.validToken) {
+        throw new HttpException('Error on authenticate process', 400);
       }
-      
+      const authToken = await this.authsService.generateAuthToken(validCredential.tokenId);
+      return authToken;
+    }
+
 }
