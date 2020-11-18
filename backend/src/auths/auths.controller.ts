@@ -12,9 +12,19 @@ export class AuthsController {
   async login(@Body('email') email: string) {
 
       console.log('Authcontroler (localstrategy):', email);
-
-      return this.authsService.loginHandler(email);
+      const registration = false;
+      return this.authsService.loginHandler(email, registration);
   }
+
+  @Post('auth/registration')
+  async registration(@Body('email') email: string) {
+
+      console.log('Authcontroler (localstrategy) for registraiton:', email);
+      const registration = true;
+      return this.authsService.loginHandler(email, registration);
+  }
+
+
   @Post('auth/authenticate')
       async authentication(@Body() userCredential: AuthDto) {
         // async authentication(@Body('userCredentiel') userCredentiel: any) {
