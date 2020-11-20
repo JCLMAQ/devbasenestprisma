@@ -13,12 +13,8 @@ export class UtilitiesService {
     /* 
         Email management utilities    
     */
-    async sendEmailToken(emailData): Promise<boolean> {
-
-// console.log('Email data : ', emailData );
-// console.log(this.configService.get("HOST_EMAIL")," /",this.configService.get("EMAIL_NOREPLY"), " / ", this.configService.get("PWD_NOREPLY"));
-    
-    // Step one: buildup the transporter - connexion to the SMTP
+    async sendEmailToken(emailData): Promise<boolean> {    
+    // Step 1: buildup the transporter - connexion to the SMTP
         // Connexion - transporter data: HOST_EMAIL, EMAIL_PORT, EMAIL_NOREPLY, PWD_NOREPLY
         const transporter = nodemailer.createTransport({
             host: this.configService.get("HOST_EMAIL"),
@@ -47,4 +43,17 @@ export class UtilitiesService {
         });    
         return sendMail;
     }
+
+    // Delay between the present moment and the past date time
+    async timeStampDelay(dateStampToTest: Date, delayMinutes: number) {
+       const tooshort = (new Date().getTime() - dateStampToTest.getTime()) / 60000 < delayMinutes;
+       return tooshort;
+    }
+
+       // Delay between two date time
+       async twoTimeStampsDelay(dateStampOne: Date, dateStampTwo: Date, delayMinutes: number) {
+        const tooshort = (dateStampOne.getTime() - dateStampTwo.getTime()) / 60000 < delayMinutes;
+        return tooshort;
+     }
+    
 }
