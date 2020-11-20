@@ -6,13 +6,15 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "docker:up": "docker-compose -f '../db/docker-compose.yml' --env-file ../backend/.env up -d --build",
     "docker:down": "docker-compose -f '../db/docker-compose.yml' --env-file ../backend/.env down",
     "start:db": "npm run prisma:generate && npm run prisma-migrate:save && npm run prisma-migrate:up",
     "start:dev": "nest start --watch",
+    "prisma:studio": "dotenv -e ../.development.env -- npx prisma studio",
+    "seed": "dotenv -e ../.development.env ts-node prisma/seed.ts",
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "start": "nest start",
@@ -24,10 +26,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "npx prisma generate",
     "prisma:generate:watch": "npx prisma generate --watch",
-    "prisma:studio": "dotenv -e ../.development.env -- npx prisma studio",
     "prisma-migrate:up": "dotenv -e ../.development.env -- npx prisma migrate up --experimental",
     "prisma-migrate:save": "dotenv -e ../.development.env -- npx prisma migrate save --experimental",
-    "seed": "dotenv -e ../.development.env ts-node prisma/seed.ts"
+
   },
   "dependencies": {
     "@nestjs/common": "^7.5.4",
