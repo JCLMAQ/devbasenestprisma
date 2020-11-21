@@ -27,7 +27,7 @@
     "prisma:generate": "npx prisma generate",
     "prisma:generate:watch": "npx prisma generate --watch",
     "prisma-migrate:up": "dotenv -e ../.development.env -- npx prisma migrate up --experimental",
-    "prisma-migrate:save": "dotenv -e ../.development.env -- npx prisma migrate save --experimental",
+    "prisma-migrate:save": "dotenv -e ../.development.env -- npx prisma migrate save --experimental"
 
   },
   "dependencies": {
