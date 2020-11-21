@@ -53,7 +53,7 @@ networks:
 
 volumes:
     postgres:
-        name: basedev-pwdlessauthnp-db
+        name: basedev-db
     pgadmin:
         name: pgadmin-db
 
