@@ -47,3 +47,4 @@ package-lock.json
 # DiskStorage of files
 /uploadefiles
 /uploadedimages
+frontend/node_modules/
