@@ -1799,7 +1799,7 @@
       "tag": "CreateField",
       "model": "ForgottenPwd",
       "field": "id",
-      "type": "String",
+      "type": "Int",
       "arity": "Required"
     },
     {
@@ -1825,7 +1825,7 @@
         "directive": "default"
       },
       "argument": "",
-      "value": "uuid()"
+      "value": "autoincrement()"
     },
     {
       "tag": "CreateDirective",

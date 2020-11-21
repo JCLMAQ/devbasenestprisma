@@ -163,7 +163,7 @@ enum Role {
 }
 
 model ForgottenPwd {
-  id          String   @default(uuid()) @id
+  id         Int      @default(autoincrement()) @id
   email       String   @unique
   pwdToken    String   @unique
   timestamp   DateTime
