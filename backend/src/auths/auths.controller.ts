@@ -45,6 +45,8 @@ export class AuthsController {
         }
         const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.tokenId);
         return authToken;
-      }
+  }
+
+  
 
 }

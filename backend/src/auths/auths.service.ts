@@ -2,13 +2,14 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TokenType } from '@prisma/client';
+import { ForgottenPwd, TokenType, User } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 
 import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { pbkdf2Sync, randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthsService {
@@ -22,13 +23,14 @@ export class AuthsService {
   ) { }
   
   logout() {
-    console.log("Log out")
+  //  console.log("Log out")
     return true;
   }
 
 // PasswordLess Authentication Schema
+
   /*
-   Utilities
+   Utilities for PasswordLess
   */
   // Generate a random 8 digit number as the email token
   async generateEmailToken(): Promise<string> {
@@ -110,7 +112,7 @@ export class AuthsService {
       tokenAlreadyExist != null && typeof(tokenAlreadyExist) == "object"
     ) {
       emailToken = await this.generateEmailToken();
-      console.log("New token : ", emailToken); 
+  console.log("New token : ", emailToken); 
         tokenAlreadyExist = await this.prismaService.token.findFirst({
         where: {
            emailToken: { equals: emailToken
@@ -164,11 +166,11 @@ export class AuthsService {
       if(delayBetweenEmailEnable) { 
         const delayToTest = this.configService.get("DELAYBTWEMAIMINUTE")
 
-              const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
-            // Verify delay between emailbase on the updateAt field
-              if ( testResult) {
-                throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
-              }
+        const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
+        // Verify delay between emailbase on the updateAt field
+        if ( testResult) {
+          throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
+        }
       }
     }
 
@@ -192,7 +194,7 @@ export class AuthsService {
       },
     })
 
-// To DELETE for dev only
+// TODO DELETE for dev only
 console.log("Token created or updated: ", tokenCreatedorupdated );
 
     // Send the email with the token
@@ -290,14 +292,141 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
     }  
   }
 
-  async validateUser(userEmail: string): Promise<any> {
+
+// Normal Password Schema (email + password)
+
+  /*
+    Utilities for Normal password login
+  */
+
+ static hashPassword(password: string, salt: string): string {
+    if (salt && password) {
+      return pbkdf2Sync(password, Buffer.from(salt, 'base64'), 10000, 64, 'sha512')
+        .toString('base64');
+    }
+    return password;
+  }
+
+  verifyPassword(user, plainTextPassword: string) {
+    const pwdHash = AuthsService.hashPassword(plainTextPassword, user.salt);
+    console.log('Verify Password (auth.controller): ', user.pwdHash, pwdHash);
+    const isOK = (pwdHash === user.pwdHash);
+    console.log('Verify password = ', isOK);
+    return isOK
+  }
+
+  async validateUserPWD(username: string, plainTextPassword: string): Promise<any> {
     // username = email
-    const user = await this.usersService.getOneUserByEmail(userEmail);
-    if (user) {
-      const { ...result } = user;
-      return result;
+console.log('validateUser (auth.service) step', username, plainTextPassword);
+    const user = await this.usersService.getOneUserByEmail(username);
+console.log('usersService.checkOneUserByEmail(username)', user)
+    if (this.verifyPassword(user, plainTextPassword)) {
+      const { pwdHash, salt, ...result } = user;
+      // const { ...result } = user;
+console.log('validateUser step: ok', result);
+      return result; // = User dtat without the pwdHash and the salt
     }
     return null;
+  }
+
+  async loginAccess(user: any) {
+console.log('authService login');
+    const payload = { username: user.email, sub: user.id, role: user.roles };
+console.log('payload:', payload)
+    return {
+      access_token: this.jwtService.sign(payload),
+      fullName: user.fullName,
+      roles: user.roles
+    };
+  }
+
+/*
+  Forgot Password process
+*/
+
+  async createForgotToken(email: string, sendEmailDelay: boolean): Promise<any> {
+console.log('email of forgot password', email);
+    const forgotPwd = await this.prismaService.forgottenPwd.findOne({ where: { email } });
+    const delayBetweenEmailEnable = sendEmailDelay;
+    const delayToTest = this.configService.get("DELAYBTWEMAIMINUTE")
+    const testDelayBetweenEmail =  await this.utilitiesService.timeStampDelay(forgotPwd.timestamp, parseInt(delayToTest,10))
+    if (forgotPwd && testDelayBetweenEmail && delayBetweenEmailEnable) {
+      throw new HttpException('Reset password email alaready sent', 400);
+    } else {
+      const newForgotPwd = await this.prismaService.forgottenPwd.upsert({
+        where: { email },
+        update: {
+          pwdToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
+          timestamp: new Date()
+        },
+        create: {
+          email,
+          pwdToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
+          timestamp: new Date()
+        },
+      });
+      if (newForgotPwd) {
+        return newForgotPwd
+      } else {
+        throw new HttpException('Error on forgot password', 400);
+      }
+    }
+  }
+
+  async sendEmailForgotPwd(email: string, sendEmailDelay: boolean): Promise<boolean> {
+console.log('email of forgot password', email);
+    const user = await this.prismaService.user.findOne({ where: { email } });
+    if (!user) throw new HttpException('Email not found', 400);
+    // create the token for the forgot pwd
+    const token = await this.createForgotToken(email, sendEmailDelay);
+console.log('reset token', token)
+    // Prepare the email
+    const emailSender = this.configService.get("EMAIL_NOREPLY");
+    const emailData = {
+        fromEmail: `"No reply" <${emailSender}>` ,
+        toEmail: email,
+        subjectEmail: `Your forgot password.`,
+        textEmail: `Hello <br> to reset your password click the link below <br>`,
+        htmlEmail: `<br> to reset your password click the link below <br>
+            <a href='http://localhost:4200/reset-password/${token.pwdToken}'>Click here</a>` // html body
+      }
+
+      if (token && token.pwdToken) {
+        // Send the email with the link and the forgotpassword token
+        const sendMail = await this.utilitiesService.sendEmailToken(emailData);
+        if (sendMail) {
+          return sendMail
+        } else {
+          throw new HttpException('Error on sending email', 400);
+        }
+      } else {
+          throw new HttpException('Error on forgot password', 400);
+      }
+    }
+
+  async verifyToken(token: string): Promise<ForgottenPwd> {
+    const forgotPwdModel = await this.prismaService.forgottenPwd.findOne({ where: { pwdToken: token } });
+    // ! use utility to verify the delay of validity
+    if ((!forgotPwdModel || (new Date().getTime() - forgotPwdModel.timestamp.getTime()) / 60000 > 15)) {
+      throw new HttpException('Invalid token', 400);
+      // return false;
+    } else {
+      // redirect
+      // return true;
+      return forgotPwdModel;
+    }
+  }
+
+  async editForgotPwd(pwd: string, userId: string): Promise<User> {
+    const salt = randomBytes(16).toString('base64');
+    const pwdHash = AuthsService.hashPassword(pwd, salt);
+    return await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        salt,
+        pwdHash,
+      }
+    })
   }
 
 }

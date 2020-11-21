@@ -6,7 +6,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -163,7 +163,7 @@ enum Role {
 }
 
 model ForgottenPwd {
-  id         Int      @default(autoincrement()) @id
+  id          String   @default(uuid()) @id
   email       String   @unique
   pwdToken    String   @unique
   timestamp   DateTime
