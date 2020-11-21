@@ -29,7 +29,7 @@ export class UsersController {
     // Get one user by id
     @Get('oneuser/:id')
     async getUserById(@Param('id') id: string): Promise<UserModel> {
-      return this.usersService.findOneUser({ id: Number(id) });
+      return this.usersService.findOneUser({ id: String(id) });
     }
 
   // Update one user
@@ -39,7 +39,7 @@ export class UsersController {
     // @Body() postData: { title: string; content?: string; authorEmail: string }): Promise<PostModel> {
     @Body() userData: UserUpdateInput): Promise<UserModel> {
     return this.usersService.updateOneUser({
-      where: { id: Number(id) },
+      where: { id: String(id) },
       data:  userData ,
     });
   }
@@ -71,6 +71,6 @@ export class UsersController {
   // TODO ! ADD : ADMIN privilège needed
   @Delete('deleteoneuser/:id')
   async deleteUser(@Param('id') id: string): Promise<UserModel> {
-    return this.usersService.deleteOneUser({ id: Number(id) });
+    return this.usersService.deleteOneUser({ id: String(id) });
   }
 }

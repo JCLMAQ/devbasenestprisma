@@ -5,7 +5,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer"
+          "type": "string"
         },
         "email": {
           "type": "string"
@@ -30,11 +30,59 @@
             "null"
           ]
         },
+        "Role": {
+          "type": "array",
+          "enum": [
+            "GUEST",
+            "USER",
+            "ADMIN",
+            "SUPERADMIN"
+          ]
+        },
+        "nickName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pwdHash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "salt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "social": {
           "type": [
             "object",
             "null"
           ]
+        },
+        "isValidated": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "isSuspended": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "isDeleted": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         },
         "isAdmin": {
           "type": [
@@ -42,42 +90,7 @@
             "null"
           ]
         },
-        "Post": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Post"
-          }
-        },
-        "Tokens": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Token"
-          }
-        }
-      }
-    },
-    "Post": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "id": {
-          "type": "integer"
-        },
-        "published": {
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "title": {
-          "type": "string"
-        },
-        "User": {
+        "manager": {
           "anyOf": [
             {
               "$ref": "#/definitions/User"
@@ -86,6 +99,60 @@
               "type": "null"
             }
           ]
+        },
+        "Team": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "Profiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Profile"
+          }
+        },
+        "Group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Group"
+          }
+        },
+        "Post": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Post"
+          }
+        },
+        "Comment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "Todo": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Todo"
+          }
+        },
+        "UserTodoLink": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserTodoLink"
+          }
+        },
+        "ChangesLog": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChangesTracking"
+          }
+        },
+        "Token": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Token"
+          }
         }
       }
     },
@@ -127,6 +194,401 @@
           "$ref": "#/definitions/User"
         }
       }
+    },
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "orderProfile": {
+          "type": "integer"
+        },
+        "User": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "bio": {
+          "type": "string"
+        },
+        "isDeleted": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "Group": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "orderGroup": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "User": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "Todo": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Todo"
+          }
+        },
+        "isDeleted": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "Todo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "orderTodo": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "CREATION",
+            "STANDBY",
+            "RUNNING",
+            "DONE"
+          ]
+        },
+        "published": {
+          "type": "boolean"
+        },
+        "public": {
+          "type": "boolean"
+        },
+        "mainTodo": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Todo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "SubTodo": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Todo"
+          }
+        },
+        "User": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "Group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Group"
+          }
+        },
+        "UserTodoLink": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserTodoLink"
+          }
+        },
+        "isDeleted": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "UserTodoLink": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "todo": {
+          "$ref": "#/definitions/Todo"
+        },
+        "isAuthor": {
+          "type": "boolean"
+        },
+        "isAssigned": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ForgottenPwd": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "pwdToken": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AccountValidation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "isValidated": {
+          "type": "boolean"
+        },
+        "emailToken": {
+          "type": "string"
+        },
+        "timeStamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "File": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "ChangesTracking": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "doneAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modifiedBy": {
+          "$ref": "#/definitions/User"
+        },
+        "modelName": {
+          "type": "string"
+        },
+        "recordId": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "newData": {
+          "type": "object"
+        },
+        "oldData": {
+          "type": "object"
+        }
+      }
+    },
+    "Post": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "orderPost": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "published": {
+          "type": "boolean"
+        },
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "Category": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Category"
+          }
+        },
+        "Comment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "isDeleted": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "Category": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "orderCategory": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "Post": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Post"
+          }
+        },
+        "isDeleted": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "isDeleted": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "orderComment": {
+          "type": "integer"
+        },
+        "published": {
+          "type": "boolean"
+        },
+        "content": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "post": {
+          "$ref": "#/definitions/Post"
+        },
+        "author": {
+          "$ref": "#/definitions/User"
+        }
+      }
     }
   },
   "type": "object",
@@ -134,11 +596,41 @@
     "user": {
       "$ref": "#/definitions/User"
     },
+    "token": {
+      "$ref": "#/definitions/Token"
+    },
+    "profile": {
+      "$ref": "#/definitions/Profile"
+    },
+    "group": {
+      "$ref": "#/definitions/Group"
+    },
+    "todo": {
+      "$ref": "#/definitions/Todo"
+    },
+    "userTodoLink": {
+      "$ref": "#/definitions/UserTodoLink"
+    },
+    "forgottenPwd": {
+      "$ref": "#/definitions/ForgottenPwd"
+    },
+    "accountValidation": {
+      "$ref": "#/definitions/AccountValidation"
+    },
+    "file": {
+      "$ref": "#/definitions/File"
+    },
+    "changesTracking": {
+      "$ref": "#/definitions/ChangesTracking"
+    },
     "post": {
       "$ref": "#/definitions/Post"
     },
-    "token": {
-      "$ref": "#/definitions/Token"
+    "category": {
+      "$ref": "#/definitions/Category"
+    },
+    "comment": {
+      "$ref": "#/definitions/Comment"
     }
   }
 }

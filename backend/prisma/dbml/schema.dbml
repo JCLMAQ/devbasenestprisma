@@ -3,25 +3,32 @@
 //// ------------------------------------------------------
 
 Table User {
-  id Int [pk, increment]
+  id String [pk]
   email String [unique, not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   lastName String
   firstName String
+  Role Role
+  nickName String
+  pwdHash String
+  salt String
   social Json
+  isValidated DateTime
+  isSuspended DateTime
+  isDeleted DateTime
   isAdmin Boolean [default: false]
+  manager User
+  managerId String
+  Team User
+  Profiles Profile
+  Group Group
   Post Post
-  Tokens Token
-}
-
-Table Post {
-  authorId Int
-  content String
-  id Int [pk, increment]
-  published Boolean [default: false]
-  title String [not null]
-  User User
+  Comment Comment
+  Todo Todo
+  UserTodoLink UserTodoLink
+  ChangesLog ChangesTracking
+  Token Token
 }
 
 Table Token {
@@ -33,7 +40,154 @@ Table Token {
   valid Boolean [not null, default: true]
   expiration DateTime [not null]
   user User [not null]
-  userId Int [not null]
+  userId String [not null]
+}
+
+Table Profile {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  orderProfile Int [not null]
+  User User
+  bio String [not null]
+  isDeleted DateTime
+}
+
+Table Group {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  orderGroup Int [not null]
+  name String [not null]
+  User User
+  Todo Todo
+  isDeleted DateTime
+}
+
+Table Todo {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  orderTodo Int [not null]
+  title String [not null]
+  content String
+  state TodoState [not null, default: 'CREATION']
+  published Boolean [not null, default: false]
+  public Boolean [not null, default: false]
+  mainTodo Todo
+  mainTodoId String
+  SubTodo Todo
+  User User
+  Group Group
+  UserTodoLink UserTodoLink
+  isDeleted DateTime
+}
+
+Table UserTodoLink {
+  userId String [not null]
+  user User [not null]
+  todoId String [not null]
+  todo Todo [not null]
+  isAuthor Boolean [not null, default: true]
+  isAssigned Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table ForgottenPwd {
+  id String [pk]
+  email String [unique, not null]
+  pwdToken String [unique, not null]
+  timestamp DateTime [not null]
+}
+
+Table AccountValidation {
+  id String [pk]
+  isValidated Boolean [not null]
+  emailToken String [unique, not null]
+  timeStamp DateTime [not null]
+}
+
+Table File {
+  id String [pk]
+  name String [not null]
+  type String [not null]
+  data String [not null]
+  owner String [not null]
+}
+
+Table ChangesTracking {
+  id Int [pk, increment]
+  doneAt DateTime [default: `now()`, not null]
+  modifiedBy User [not null]
+  authorId String [not null]
+  modelName String [not null]
+  recordId String [not null]
+  operation String [not null]
+  newData Json [not null]
+  oldData Json [not null]
+}
+
+Table Post {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  orderPost Int
+  published Boolean [not null, default: false]
+  title String [not null]
+  content String
+  author User [not null]
+  authorId String [not null]
+  Category Category
+  Comment Comment
+  isDeleted DateTime
+}
+
+Table Category {
+  id String [pk]
+  orderCategory Int [not null]
+  name String [not null]
+  Post Post
+  isDeleted DateTime
+}
+
+Table Comment {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  isDeleted DateTime
+  orderComment Int [not null]
+  published Boolean [not null, default: false]
+  content String
+  post Post [not null]
+  postId String [not null]
+  author User [not null]
+  authorId String [not null]
+}
+
+Table ProfileToUser {
+  profilesId String [ref: > Profile.id]
+  userId String [ref: > User.id]
+}
+
+Table GroupToUser {
+  groupId String [ref: > Group.id]
+  userId String [ref: > User.id]
+}
+
+Table TodoToUser {
+  todoId String [ref: > Todo.id]
+  userId String [ref: > User.id]
+}
+
+Table GroupToTodo {
+  todoId String [ref: > Todo.id]
+  groupId String [ref: > Group.id]
+}
+
+Table CategoryToPost {
+  categoryId String [ref: > Category.id]
+  postId String [ref: > Post.id]
 }
 
 Enum TokenType {
@@ -41,6 +195,40 @@ Enum TokenType {
   API
 }
 
-Ref: Post.authorId > User.id
+Enum TodoState {
+  CREATION
+  STANDBY
+  RUNNING
+  DONE
+}
+
+Enum Gender {
+  MALE
+  FEMELE
+  UNKNOWN
+}
+
+Enum Role {
+  GUEST
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+Ref: User.managerId - User.id
 
 Ref: Token.userId > User.id
+
+Ref: Todo.mainTodoId - Todo.id
+
+Ref: UserTodoLink.userId > User.id
+
+Ref: UserTodoLink.todoId > Todo.id
+
+Ref: ChangesTracking.authorId > User.id
+
+Ref: Post.authorId > User.id
+
+Ref: Comment.postId > Post.id
+
+Ref: Comment.authorId > User.id
