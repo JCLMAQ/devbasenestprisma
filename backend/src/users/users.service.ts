@@ -7,7 +7,7 @@ import {
   UserWhereUniqueInput,
   UserWhereInput,
   UserOrderByInput,
-  UserCreateWithoutPostInput
+  UserCreateWithoutPostInput,
 } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,14 +18,7 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
   ) {}
-  
-// Middleware 1
-// test = this.prisma.$use(async (params, next) => {
-//   // Manipulate params here
-//   const result = next(params);
-//   // See results here
-//   return result;
-// }
+
 
   async createUser(data: UserCreateInput): Promise<User> {
     return this.prisma.user.create({

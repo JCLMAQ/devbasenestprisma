@@ -12,25 +12,25 @@ import {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-   // Create a new user
-   @Post('newUser')
-   async createOneUser( @Body() userData: UserCreateInput ): Promise<UserModel> {
-     // const { name, email } = userData;
-     return this.usersService.createUser(
-       userData
-     );
-   }
- 
-   @Get('allusers')
-   async getAllUsers(): Promise<UserModel[]> {
-     return this.usersService.findUsers({});
-   }
+  // Create a new user
+  @Post('newUser')
+  async createOneUser( @Body() userData: UserCreateInput ): Promise<UserModel> {
+    // const { name, email } = userData;
+    return this.usersService.createUser(
+      userData
+    );
+  }
 
-    // Get one user by id
-    @Get('oneuser/:id')
-    async getUserById(@Param('id') id: string): Promise<UserModel> {
-      return this.usersService.findOneUser({ id: String(id) });
-    }
+  @Get('allusers')
+  async getAllUsers(): Promise<UserModel[]> {
+    return this.usersService.findUsers({});
+  }
+
+  // Get one user by id
+  @Get('oneuser/:id')
+  async getUserById(@Param('id') id: string): Promise<UserModel> {
+    return this.usersService.findOneUser({ id: String(id) });
+  }
 
   // Update one user
   @Put('updateoneuser/:id')
@@ -69,7 +69,9 @@ export class UsersController {
   // Delete one user
   // TODO ! Cascading delete for Post
   // TODO ! ADD : ADMIN privilège needed
-  @Delete('deleteoneuser/:id')
+
+  @Delete('deleteoneuser/:id') 
+  // "Soft delete" is implemented through Prisma Middelware define within Prisma Service (see Prisma Module)
   async deleteUser(@Param('id') id: string): Promise<UserModel> {
     return this.usersService.deleteOneUser({ id: String(id) });
   }
