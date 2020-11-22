@@ -19,6 +19,14 @@ export class UsersService {
     private prisma: PrismaService,
   ) {}
   
+// Middleware 1
+// test = this.prisma.$use(async (params, next) => {
+//   // Manipulate params here
+//   const result = next(params);
+//   // See results here
+//   return result;
+// }
+
   async createUser(data: UserCreateInput): Promise<User> {
     return this.prisma.user.create({
       data,

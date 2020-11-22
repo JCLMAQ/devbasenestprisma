@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Middleware } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
 import { from } from 'rxjs';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UtilitiesService {
 
     constructor(
         private configService: ConfigService, 
+        private prisma: PrismaService
         ) {}
 
     /* 
@@ -46,14 +49,56 @@ export class UtilitiesService {
 
     // Delay between the present moment and the past date time
     async timeStampDelay(dateStampToTest: Date, delayMinutes: number) {
-       const tooshort = (new Date().getTime() - dateStampToTest.getTime()) / 60000 < delayMinutes;
-       return tooshort;
+        const tooshort = (new Date().getTime() - dateStampToTest.getTime()) / 60000 < delayMinutes;
+        return tooshort;
     }
 
-       // Delay between two date time
-       async twoTimeStampsDelay(dateStampOne: Date, dateStampTwo: Date, delayMinutes: number) {
+    // Delay between two date time
+    async twoTimeStampsDelay(dateStampOne: Date, dateStampTwo: Date, delayMinutes: number) {
         const tooshort = (dateStampOne.getTime() - dateStampTwo.getTime()) / 60000 < delayMinutes;
         return tooshort;
-     }
+    }
+
+/*
+Test Primsa MiddelWare
+*/
+    // OmitPasswordInUser: Middleware = async (params, next) => {
+    //     const result = await next(params);
+        
+    //     if(params.model === "User") {
+    //         const { password, ...rest } = result;
+    //         return rest;
+    //     }
+        
+    //     return result;
+    // }
     
+    //  prisma.$use(OmitPasswordInUser);
+
+    
+
+    // softDeleteMiddelware = this.prisma.$use(async (params, next) => {
+    // // Check incoming query type
+    // if (params.model == "Post") {
+    //     if (params.action == "delete") {
+    //         // Delete queries
+    //         // Change action to an update
+    //         params.action = "update";
+    //         params.args["data"] = { isDeleted: new Date };
+    //     }
+    //     if (params.action == "deleteMany") {
+    //         // Delete many queries
+    //         params.action = "updateMany";
+    //         if (params.args.data != undefined) {
+    //         params.args.data["isDeleted"] = new Date;
+    //         } else {
+    //         params.args["data"] = { isDeleted: new Date };
+    //         }
+    //     }
+//     }
+//     return next(params);
+//   });
+
+
 }
+
