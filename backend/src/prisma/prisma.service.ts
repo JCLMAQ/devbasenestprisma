@@ -86,7 +86,6 @@ export class PrismaService extends PrismaClient
         }
       }
     }
-    console.log(params);
     return next(params);
   };
 
