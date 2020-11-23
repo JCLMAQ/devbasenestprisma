@@ -87,11 +87,11 @@ export class PrismaService extends PrismaClient
         params.action = "updateMany";
         // Add 'deleted' filter
         // ID filter maintained
-        params.args.where["isDeleted"] == null;
+        params.args.where["isDeleted"] = null;
       }
       if (params.action == "updateMany") {
         if (params.args.where != undefined) {
-          params.args.where["isDeleted"] == null;
+          params.args.where["isDeleted"] = null;
         } else {
           params.args["where"] = { isDeleted: null };
         }
