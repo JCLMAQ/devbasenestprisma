@@ -1,16 +1,28 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Middleware, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient
   implements OnModuleInit, OnModuleDestroy {
 
-  constructor() {
+  constructor(
+    private configService: ConfigService, 
+  ) {
     super();
   //  this.$use(this.OmitPasswordInUser);
-    this.$use(this.notFindSoftDeleMiddelware);
-    this.$use(this.notUpdateSoftDeletedMiddelware);
-    this.$use(this.softDeleteMiddelware);
+  if(this.configService.get("ENABLE_SOFT_DELETE") == 1) {
+    this.$use(this.softDeleteMiddelware)
+    if(this.configService.get("ENABLE_NOT_FIND_SOFTDELETED") == 1) {
+      this.$use(this.notFindSoftDeleMiddelware);
+      if(this.configService.get("ENABLE_NOT_UPDATE_SOFTDELETED") == 1){
+        this.$use(this.notUpdateSoftDeletedMiddelware);
+      }
+    }
+  }
+    // this.$use(this.notFindSoftDeleMiddelware);
+    // this.$use(this.notUpdateSoftDeletedMiddelware);
+    // this.$use(this.softDeleteMiddelware);
   }
 
   async onModuleInit() {
