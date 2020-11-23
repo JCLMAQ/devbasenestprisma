@@ -61,20 +61,21 @@ export class PrismaService extends PrismaClient
         params.action = "findFirst";
         // Add 'deleted' filter
         // ID filter maintained
-        params.args.where["isDeleted"] == null;
+        params.args.where["isDeleted"] = null;
       }
       if (params.action == "findMany") {
         // Find many queries
         if (params.args.where != undefined) {
           if (params.args.where.isDeleted == undefined) {
             // Exclude deleted records if they have not been expicitly requested
-            params.args.where["isDeleted"] == null;
+            params.args.where["isDeleted"] = null;
           }
         } else {
           params.args["where"] = { isDeleted: null};
         }
       }
     }
+    console.log(params);
     return next(params);
   };
 
