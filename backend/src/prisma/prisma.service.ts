@@ -10,19 +10,16 @@ export class PrismaService extends PrismaClient
     private configService: ConfigService, 
   ) {
     super();
-  //  this.$use(this.OmitPasswordInUser);
-  if(this.configService.get("ENABLE_SOFT_DELETE") == 1) {
-    this.$use(this.softDeleteMiddelware)
-    if(this.configService.get("ENABLE_NOT_FIND_SOFTDELETED") == 1) {
-      this.$use(this.notFindSoftDeleMiddelware);
-      if(this.configService.get("ENABLE_NOT_UPDATE_SOFTDELETED") == 1){
-        this.$use(this.notUpdateSoftDeletedMiddelware);
+    this.$use(this.deletePasswordUser);
+    if(this.configService.get("ENABLE_SOFT_DELETE") == 1) {
+      this.$use(this.softDeleteMiddelware)
+      if(this.configService.get("ENABLE_NOT_FIND_SOFTDELETED") == 1) {
+        this.$use(this.notFindSoftDeleMiddelware);
+        if(this.configService.get("ENABLE_NOT_UPDATE_SOFTDELETED") == 1){
+          this.$use(this.notUpdateSoftDeletedMiddelware);
+        }
       }
     }
-  }
-    // this.$use(this.notFindSoftDeleMiddelware);
-    // this.$use(this.notUpdateSoftDeletedMiddelware);
-    // this.$use(this.softDeleteMiddelware);
   }
 
   async onModuleInit() {
@@ -34,14 +31,16 @@ export class PrismaService extends PrismaClient
   }
 
 // Middelwares
-// OmitPasswordInUser: Middleware = async (params, next) => {
-//   const result = await next(params);        
-//   if(params.model === "User") {
-//       const { password, ...rest } = result;
-//       return rest;
-//   }       
-//   return result;
-// }
+  deletePasswordUser: Middleware = async (params, next) => {
+//     console.log("params:", params);
+// Work only for "findOne"  ot for findMany
+    const result = await next(params);        
+    if(params.model === "User") {
+        const { pwdHash, salt, isAdmin, ...rest } = result;
+        return rest;
+    }
+    return result;
+  }
 
   softDeleteMiddelware: Middleware = async (params, next) => {
     // Check incoming query type

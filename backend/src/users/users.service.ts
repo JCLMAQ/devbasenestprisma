@@ -82,7 +82,7 @@ export class UsersService {
   async returnUserPartial(userEmail) {
     const user = await this.getOneUserByEmail(userEmail);
     // const { pwdHash, salt, ...result } = user; // To remove pwdHash and salt from user: result = user less salt and pwdHash
-    const { isAdmin, ...result } = user;
+    const { pwdHash, salt, isAdmin, ...result } = user;
     console.log('UserStillExist : yes', result)
     return result;
   }
