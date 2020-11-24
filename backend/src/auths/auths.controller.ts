@@ -20,7 +20,7 @@ export class AuthsController {
       const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") === "1"
       // const sendEmailDelay = true // Delay betwwen to send email actif
       const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") === "1";
-      return this.authsService.loginHandler(email, registration, sendEmailDelay, autoRegistration);
+      return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
   }
 
   @Post('auth/registration')
@@ -31,7 +31,7 @@ export class AuthsController {
       // const sendEmailDelay = true // Delay betwwen to send email actif
       const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") === "1"
       const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") === "1";
-      return this.authsService.loginHandler(email, registration, sendEmailDelay, autoRegistration);
+      return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
   }
 
 
