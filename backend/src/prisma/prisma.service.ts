@@ -33,13 +33,20 @@ export class PrismaService extends PrismaClient
 // Middelwares
   deletePasswordUser = async (params, next) => {
 //     console.log("params:", params);
-// Work only for "findOne"  ot for findMany
+// Work only for "findUnique"  ot for findMany
     const result = await next(params);        
     if(params.model === "User") {
-        const { pwdHash, salt, isAdmin, ...rest } = result;
-        return rest;
+      if(result != null) {
+        if((result.pwdHash != null) && (result.salt != null)) {
+          const { pwdHash, salt, isAdmin, ...rest } = result;
+          return rest;
+        } else {
+          const { isAdmin, ...rest } = result;
+          return rest;
+        }
+      }
     }
-    return result;
+   return result
   }
 
   softDeleteMiddelware = async (params, next) => {
@@ -66,9 +73,9 @@ export class PrismaService extends PrismaClient
 
   notFindSoftDeleMiddelware = async (params, next) => {
     if (params.model == "User") {
-      if (params.action == "findOne") {
+      if (params.action == "findUnique") {
         // Change to findFirst - you cannot filter
-        // by anything except ID / unique with findOne
+        // by anything except ID / unique with findUnique
         params.action = "findFirst";
         // Add 'deleted' filter
         // ID filter maintained
@@ -93,7 +100,7 @@ export class PrismaService extends PrismaClient
     if (params.model == "User") {
       if (params.action == "update") {
         // Change to updateMany - you cannot filter
-        // by anything except ID / unique with findOne
+        // by anything except ID / unique with findUnique
         params.action = "updateMany";
         // Add 'deleted' filter
         // ID filter maintained

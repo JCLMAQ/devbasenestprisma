@@ -9,7 +9,7 @@ Table User {
   updatedAt DateTime [default: `now()`, not null]
   lastName String
   firstName String
-  Role Role
+  Role Role [not null, default: 'USER']
   nickName String
   pwdHash String
   salt String

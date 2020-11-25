@@ -42,20 +42,20 @@ export class UsersService {
     });
   }
 
-  async findOneUser(userWhereUniqueInput: UserWhereUniqueInput): Promise<User | null> {
-    return this.prisma.user.findOne({
+  async findUniqueUser(userWhereUniqueInput: UserWhereUniqueInput): Promise<User | null> {
+    return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
     });
   }
 
   async getOneUserByEmail(userEmail): Promise<User> {
-    return await this.prisma.user.findOne({
+    return await this.prisma.user.findUnique({
         where: { email: userEmail }
     })
   } 
 
   async findOrCreateOneUser(email: string): Promise<User> { // If user does not exist, create one
-    let user = await this.prisma.user.findOne({ where: { email } })
+    let user = await this.prisma.user.findUnique({ where: { email } })
     if (!user) {
       // Create a new user
       user = await this.prisma.user.create({ data: { email }})
@@ -88,7 +88,7 @@ export class UsersService {
   }
 
   async userExistOrCreate(email: string): Promise<User> { // If user does not exist, create one
-    let user = await this.prisma.user.findOne({ where: { email } })
+    let user = await this.prisma.user.findUnique({ where: { email } })
     // if (!user) throw new HttpException('User not found', 400);
     if (!user) {
       // Create a new user

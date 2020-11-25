@@ -67,7 +67,7 @@ export class AuthsService {
   
   // Fetch the token from DB to verify it's valid
   async verifyDBTokenMatch(tokenId) {       
-      const fetchedToken = await this.prismaService.token.findOne({
+      const fetchedToken = await this.prismaService.token.findUnique({
           where: {
               id: tokenId,
           },
@@ -136,7 +136,7 @@ export class AuthsService {
     // Define the emailToken expiration time
     const tokenExpiration = await this.emailTokenExpiration();
 
-    let userFound = await this.usersService.findOneUser({email});
+    let userFound = await this.usersService.findUniqueUser({email});
 
     if(autoRegistration && !userFound) {
       userFound = await this.usersService.createUser({email}); // registration auto of a new user
@@ -216,7 +216,7 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
   const { email, emailToken } = userCredential;
   const validEmailToken= { email: email, userId: null, validToken: false, tokenId: null};
   // Get short lived email token
-  const fetchedEmailToken = await this.prismaService.token.findOne({
+  const fetchedEmailToken = await this.prismaService.token.findUnique({
     where: {
         emailToken: emailToken,
     },
@@ -349,7 +349,7 @@ console.log('Verify password = ', isOK);
 console.log('email of forgot password', email);
 
     // Find and update or Create the forgot pwd data (specific token) in the DB
-    const forgotPwd = await this.prismaService.forgottenPwd.findOne({ where: { email } });
+    const forgotPwd = await this.prismaService.forgottenPwd.findUnique({ where: { email } });
     // if a forgotPwd exist for the user (email) and if the delay is still running, do not send a new email
     if (forgotPwd && ((new Date().getTime() - forgotPwd.timestamp.getTime()) / 60000 < 15)) {
       throw new HttpException('Reset password email alaready sent', 400);
@@ -381,7 +381,7 @@ console.log('email of forgot password', email);
 console.log('email of forgot password', emailForgotPwd);
 
     // Verify if the user exist
-    const user = await this.prismaService.user.findOne({ where: { email: emailForgotPwd } });
+    const user = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
     if (!user) throw new HttpException('Email (user) not found', 400);
 
     // Create the forgot  password token
@@ -421,7 +421,7 @@ console.log('reset token', tokenForgotPwd)
 
 
   async verifyToken(token: string): Promise<ForgottenPwd> {
-    const forgotPwdModel = await this.prismaService.forgottenPwd.findOne({ where: { pwdToken: token } });
+    const forgotPwdModel = await this.prismaService.forgottenPwd.findUnique({ where: { pwdToken: token } });
     if ((!forgotPwdModel || (new Date().getTime() - forgotPwdModel.timestamp.getTime()) / 60000 > 15)) {
       throw new HttpException('Invalid token', 400);
       // return false;

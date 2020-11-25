@@ -29,7 +29,7 @@ export class UsersController {
     // Get one user by id
     @Get('oneuser/:id')
     async getUserById(@Param('id') id: string): Promise<UserModel> {
-      return this.usersService.findOneUser({ id: String(id) });
+      return this.usersService.findUniqueUser({ id: String(id) });
     }
 
   // Update one user
