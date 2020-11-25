@@ -2,13 +2,16 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TokenType } from '@prisma/client';
+import { User,TokenType, ForgottenPwd } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 
 import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { pbkdf2Sync, randomBytes } from 'crypto';
+
+
 
 @Injectable()
 export class AuthsService {
@@ -26,10 +29,13 @@ export class AuthsService {
     return true;
   }
 
-// PasswordLess Authentication Schema
+/*
+  PasswordLess Authentication Schema
+*/
   /*
-   Utilities
+   Utilities for passwordLess
   */
+
   // Generate a random 8 digit number as the email token
   async generateEmailToken(): Promise<string> {
     return Math.floor(10000000 + Math.random() * 90000000).toString()
@@ -61,7 +67,7 @@ export class AuthsService {
   
   // Fetch the token from DB to verify it's valid
   async verifyDBTokenMatch(tokenId) {       
-      const fetchedToken = await this.prismaService.token.findOne({
+      const fetchedToken = await this.prismaService.token.findUnique({
           where: {
               id: tokenId,
           },
@@ -92,13 +98,13 @@ export class AuthsService {
     */
 
     /*
-     Start Login processes
+     Start PasswordLess Login process
     */
 
     // const {fromEmail, toEmail, subjectEmail, textEmail, htmlEmail } = emailData
 
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
-  async loginHandler(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean) {
+  async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean) {
     let emailToken = await this.generateEmailToken();
     let tokenAlreadyExist = await this.prismaService.token.findFirst({
       where: {
@@ -117,7 +123,7 @@ export class AuthsService {
         }}});
     }
    
-
+    // Config data for the email to send with the token
     const emailSender = this.configService.get("EMAIL_NOREPLY");
     const emailData = {
       fromEmail: `"No reply" <${emailSender}>` ,
@@ -130,7 +136,7 @@ export class AuthsService {
     // Define the emailToken expiration time
     const tokenExpiration = await this.emailTokenExpiration();
 
-    let userFound = await this.usersService.findOneUser({email});
+    let userFound = await this.usersService.findUniqueUser({email});
 
     if(autoRegistration && !userFound) {
       userFound = await this.usersService.createUser({email}); // registration auto of a new user
@@ -200,7 +206,7 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
     if (sendMail) {
       return sendMail
     } else {
-      throw new HttpException('Error on sending email', 400);
+      throw new HttpException('Error on sending email with the token', 400);
     }
     
   }
@@ -210,7 +216,7 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
   const { email, emailToken } = userCredential;
   const validEmailToken= { email: email, userId: null, validToken: false, tokenId: null};
   // Get short lived email token
-  const fetchedEmailToken = await this.prismaService.token.findOne({
+  const fetchedEmailToken = await this.prismaService.token.findUnique({
     where: {
         emailToken: emailToken,
     },
@@ -290,14 +296,152 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
     }  
   }
 
-  async validateUser(userEmail: string): Promise<any> {
+  /*
+    Email and password Authentication
+  */
+
+ async loginWithPwd(user: User) {
+  console.log('authService login');
+  const payload = { username: user.email, sub: user.id, role: user.Role };
+  console.log('payload:', payload)
+  return {
+    access_token: this.jwtService.sign(payload),
+    fullName: user.firstName +" "+ user.lastName,
+    roles: user.Role
+  };
+}
+
+  async validateUser(username: string, plainTextPassword: string): Promise<any> {
     // username = email
-    const user = await this.usersService.getOneUserByEmail(userEmail);
-    if (user) {
-      const { ...result } = user;
+console.log('validateUser (auth.service) step', username, plainTextPassword);
+    const user = await this.usersService.getOneUserByEmail(username);
+console.log('usersService.checkOneUserByEmail(username)', user)
+
+    if (this.verifyPassword(user, plainTextPassword)) {
+      const { pwdHash, salt, ...result } = user;
+console.log('validateUser step: ok', result);
       return result;
     }
     return null;
   }
 
+  static hashPassword(password: string, salt: string): string {
+    if (salt && password) {
+      return pbkdf2Sync(password, Buffer.from(salt, 'base64'), 10000, 64, 'sha512')
+        .toString('base64');
+    }
+    return password;
+  }
+
+  verifyPassword(user, plainTextPassword: string) {
+    const pwdHash = AuthsService.hashPassword(plainTextPassword, user.salt);
+console.log('Verify Password (auth.controller): ', user.pwdHash, pwdHash);
+    const isOK = (pwdHash === user.pwdHash);
+console.log('Verify password = ', isOK);
+    return isOK
+  }
+
+/*
+  Forgot Password process
+*/
+
+  async createForgotToken(email: string): Promise<any> {
+console.log('email of forgot password', email);
+
+    // Find and update or Create the forgot pwd data (specific token) in the DB
+    const forgotPwd = await this.prismaService.forgottenPwd.findUnique({ where: { email } });
+    // if a forgotPwd exist for the user (email) and if the delay is still running, do not send a new email
+    if (forgotPwd && ((new Date().getTime() - forgotPwd.timestamp.getTime()) / 60000 < 15)) {
+      throw new HttpException('Reset password email alaready sent', 400);
+    } else {
+      // Update or create the forgotPwd record with a pwd token and a udate/creation date
+      const newForgotPwd = await this.prismaService.forgottenPwd.upsert({
+        where: { email },
+        update: {
+          pwdToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
+          timestamp: new Date()
+        },
+        create: {
+          email,
+          pwdToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
+          timestamp: new Date()
+        },
+      });
+      if (newForgotPwd) {
+        return newForgotPwd
+      } else {
+        throw new HttpException('Error on forgot password', 400);
+      }
+    }
+  }
+
+  // Sending forgot password email with the link
+  async sendEmailForgotPwd(emailForgotPwd: string): Promise<boolean> {
+
+console.log('email of forgot password', emailForgotPwd);
+
+    // Verify if the user exist
+    const user = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
+    if (!user) throw new HttpException('Email (user) not found', 400);
+
+    // Create the forgot  password token
+    const tokenForgotPwd = await this.createForgotToken(emailForgotPwd);
+
+console.log('reset token', tokenForgotPwd)
+
+    // If the token has been created, send the email
+    if (tokenForgotPwd && tokenForgotPwd.pwdToken) {
+      
+      // Config data for the email to send with the token
+      const emailSender = this.configService.get("EMAIL_NOREPLY");
+      const hostWebAddress = this.configService.get("APP_FRONT_END");
+      const emailData = {
+        fromEmail: `"No reply" <${emailSender}>` ,
+        toEmail: emailForgotPwd,
+        subjectEmail: `Forgot Password reinitialyse Link.`,
+        textEmail: `To resert your password click on the link.`,
+        htmlEmail: `Hello <br> to reset your password click the link below <br>
+        <a href='${hostWebAddress}/reset-password/${tokenForgotPwd.pwdToken}'>Click here</a>` // html body
+      }
+
+      // Send the email with the link
+      const sendMail = await this.utilitiesService.sendEmailToken(emailData);
+      if (sendMail) {
+        return sendMail
+      } else {
+        throw new HttpException('Error on sending email with the token', 400);
+      }
+
+    } else {
+      throw new HttpException('Error on forgot password process', 400);
+    }
+  }
+
+
+
+
+  async verifyToken(token: string): Promise<ForgottenPwd> {
+    const forgotPwdModel = await this.prismaService.forgottenPwd.findUnique({ where: { pwdToken: token } });
+    if ((!forgotPwdModel || (new Date().getTime() - forgotPwdModel.timestamp.getTime()) / 60000 > 15)) {
+      throw new HttpException('Invalid token', 400);
+      // return false;
+    } else {
+      // redirect
+      // return true;
+      return forgotPwdModel;
+    }
+  }
+
+  async editForgotPwd(pwd: string, userId: string): Promise<User> {
+    const salt = randomBytes(16).toString('base64');
+    const pwdHash = AuthsService.hashPassword(pwd, salt);
+    return await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        salt,
+        pwdHash,
+      }
+    })
+  }
+  
 }

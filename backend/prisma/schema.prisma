@@ -31,10 +31,13 @@ model User {
   updatedAt   DateTime  @default(now()) @updatedAt
   lastName    String?
   firstName   String?
-  Role        Role[]
+  Role        Role      @default(USER)
   nickName    String?
-  pwdHash     String?
-  salt        String?
+  Gender      Gender
+  pwdHash     String?   
+  salt        String?   
+  // pwdHash     String?   @default("")
+  // salt        String?   @default("")
   social      Json?
 
   // Management of the state of the account
@@ -50,7 +53,7 @@ model User {
   managerId    String?           @map("manager")   // Self 1 to n
   Team         User[]            @relation("ManagerTeams")
   //Outside relations
-  Profiles     Profile[]         @relation(references: [id]) // implicit m:n 
+  Profile     Profile[]         @relation(references: [id]) // implicit m:n 
   Group        Group[]           @relation(references: [id])   // implicit m:n
   Post         Post[]   // 1:n
   Comment      Comment[]   // 1:n

@@ -9,8 +9,9 @@ Table User {
   updatedAt DateTime [default: `now()`, not null]
   lastName String
   firstName String
-  Role Role
+  Role Role [not null, default: 'USER']
   nickName String
+  Gender Gender [not null]
   pwdHash String
   salt String
   social Json
