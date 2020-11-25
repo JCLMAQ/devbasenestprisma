@@ -27,40 +27,40 @@ export class UsersController {
 
    @Get('someusers')
    async getSomeUsers( @Body() findParams: Prisma.FindManyUserArgs ): Promise<UserModel[]> {
-
-     return this.usersService.findSomeUsers({
-       select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        Role: true,
-        nickName: true,
-        lastName: true,
-        firstName: true,
-        Gender: true,
-        isDeleted: true,
-        isSuspended: true,
-        isValidated: true,
-        Team: {
-            select: {
-                lastName: true,
-                firstName: true,
-                email: true,
-            }
-        },
-        manager: {
-            select: {
-                lastName: true,
-                firstName: true,
-                email: true,
-            }
-        },
-        Post: true,
-        Comment: true,
-        Todo: true,
-        Group: true
-       }
+    const show = {
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+      email: true,
+      Role: true,
+      nickName: true,
+      lastName: true,
+      firstName: true,
+      Gender: true,
+      isDeleted: true,
+      isSuspended: true,
+      isValidated: true,
+      Team: {
+          select: {
+              lastName: true,
+              firstName: true,
+              email: true,
+          }
+      },
+      manager: {
+          select: {
+              lastName: true,
+              firstName: true,
+              email: true,
+          }
+      },
+      Post: true,
+      Comment: true,
+      Todo: true,
+      Group: true
+      }
+    return this.usersService.findSomeUsers({
+      select: show
      });
    }
 
