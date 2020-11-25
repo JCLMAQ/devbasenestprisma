@@ -103,7 +103,7 @@ Table ForgottenPwd {
   id String [pk]
   email String [unique, not null]
   pwdToken String [unique, not null]
-  timestamp DateTime [not null]
+  expiration DateTime [not null]
 }
 
 Table AccountValidation {

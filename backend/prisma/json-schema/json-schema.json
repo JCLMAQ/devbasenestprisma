@@ -403,7 +403,7 @@
         "pwdToken": {
           "type": "string"
         },
-        "timestamp": {
+        "expiration": {
           "type": "string",
           "format": "date-time"
         }

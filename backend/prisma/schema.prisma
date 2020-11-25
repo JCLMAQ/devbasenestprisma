@@ -171,7 +171,7 @@ model ForgottenPwd {
   id          String   @default(uuid()) @id
   email       String   @unique
   pwdToken    String   @unique
-  timestamp   DateTime
+  expiration  DateTime
 }
 
 model AccountValidation{
