@@ -45,6 +45,14 @@
             "null"
           ]
         },
+        "Gender": {
+          "type": "string",
+          "enum": [
+            "MALE",
+            "FEMELE",
+            "UNKNOWN"
+          ]
+        },
         "pwdHash": {
           "type": [
             "string",

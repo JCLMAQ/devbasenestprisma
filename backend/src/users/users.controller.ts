@@ -4,8 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { 
   User as UserModel,
-  UserCreateInput, 
-  UserUpdateInput
+  Prisma
 } from '@prisma/client';
 
 @Controller('users')
@@ -14,7 +13,7 @@ export class UsersController {
 
    // Create a new user
    @Post('newUser')
-   async createOneUser( @Body() userData: UserCreateInput ): Promise<UserModel> {
+   async createOneUser( @Body() userData: Prisma.UserCreateInput ): Promise<UserModel> {
      // const { name, email } = userData;
      return this.usersService.createUser(
        userData
@@ -37,7 +36,7 @@ export class UsersController {
   async updatePost(
     @Param('id') id: string,
     // @Body() postData: { title: string; content?: string; authorEmail: string }): Promise<PostModel> {
-    @Body() userData: UserUpdateInput): Promise<UserModel> {
+    @Body() userData: Prisma.UserUpdateInput): Promise<UserModel> {
     return this.usersService.updateOneUser({
       where: { id: String(id) },
       data:  userData ,

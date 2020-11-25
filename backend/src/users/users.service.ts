@@ -7,7 +7,8 @@ import {
   UserWhereUniqueInput,
   UserWhereInput,
   UserOrderByInput,
-  UserCreateWithoutPostInput
+  UserCreateWithoutPostInput,
+  UserSelect
 } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -32,14 +33,14 @@ export class UsersService {
     where?: UserWhereInput;
     orderBy?: UserOrderByInput;
   }): Promise<User[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { skip, take, cursor, where, orderBy} = params;
     return this.prisma.user.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
-    });
+     });
   }
 
   async findUniqueUser(userWhereUniqueInput: UserWhereUniqueInput): Promise<User | null> {

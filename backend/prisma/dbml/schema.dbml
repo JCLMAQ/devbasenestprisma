@@ -11,6 +11,7 @@ Table User {
   firstName String
   Role Role [not null, default: 'USER']
   nickName String
+  Gender Gender [not null]
   pwdHash String
   salt String
   social Json
