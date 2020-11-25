@@ -46,7 +46,10 @@
           ]
         },
         "Gender": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
             "MALE",
             "FEMELE",
@@ -114,7 +117,7 @@
             "$ref": "#/definitions/User"
           }
         },
-        "Profiles": {
+        "Profile": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Profile"

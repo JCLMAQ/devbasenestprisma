@@ -33,7 +33,7 @@ model User {
   firstName   String?
   Role        Role      @default(USER)
   nickName    String?
-  Gender      Gender
+  Gender      Gender?
   pwdHash     String?   
   salt        String?   
   // pwdHash     String?   @default("")
@@ -44,6 +44,7 @@ model User {
   isValidated  DateTime? // Null = not deleted
   isSuspended  DateTime? // Null = not deleted
   isDeleted    DateTime? // Null = not deleted
+  
   // Specific - Access right
   isAdmin      Boolean? @default(false)
 
@@ -52,6 +53,7 @@ model User {
   manager      User?             @relation("ManagerTeams", fields: [managerId], references: [id]) // Self 1 to n
   managerId    String?           @map("manager")   // Self 1 to n
   Team         User[]            @relation("ManagerTeams")
+
   //Outside relations
   Profile     Profile[]         @relation(references: [id]) // implicit m:n 
   Group        Group[]           @relation(references: [id])   // implicit m:n

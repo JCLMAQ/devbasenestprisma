@@ -59,7 +59,7 @@ export class UsersService {
     let user = await this.prisma.user.findUnique({ where: { email } })
     if (!user) {
       // Create a new user
-      user = await this.prisma.user.create({ data: { email }})
+      user = await this.prisma.user.create({ data: { email: email },})
     }
       return user; 
   }

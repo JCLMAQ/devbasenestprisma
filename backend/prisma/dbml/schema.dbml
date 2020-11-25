@@ -11,7 +11,7 @@ Table User {
   firstName String
   Role Role [not null, default: 'USER']
   nickName String
-  Gender Gender [not null]
+  Gender Gender
   pwdHash String
   salt String
   social Json
@@ -22,7 +22,7 @@ Table User {
   manager User
   managerId String
   Team User
-  Profiles Profile
+  Profile Profile
   Group Group
   Post Post
   Comment Comment
@@ -171,7 +171,7 @@ Table Comment {
 }
 
 Table ProfileToUser {
-  profilesId String [ref: > Profile.id]
+  profileId String [ref: > Profile.id]
   userId String [ref: > User.id]
 }
 
