@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Middleware, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient
@@ -31,7 +31,7 @@ export class PrismaService extends PrismaClient
   }
 
 // Middelwares
-  deletePasswordUser: Middleware = async (params, next) => {
+  deletePasswordUser = async (params, next) => {
 //     console.log("params:", params);
 // Work only for "findOne"  ot for findMany
     const result = await next(params);        
@@ -42,7 +42,7 @@ export class PrismaService extends PrismaClient
     return result;
   }
 
-  softDeleteMiddelware: Middleware = async (params, next) => {
+  softDeleteMiddelware = async (params, next) => {
     // Check incoming query type
     if (params.model == "User") {
         if (params.action == "delete") {
@@ -64,7 +64,7 @@ export class PrismaService extends PrismaClient
     return next(params);
   };
 
-  notFindSoftDeleMiddelware: Middleware = async (params, next) => {
+  notFindSoftDeleMiddelware = async (params, next) => {
     if (params.model == "User") {
       if (params.action == "findOne") {
         // Change to findFirst - you cannot filter
@@ -89,7 +89,7 @@ export class PrismaService extends PrismaClient
     return next(params);
   };
 
-  notUpdateSoftDeletedMiddelware: Middleware = async (params, next) => {
+  notUpdateSoftDeletedMiddelware = async (params, next) => {
     if (params.model == "User") {
       if (params.action == "update") {
         // Change to updateMany - you cannot filter
