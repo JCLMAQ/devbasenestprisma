@@ -17,9 +17,8 @@ export class AuthsController {
   // Common
   @Get('profile')
   async getProfile(@Request() req) {
-
-      console.log('Authcontroler (localstrategy): Profile return:', req.user);
-
+console.log('Authcontroler (localstrategy): Profile return:', req.user);
+    // TODO To complete one day for profile user managment
       return req.user;
   }
 
@@ -77,10 +76,25 @@ console.log("Usercredential received by POST: ", userCredential);
         const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.tokenId);
         return authToken;
       }
-  // PasswordLess Logout
 
-  // TODO 
+      // Delete one user
+// TODO Delete one user by admin
 
+      // Deelte request by the user (RGPD)
+// TODO Delete one user by the user itself
+
+    // PasswordLess Logout
+  @Post('auth/logoutpwdless')
+  async logoutPwdLess() {
+    const isOK = await this.authsService.logout();
+console.log("AuthCOntrolers logout :", isOK)
+    if (!isOK) {
+        return {}
+    }
+    const user = '';
+console.log("AuthCOntrolers logout - done", user)
+    return { user }
+  }
   /*
       Login with password (and email)
   */
@@ -143,7 +157,6 @@ console.log('forgot pwd email:', req.email);
               message: `${error}`
           }
       }
-
       return valideTkn;
   }
 
@@ -155,9 +168,7 @@ console.log('forgot pwd email:', req.email);
         let user;
         try {
             valideTknObj = await this.authsService.verifyForgotPwdToken(params.token);
-
-            console.log('token', valideTknObj);
-
+console.log('token', valideTknObj);
         } catch (error) {
             return {
                 success: false,
