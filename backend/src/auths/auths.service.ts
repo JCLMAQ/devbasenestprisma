@@ -15,7 +15,7 @@ import { pbkdf2Sync, randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthsService {
- 
+
   constructor(
     private readonly usersService: UsersService,
     private readonly utilitiesService: UtilitiesService,
@@ -33,7 +33,7 @@ export class AuthsService {
   PasswordLess Authentication Schema
 */
   /*
-   Utilities for passwordLess
+    Utilities for passwordLess
   */
 
   // Generate a random 8 digit number as the email token
@@ -94,11 +94,11 @@ export class AuthsService {
       }
   }
     /*
-     End of utilities
+      End of utilities
     */
 
     /*
-     Start PasswordLess Login process
+      Start PasswordLess Login process
     */
 
     // const {fromEmail, toEmail, subjectEmail, textEmail, htmlEmail } = emailData
@@ -119,10 +119,10 @@ export class AuthsService {
       console.log("New token : ", emailToken); 
         tokenAlreadyExist = await this.prismaService.token.findFirst({
         where: {
-           emailToken: { equals: emailToken
+          emailToken: { equals: emailToken
         }}});
     }
-   
+
     // Config data for the email to send with the token
     const emailSender = this.configService.get("EMAIL_NOREPLY");
     const emailData = {
@@ -167,10 +167,12 @@ export class AuthsService {
     } else {
       tokenId = tokenExist.id;
       const delayBetweenEmailEnable = sendEmailDelay;
+      console.log("Delay d'envoi à vérifier: ", delayBetweenEmailEnable)
       if(delayBetweenEmailEnable) { 
-        const delayToTest = this.configService.get("DELAYBTWEMAIMINUTE")
+        const delayToTest = this.configService.get("DELAYBTWEMAILMINUTE")
 
               const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
+  console.log("Email already send: ", testResult, "Delay to test: ", delayToTest)
             // Verify delay between emailbase on the updateAt field
               if ( testResult) {
                 throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
@@ -198,7 +200,7 @@ export class AuthsService {
       },
     })
 
-// To DELETE for dev only
+
 console.log("Token created or updated: ", tokenCreatedorupdated );
 
     // Send the email with the token

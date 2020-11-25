@@ -12,57 +12,57 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
    // Create a new user
-   @Post('newUser')
-   async createOneUser( @Body() userData: Prisma.UserCreateInput ): Promise<UserModel> {
-     // const { name, email } = userData;
-     return this.usersService.createUser(
-       userData
-     );
-   }
- 
-   @Get('allusers')
-   async getAllUsers(): Promise<UserModel[]> {
-     return this.usersService.findUsers({});
-   }
+  @Post('newUser')
+  async createOneUser( @Body() userData: Prisma.UserCreateInput ): Promise<UserModel> {
+    // const { name, email } = userData;
+    return this.usersService.createUser(
+      userData
+    );
+  }
 
-   @Get('someusers')
-   async getSomeUsers( @Body() findParams: Prisma.FindManyUserArgs ): Promise<UserModel[]> {
-    const show = {
-      id: true,
-      createdAt: true,
-      updatedAt: true,
-      email: true,
-      Role: true,
-      nickName: true,
-      lastName: true,
-      firstName: true,
-      Gender: true,
-      isDeleted: true,
-      isSuspended: true,
-      isValidated: true,
-      Team: {
-          select: {
-              lastName: true,
-              firstName: true,
-              email: true,
-          }
-      },
-      manager: {
-          select: {
-              lastName: true,
-              firstName: true,
-              email: true,
-          }
-      },
-      Post: true,
-      Comment: true,
-      Todo: true,
-      Group: true
-      }
-    return this.usersService.findSomeUsers({
-      select: show
-     });
-   }
+  @Get('allusers')
+  async getAllUsers(): Promise<UserModel[]> {
+    return this.usersService.findUsers({});
+  }
+
+  @Get('someusers')
+  async getSomeUsers( @Body() findParams: Prisma.FindManyUserArgs ): Promise<UserModel[]> {
+  const show = {
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    email: true,
+    Role: true,
+    nickName: true,
+    lastName: true,
+    firstName: true,
+    Gender: true,
+    isDeleted: true,
+    isSuspended: true,
+    isValidated: true,
+    Team: {
+        select: {
+            lastName: true,
+            firstName: true,
+            email: true,
+        }
+    },
+    manager: {
+        select: {
+            lastName: true,
+            firstName: true,
+            email: true,
+        }
+    },
+    Post: true,
+    Comment: true,
+    Todo: true,
+    Group: true
+    }
+  return this.usersService.findSomeUsers({
+    select: show
+    });
+  }
 
     // Get one user by id
     @Get('oneuser/:id')
