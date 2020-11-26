@@ -23,23 +23,24 @@ import { UsersService } from 'src/users/users.service';
     // ConfigModule,
     // ConfigModule.forRoot(
     //   { envFilePath: '../.env' }),
-    // // PassportModule,
+    // PassportModule,
     PassportModule.register({
         defaultStrategy: 'jwt'
     }),
     JwtModule.register({ 
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '240s' },
+      // signOptions: { expiresIn: '240s' },
+      signOptions: { expiresIn: process.env.JWT_VALIDITY_DURATION },
     })
   ],
   controllers: [
-    AuthsController
+    // AuthsController
   ],
   providers: [
-    ConfigService,
-    PrismaService,
+    // ConfigService,
+    // PrismaService,
     AuthsService,
-    UsersService,
+    // UsersService,
     JwtStrategy,
     LocalStrategy,
   ],

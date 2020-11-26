@@ -308,7 +308,7 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
     Email and password Authentication
   */
 
- async loginWithPwd(user: User) {
+  async loginWithPwd(user: User) {
 console.log('authService login');
   const payload = { username: user.email, sub: user.id, role: user.Role };
 console.log('payload:', payload)

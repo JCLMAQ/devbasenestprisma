@@ -108,8 +108,13 @@ console.log('UserStillExist : yes', result)
 
   async userStillExist(userEmail) {
     const user = await this.getOneUserByEmail(userEmail);
-    // const { pwdHash, salt, ...result } = user;
-    const { ...result } = user;
+    // Verify the user is not soft deleted !!!
+    if(!user || user.isDeleted){
+console.log('UserStillExist : non (or soft deleted: ')
+      return null // Soft deleted or user does not exist
+    }
+    const { pwdHash, salt, ...result } = user;
+    // const { ...result } = user;
 console.log('UserStillExist : yes', result)
     return result;
   }

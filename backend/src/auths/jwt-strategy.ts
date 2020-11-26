@@ -19,9 +19,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
 console.log('payload to validate: ', payload)
     const user = await this.usersService.userStillExist(payload.username);
-    if (!user) {
-    throw new UnauthorizedException();
-        }
+    if (!user || user.isDeleted) {
+      throw new UnauthorizedException();
+    }
 console.log('return after validate payload:','userId:', payload.sub, 'username:', payload.username, 'role:', user.Role)
     return { userId: payload.sub, username: payload.username, role: user.Role };
   }
