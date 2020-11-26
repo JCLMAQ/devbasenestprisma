@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Request, HttpException, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Request, HttpException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { AuthsService } from './auths.service';
 import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { LocalAuthGuard } from './local-auth.guard';
 
 @Controller('auths')
 export class AuthsController {
@@ -17,28 +19,31 @@ export class AuthsController {
 // TODO : Add localstrategy and jwt strategy guard
 
   // Common
-  @Get('profile')
-  async getProfile(@Request() req) {
-console.log('Authcontroler (localstrategy): Profile return:', req.user);
-    // TODO To complete one day for profile user managment
-      return req.user;
-  }
+    // Get the profile of the user
+    @Get('profile')
+    async getProfile(@Request() req) {
+    console.log('Authcontroler (localstrategy): Profile return:', req.user);
+        // TODO To complete one day for profile user managment
+        return req.user;
+    }
 
-  @Post('checkCredential')
-  async checkCredential(@Body('emailToCheck') email: string) {
-console.log("reload checkcredential:",email);
-      const user = await this.usersService.getOneUserByEmail(email);
-      // console.log("user", user);
-      if (!user) {
-console.log('User does not exist on the database.');
-          throw new UnauthorizedException();
-      }
-console.log("reload checkcredential user found:", user);
-      return {
-          email: user.email,
-          fullName: user.firstName + " " + user.lastName
-      };
-  }
+    // Verify if the user exist (with his email)
+    @UseGuards(JwtAuthGuard)
+    @Post('checkCredential')
+    async checkCredential(@Body('emailToCheck') email: string) {
+    console.log("reload checkcredential:",email);
+        const user = await this.usersService.getOneUserByEmail(email);
+        // console.log("user", user);
+        if (!user) {
+    console.log('User does not exist on the database.');
+            throw new UnauthorizedException();
+        }
+    console.log("reload checkcredential user found:", user);
+        return {
+            email: user.email,
+            fullName: user.firstName + " " + user.lastName
+        };
+    }
 
   /* 
   Password less part
@@ -101,73 +106,78 @@ console.log("AuthCOntrolers logout :", isOK)
 console.log("AuthCOntrolers logout - done", user)
     return { user }
   }
+
+
   /*
       Login with password (and email)
   */
- // Login with the password and the email
-  @Post('auth/loginwithpwd')
-  async loginWithPwd(@Request() req) {
-
-      console.log('Authcontroler (localstrategy):', req.user)
-
-      return this.authsService.loginWithPwd(req.user);
-  }
-
-  // Logout with password and email autehntication
-  @Post('auth/logout')
-  async logoutPwd() {
-    const isOK = await this.authsService.logout();
-console.log("AuthCOntrolers logout :", isOK)
-    if (!isOK) {
-        return {}
+    // Login with the password and the email
+    @UseGuards(LocalAuthGuard)
+    @Post('auth/loginwithpwd')
+    async loginWithPwd(@Request() req) {
+console.log('Authcontroler (localstrategy):', req.user)
+        return this.authsService.loginWithPwd(req.user);
     }
-    const user = '';
-    const authJwtToken = '';
+
+    // Logout with password and email autehntication
+    @Post('auth/logout')
+    async logoutPwd() {
+        const isOK = await this.authsService.logout();
+console.log("AuthCOntrolers logout :", isOK)
+        if (!isOK) {
+            return {}
+        }
+        const user = '';
+        const authJwtToken = '';
 console.log("AuthCOntrolers logout - done", user, authJwtToken)
-    return { user, authJwtToken }
-  }
+        return { user, authJwtToken }
+    }
+
 
 // Forgot Password Part
-  @Post('auth/email/forgot-password')
-  async sendEmailForgotPassword(@Request() req): Promise<any> {
-console.log('forgot pwd email:', req.email);
-      try {
-          const isEmailSent = await this.authsService.sendEmailForgotPwd(req.body.email);
-          if (isEmailSent) {
-              return {
-                  success: true,
-                  message: 'Email sent succefully'
-              }
-          } else {
-              return {
-                  success: false,
-                  message: 'Email not sent'
-              }
-          }
-      } catch (error) {
-          return {
-              success: false,
-              message: `${error}`
-          }
-      }
-  }
-      // Validate the password forgot token
-  @Get('auth/email/reset-password/:token')
-  async validateToken(@Param() params): Promise<any> {
-      let valideTkn;
-      try {
-          valideTkn = await this.authsService.verifyForgotPwdToken(params.token);
-      } catch (error) {
-          return {
-              success: false,
-              message: `${error}`
-          }
-      }
-      return valideTkn;
-  }
 
-  // Reset forgotpwd
-  @Post('auth/email/reset-password/:token')
+    // Send the forgot password email (with the lik to come back and change password)
+    @Post('auth/email/forgot-password')
+    async sendEmailForgotPassword(@Request() req): Promise<any> {
+console.log('forgot pwd email:', req.email);
+        try {
+            const isEmailSent = await this.authsService.sendEmailForgotPwd(req.body.email);
+            if (isEmailSent) {
+                return {
+                    success: true,
+                    message: 'Email sent succefully'
+                }
+            } else {
+                return {
+                    success: false,
+                    message: 'Email not sent'
+                }
+            }
+        } catch (error) {
+            return {
+                success: false,
+                message: `${error}`
+            }
+        }
+    }
+
+    // Validate the password forgot token send back
+    @Get('auth/email/reset-password/:token')
+    async validateToken(@Param() params): Promise<any> {
+        let valideTkn;
+        try {
+            valideTkn = await this.authsService.verifyForgotPwdToken(params.token);
+        } catch (error) {
+            return {
+                success: false,
+                message: `${error}`
+            }
+        }
+        return valideTkn;
+    }
+
+    // Reset forgotpwd: the new password and the verification password
+    @Post('auth/email/reset-password/:token')
     async resetPwd(@Param() params, @Request() req): Promise<any> {
         const { newPassword, verifyPassword } = req.body;
         let valideTknObj;
@@ -183,7 +193,7 @@ console.log('token', valideTknObj);
         }
         if (!valideTknObj) return {
             success: false,
-            message: 'invalid token'
+            message: 'Invalid token'
         }
 
         try {
@@ -196,12 +206,12 @@ console.log('token', valideTknObj);
         }
         if (!user) return {
             success: false,
-            message: 'invalid token'
+            message: 'Invalid token'
         }
 
         if (!newPassword || !verifyPassword || (newPassword !== verifyPassword)) return {
             success: false,
-            message: 'invalid password'
+            message: 'Invalid password'
         }
 
         const userUpdated = await this.authsService.editForgotPwd(newPassword, user.id);
