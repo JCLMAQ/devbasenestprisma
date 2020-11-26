@@ -58,8 +58,8 @@ export class AuthsService {
   }
 
   // Generate a signed JWT token with the tokenId in the payload
-  async generateAuthToken(userEmail: string, userId: string, tokenId: number): Promise<any> {
-    const jwtPayload = { username: userEmail, sub: userId, tokenid: tokenId}
+  async generateAuthToken(userEmail: string, userId: string, role: string,  tokenId: number): Promise<any> {
+    const jwtPayload = { username: userEmail, sub: userId, role: role, tokenid: tokenId}
     return  {
       access_token: this.jwtService.sign(jwtPayload)
     }
@@ -170,13 +170,12 @@ export class AuthsService {
       console.log("Delay d'envoi à vérifier: ", delayBetweenEmailEnable)
       if(delayBetweenEmailEnable) { 
         const delayToTest = this.configService.get("DELAYBTWEMAILMINUTE")
-
-              const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
+        const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
   console.log("Email already send: ", testResult, "Delay to test: ", delayToTest)
-            // Verify delay between emailbase on the updateAt field
-              if ( testResult) {
-                throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
-              }
+        // Verify delay between emailbase on the updateAt field
+          if ( testResult) {
+            throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
+          }
       }
     }
 
@@ -213,88 +212,95 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
     
   }
     
- // Step 2: Verify the validity of the short token linked to the email of the user
- async authenticateHandler(userCredential) {
-  const { email, emailToken } = userCredential;
-  const validEmailToken= { email: email, userId: null, validToken: false, tokenId: null};
-  // Get short lived email token
-  const fetchedEmailToken = await this.prismaService.token.findUnique({
-    where: {
-        emailToken: emailToken,
-    },
-    include: {
-        user: true,
-    },
-  })
+  // Step 2: Verify the validity of the short token linked to the email of the user
+  async authenticateHandler(userCredential) {
+    const { email, emailToken } = userCredential;
+    // Verify that the user has not been deleted or soft deleted
+    const userNotDeleted = await this.usersService.userStillExist(email);
+    if(userNotDeleted.isDeleted != null) {
+      throw new HttpException('User does not exist - anymore - or has been deleted', 400)
+    }
+    
+    const validEmailToken= { email: email, userId: null, validToken: false, role: userNotDeleted.Role, tokenId: null};
+    // Get short lived email token
+    const fetchedEmailToken = await this.prismaService.token.findUnique({
+      where: {
+          emailToken: emailToken,
+      },
+      include: {
+          user: true,
+      },
+    })
 
-  // Is the emailToken still valid
-  if (!fetchedEmailToken?.valid) {
-    // If the token doesn't exist or is not valid, return false
-    validEmailToken.validToken=false;
-    return validEmailToken
-  }
-
-  // Verify token again expiration limits
-  if (fetchedEmailToken.expiration < new Date()) {
-      // If the the expiration time of the token is passed, return false
+    // Is the emailToken still valid ?
+    if (!fetchedEmailToken?.valid) {
+      // If the token doesn't exist or is not valid, return false
       validEmailToken.validToken=false;
       return validEmailToken
-  }
-  // If evrything is in order, continue the process
-  // If token matches the user email passed in the payload, generate long lived API token
-  if (fetchedEmailToken?.user?.email === email) {
-    const tokenExpiration = await this.jwtTokenExpiration();
-    // Persist token in DB so it's stateful
-
-    // Find the token with the userid and the type
-    let tokenExist = await this.prismaService.token.findFirst({
-      where: {
-        userId: { equals: fetchedEmailToken.userId },
-        type: { equals:TokenType.API },
-      }
-    })
-  
-    let tokenId = 0
-    if(!tokenExist) {
-      tokenId = 0;
-    } else {
-      tokenId = tokenExist.id;
     }
 
-    // Create or update a longlived token record
-    tokenExist = await this.prismaService.token.upsert({
-      where: {
-        id: tokenId
-      },
-      update: {
-//        emailToken: "",
-        type: TokenType.API,
-        expiration: tokenExpiration,
-      },
-      create: {
-//        emailToken: "",
-        type: TokenType.API,
-        expiration: tokenExpiration,
-        userId: fetchedEmailToken.userId
-      }
-    })
-    
-    // Invalidate the email token after it's been used
-    await this.prismaService.token.update({
-        where: {
-            id: fetchedEmailToken.id,
-        },
-        data: {
-            valid: false,
-        },
-    });
+    // Verify token again expiration limits
+    if (fetchedEmailToken.expiration < new Date()) {
+        // If the the expiration time of the token is passed, return false
+        validEmailToken.validToken=false;
+        return validEmailToken
+    }
 
-    // Create the return answer
-    validEmailToken.email = email;
-    validEmailToken.userId = fetchedEmailToken.userId;
-    validEmailToken.tokenId = tokenExist.id;
-    validEmailToken.validToken = true;
-    return validEmailToken;
+    // If evrything is in order, continue the process
+    // If token matches the user email passed in the payload, generate long lived API token
+    if (fetchedEmailToken?.user?.email === email) {
+      const tokenExpiration = await this.jwtTokenExpiration();
+      // Persist token in DB so it's stateful
+
+      // Find the token with the userid and the type
+      let tokenExist = await this.prismaService.token.findFirst({
+        where: {
+          userId: { equals: fetchedEmailToken.userId },
+          type: { equals:TokenType.API },
+        }
+      })
+    
+      let tokenId = 0
+      if(!tokenExist) {
+        tokenId = 0;
+      } else {
+        tokenId = tokenExist.id;
+      }
+
+      // Create or update a longlived token record
+      tokenExist = await this.prismaService.token.upsert({
+        where: {
+          id: tokenId
+        },
+        update: {
+  //        emailToken: "",
+          type: TokenType.API,
+          expiration: tokenExpiration,
+        },
+        create: {
+  //        emailToken: "",
+          type: TokenType.API,
+          expiration: tokenExpiration,
+          userId: fetchedEmailToken.userId
+        }
+      })
+    
+      // Invalidate the email token after it's been used
+      await this.prismaService.token.update({
+          where: {
+              id: fetchedEmailToken.id,
+          },
+          data: {
+              valid: false,
+          },
+      });
+
+      // Create the return answer
+      validEmailToken.email = email;
+      validEmailToken.userId = fetchedEmailToken.userId;
+      validEmailToken.tokenId = tokenExist.id;
+      validEmailToken.validToken = true;
+      return validEmailToken;
     }  
   }
 
@@ -303,9 +309,9 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
   */
 
  async loginWithPwd(user: User) {
-  console.log('authService login');
+console.log('authService login');
   const payload = { username: user.email, sub: user.id, role: user.Role };
-  console.log('payload:', payload)
+console.log('payload:', payload)
   return {
     access_token: this.jwtService.sign(payload),
     fullName: user.firstName +" "+ user.lastName,

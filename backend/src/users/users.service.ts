@@ -107,7 +107,6 @@ export class UsersService {
   }
 
   async userStillExist(userEmail) {
-
     const user = await this.getOneUserByEmail(userEmail);
     // const { pwdHash, salt, ...result } = user;
     const { ...result } = user;

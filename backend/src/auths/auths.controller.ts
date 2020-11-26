@@ -84,7 +84,7 @@ console.log("Usercredential received by POST: ", userCredential);
         if(!validCredential.validToken) {
           throw new HttpException('Error on authenticate process', 400);
         }
-        const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.tokenId);
+        const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.role, validCredential.tokenId);
         return authToken;
       }
 
