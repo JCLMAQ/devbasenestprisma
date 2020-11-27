@@ -248,7 +248,7 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
 
     // If evrything is in order, continue the process
     // If token matches the user email passed in the payload, generate long lived API token
-    if (fetchedEmailToken?.user?.email === email) {
+    if (fetchedEmailToken?.user?.email == email) {
       const tokenExpiration = await this.jwtTokenExpiration();
       // Persist token in DB so it's stateful
 
@@ -362,7 +362,7 @@ console.log('validateUser pwd less step: ok', result);
   verifyPassword(user, plainTextPassword: string) {
     const pwdHash = AuthsService.hashPassword(plainTextPassword, user.salt);
 console.log('Verify Password (auth.controller): ', user.pwdHash, pwdHash);
-    const isOK = (pwdHash === user.pwdHash);
+    const isOK = (pwdHash == user.pwdHash);
 console.log('Verify password = ', isOK);
     return isOK
   }

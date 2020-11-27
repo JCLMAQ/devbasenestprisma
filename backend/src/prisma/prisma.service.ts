@@ -35,7 +35,7 @@ export class PrismaService extends PrismaClient
 //     console.log("params:", params);
 // Work only for "findUnique"  ot for findMany
     const result = await next(params);        
-    if(params.model === "User") {
+    if(params.model == "User") {
       if(result != null) {
         if((result.pwdHash != null) && (result.salt != null)) {
           const { pwdHash, salt, isAdmin, ...rest } = result;
