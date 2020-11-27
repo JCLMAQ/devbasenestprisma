@@ -324,8 +324,8 @@ console.log('payload:', payload)
 console.log('validateUser (auth.service) step', username, plainTextPassword);
     const user = await this.usersService.getOneUserByEmail(username);
 console.log('usersService.checkOneUserByEmail(username)', user)
-
-    if(this.configService.get('PWDLESS_LOGIN_ENABLE') === 0) {
+console.log("Config PWDLESS ENABLE:", this.configService.get('PWDLESS_LOGIN_ENABLE'))
+    if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0) {
       if (this.verifyPassword(user, plainTextPassword)) {
         const { pwdHash, salt, ...result } = user;
 console.log('validateUser with pwd step: ok', result);
