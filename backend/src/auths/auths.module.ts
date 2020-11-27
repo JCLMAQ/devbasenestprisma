@@ -34,7 +34,7 @@ import { UsersService } from 'src/users/users.service';
     })
   ],
   controllers: [
-    // AuthsController
+    AuthsController
   ],
   providers: [
     ConfigService,
