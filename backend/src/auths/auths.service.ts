@@ -333,6 +333,16 @@ console.log('validateUser step: ok', result);
     return null;
   }
 
+  // Create one new user when register with a password and an email as username
+  async createOneUserWithPwd(userData): Promise<boolean> {
+    // Create a salt and Hash the password with it 
+    const salt = randomBytes(16).toString('base64');
+    const pwdHash = AuthsService.hashPassword(userData.password, salt);
+    const {password, ...userDataWithoutPwd } = userData;
+    const result = await this.usersService.createOneUserWithPwd(userDataWithoutPwd, pwdHash, salt);
+    return result;
+  }
+
   static hashPassword(password: string, salt: string): string {
     if (salt && password) {
       return pbkdf2Sync(password, Buffer.from(salt, 'base64'), 10000, 64, 'sha512')

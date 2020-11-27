@@ -6,6 +6,7 @@ import {
 } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -71,6 +72,33 @@ export class UsersService {
     }
       return user; 
   }
+  async createOneUserWithPwd(userData, pwdHash, salt): Promise<boolean> {
+    // async createOneUser(userData): Promise<User> {
+    let userCreatedStatute = false;
+console.log('user.service: userdata to create', userData);
+    const fullName = userData.firstName + ' ' + userData.lastName;
+    // WARNING A new User is always created as a USER, should be by default "GUEST" ?
+    // const roles: UserCreaterolesInput = Set['USER'];
+    const Role = 'USER';
+    const result = await this.prisma.user.create({
+        data: {
+            salt,
+            pwdHash,
+            email: userData.email,
+            nickName: userData.nickName,
+            lastName: userData.lastName,
+            firstName: userData.firstName,
+            Gender: userData.gender,
+            // manager: userData.manager
+            //  manager: { connect: {email: userData.managerId} }
+        }
+    });
+console.log('usersService.createOneUser', result);
+    if (!!result) { userCreatedStatute = true; }
+    // return resultbis;
+    return userCreatedStatute;
+  }
+
   async updateOneUser(params: {
     where: Prisma.UserWhereUniqueInput;
     data: Prisma.UserUpdateInput;

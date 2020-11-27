@@ -7,6 +7,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
+import { User } from '@prisma/client';
 
 @Controller('auths')
 export class AuthsController {
@@ -28,7 +29,7 @@ export class AuthsController {
     }
 
     // Verify if the user exist (with his email)
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Post('checkCredential')
     async checkCredential(@Body('emailToCheck') email: string) {
     console.log("reload checkcredential:",email);
@@ -112,11 +113,12 @@ console.log("AuthCOntrolers logout - done", user)
       Login with password (and email)
   */
     // Login with the password and the email
-    @UseGuards(LocalAuthGuard)
+    // @UseGuards(LocalAuthGuard)
     @Post('auth/loginwithpwd')
     async loginWithPwd(@Request() req) {
 console.log('Authcontroler (localstrategy):', req.user)
-        return this.authsService.loginWithPwd(req.user);
+        // return this.authsService.loginWithPwd(req.user);
+        return req.user;
     }
 
     // Logout with password and email autehntication
@@ -133,6 +135,11 @@ console.log("AuthCOntrolers logout - done", user, authJwtToken)
         return { user, authJwtToken }
     }
 
+    @Post('auth/registerwithpwd')
+    async createOneUser(@Body() userData: User): Promise<boolean> {
+console.log('new user', userData);
+        return this.authsService.createOneUserWithPwd(userData);
+    }
 
 // Forgot Password Part
 
