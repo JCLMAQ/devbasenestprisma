@@ -23,10 +23,10 @@ import { UsersService } from 'src/users/users.service';
     // ConfigModule,
     // ConfigModule.forRoot(
     //   { envFilePath: '../.env' }),
-    PassportModule,
-    // PassportModule.register({
-    //     defaultStrategy: 'jwt'
-    // }),
+    // PassportModule,
+    PassportModule.register({
+        defaultStrategy: 'jwt'
+    }),
     JwtModule.register({ 
       secret: process.env.JWT_SECRET,
       // signOptions: { expiresIn: '240s' },

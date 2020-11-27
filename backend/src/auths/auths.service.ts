@@ -215,6 +215,7 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
   // Step 2: Verify the validity of the short token linked to the email of the user
   async authenticateHandler(userCredential) {
     const { email, emailToken } = userCredential;
+console.log("authentication pwdless handler (usercredential): ", userCredential)
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(email);
     if(userNotDeleted.isDeleted != null) {
@@ -222,6 +223,7 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
     }
     
     const validEmailToken= { email: email, userId: null, validToken: false, role: userNotDeleted.Role, tokenId: null};
+  
     // Get short lived email token
     const fetchedEmailToken = await this.prismaService.token.findUnique({
       where: {
@@ -231,18 +233,19 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
           user: true,
       },
     })
-
+console.log("ValidEmailToken", fetchedEmailToken)
     // Is the emailToken still valid ?
     if (!fetchedEmailToken?.valid) {
       // If the token doesn't exist or is not valid, return false
       validEmailToken.validToken=false;
       return validEmailToken
     }
-
+console.log("ValidEmailTokenExpiration: ", fetchedEmailToken.expiration < new Date())
     // Verify token again expiration limits
     if (fetchedEmailToken.expiration < new Date()) {
         // If the the expiration time of the token is passed, return false
         validEmailToken.validToken=false;
+        console.log("ValidEmailTokenExpire", validEmailToken)
         return validEmailToken
     }
 
