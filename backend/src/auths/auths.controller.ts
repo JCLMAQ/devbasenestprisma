@@ -51,6 +51,7 @@ export class AuthsController {
   */
 
   // PasswordLess Login
+  @UseGuards(LocalAuthGuard)
   @Post('auth/loginpwdless')
   async login(@Body('email') email: string) {
 console.log('Authcontroler (localstrategy):', email);

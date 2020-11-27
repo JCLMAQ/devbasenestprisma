@@ -325,12 +325,20 @@ console.log('validateUser (auth.service) step', username, plainTextPassword);
     const user = await this.usersService.getOneUserByEmail(username);
 console.log('usersService.checkOneUserByEmail(username)', user)
 
-    if (this.verifyPassword(user, plainTextPassword)) {
+    if(this.configService.get('PWDLESS_LOGIN_ENABLE') === 0) {
+      if (this.verifyPassword(user, plainTextPassword)) {
+        const { pwdHash, salt, ...result } = user;
+console.log('validateUser with pwd step: ok', result);
+        return result;
+      } else {
+console.log('validateUser with pwd step: Echec', user);
+        return null;
+      }
+    } else {
       const { pwdHash, salt, ...result } = user;
-console.log('validateUser step: ok', result);
-      return result;
+console.log('validateUser pwd less step: ok', result);
+        return result;
     }
-    return null;
   }
 
   // Create one new user when register with a password and an email as username
