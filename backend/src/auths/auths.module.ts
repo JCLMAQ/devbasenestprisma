@@ -20,7 +20,7 @@ import { UsersService } from 'src/users/users.service';
     PrismaModule,
     UtilitiesModule,
     UsersModule,
-    // ConfigModule,
+    ConfigService,
     // ConfigModule.forRoot(
     //   { envFilePath: '../.env' }),
     // PassportModule,
@@ -29,8 +29,8 @@ import { UsersService } from 'src/users/users.service';
     }),
     JwtModule.register({ 
       secret: process.env.JWT_SECRET,
-      // signOptions: { expiresIn: '240s' },
-      signOptions: { expiresIn: process.env.JWT_VALIDITY_DURATION_HOURS },
+    //  signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: process.env.JWT_VALIDITY_DURATION },
     })
   ],
   controllers: [

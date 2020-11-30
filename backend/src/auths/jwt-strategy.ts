@@ -17,6 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    console.log("jwt-secret", process.env.JWT_SECRET)
 console.log('payload to validate: ', payload)
     const user = await this.usersService.userStillExist(payload.username);
     if (!user || user.isDeleted) {

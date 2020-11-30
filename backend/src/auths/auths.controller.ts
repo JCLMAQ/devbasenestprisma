@@ -30,10 +30,9 @@ export class AuthsController {
     }
 
     // Verify if the user exist (with his email)
-    // @UseGuards(JwtAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post('checkCredential')
-    async checkCredential(@Body('emailToCheck') email: string) {
+    async checkCredential(@Body('email') email: string) {
     console.log("reload checkcredential:",email);
         const user = await this.usersService.getOneUserByEmail(email);
         // console.log("user", user);

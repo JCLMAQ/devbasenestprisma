@@ -51,7 +51,7 @@ export class AuthsService {
 
   // Generate the expiration time of the JWT token
   async jwtTokenExpiration() {
-    const hoursToAdd = Number(this.configService.get("JWT_VALIDITY_DURATION_HOURS"));
+    const hoursToAdd = Number(this.configService.get<number>("JWT_VALIDITY_DURATION_HOURS"));
     const currentDate = new Date();
     const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ (hoursToAdd*60*60*1000));
     return jwtTokenExpirationDate
@@ -215,7 +215,7 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
   // Step 2: Verify the validity of the short token linked to the email of the user
   async authenticateHandler(userCredential) {
     const { email, emailToken } = userCredential;
-console.log("authentication pwdless handler (usercredential): ", userCredential)
+console.log("1 authentication pwdless handler (usercredential): ", userCredential)
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(email);
     if(userNotDeleted.isDeleted != null) {
@@ -233,19 +233,19 @@ console.log("authentication pwdless handler (usercredential): ", userCredential)
           user: true,
       },
     })
-console.log("ValidEmailToken", fetchedEmailToken)
+console.log(" 2 ValidEmailToken", fetchedEmailToken)
     // Is the emailToken still valid ?
     if (!fetchedEmailToken?.valid) {
       // If the token doesn't exist or is not valid, return false
       validEmailToken.validToken=false;
       return validEmailToken
     }
-console.log("ValidEmailTokenExpiration: ", fetchedEmailToken.expiration < new Date())
+console.log(" 3 ValidEmailTokenExpiration: ", fetchedEmailToken.expiration < new Date())
     // Verify token again expiration limits
     if (fetchedEmailToken.expiration < new Date()) {
         // If the the expiration time of the token is passed, return false
         validEmailToken.validToken=false;
-        console.log("ValidEmailTokenExpire", validEmailToken)
+        console.log("4 ValidEmailTokenExpire", validEmailToken)
         return validEmailToken
     }
 
@@ -262,14 +262,14 @@ console.log("ValidEmailTokenExpiration: ", fetchedEmailToken.expiration < new Da
           type: { equals:TokenType.API },
         }
       })
-    
+      console.log(" 5 Token Exist: ", tokenExist) 
       let tokenId = 0
       if(!tokenExist) {
         tokenId = 0;
       } else {
         tokenId = tokenExist.id;
       }
-
+console.log(" 6 tokenId:", tokenId)
       // Create or update a longlived token record
       tokenExist = await this.prismaService.token.upsert({
         where: {
@@ -287,7 +287,7 @@ console.log("ValidEmailTokenExpiration: ", fetchedEmailToken.expiration < new Da
           userId: fetchedEmailToken.userId
         }
       })
-    
+console.log("7 fetchedEmailToken: ", fetchedEmailToken)    
       // Invalidate the email token after it's been used
       await this.prismaService.token.update({
           where: {
