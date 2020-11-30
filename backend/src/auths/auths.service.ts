@@ -338,7 +338,7 @@ console.log('validateUser with pwd step: Echec', user);
         return null;
       }
     } else {
-      const { pwdHash, salt, ...result } = user;
+      const { ...result } = user;
 console.log('validateUser pwd less step: ok', result);
         return result;
     }

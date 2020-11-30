@@ -21,6 +21,7 @@ export class AuthsController {
 
   // Common
     // Get the profile of the user
+    @UseGuards(JwtAuthGuard)
     @Get('profile')
     async getProfile(@Request() req) {
     console.log('Authcontroler (localstrategy): Profile return:', req.user);
@@ -30,6 +31,7 @@ export class AuthsController {
 
     // Verify if the user exist (with his email)
     // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post('checkCredential')
     async checkCredential(@Body('emailToCheck') email: string) {
     console.log("reload checkcredential:",email);
@@ -65,6 +67,7 @@ console.log("delaybtw email:", sendEmailDelay, this.configService.get("DELAYBTWE
   }
 
   // PasswordLess registration
+  @UseGuards(LocalAuthGuard)
   @Post('auth/registrationpwdless')
   async registration(@Body('email') email: string) {
 console.log('Authcontroler (localstrategy) for registraiton:', email);
