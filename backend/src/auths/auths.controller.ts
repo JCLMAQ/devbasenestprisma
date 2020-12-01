@@ -32,14 +32,11 @@ export class AuthsController {
     @Post('checkCredential')
     async checkCredential(@Body('email') email: string) {
         // TODO To complete one day for profile user managment
-console.log("reload checkcredential:",email);
         const user = await this.usersService.getOneUserByEmail(email);
         // console.log("user", user);
         if (!user) {
-console.log('User does not exist on the database.');
             throw new UnauthorizedException();
         }
-console.log("reload checkcredential user found:", user);
         return {
             email: user.email,
             fullName: user.firstName + " " + user.lastName
@@ -54,13 +51,10 @@ console.log("reload checkcredential user found:", user);
     @UseGuards(LocalAuthGuard)
     @Post('auth/loginpwdless')
     async login(@Body('email') email: string) {
-    console.log('Authcontroler (localstrategy):', email);
         const registration = false; // As we are in the login part
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
         // const sendEmailDelay = true // Delay betwwen to send email actif
         const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") == 1;
-    console.log("Autoregistration:", autoRegistration, this.configService.get("AUTO_REGISTRATION_ENABLE"))
-    console.log("delaybtw email:", sendEmailDelay, this.configService.get("DELAYBTWEMAIL_ENABLE"))
         return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
     }
 
@@ -68,13 +62,10 @@ console.log("reload checkcredential user found:", user);
     @UseGuards(LocalAuthGuard)
     @Post('auth/registrationpwdless')
     async registration(@Body('email') email: string) {
-    console.log('Authcontroler (localstrategy) for registraiton:', email);
         const registration = true; // To show that we are within the resitraton part
         // const sendEmailDelay = true // Delay betwwen to send email actif
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
-    console.log("Autoregistration:", autoRegistration)
         const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") == 1;
-    console.log("delaybtw email:", sendEmailDelay)
         return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
     }
 

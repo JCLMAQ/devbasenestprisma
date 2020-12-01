@@ -218,22 +218,16 @@ console.log('payload:', payload)
 
   async validateUser(username: string, plainTextPassword: string): Promise<any> {
     // username = email
-console.log('validateUser (auth.service) step', username, plainTextPassword);
     const user = await this.usersService.getOneUserByEmail(username);
-console.log('usersService.checkOneUserByEmail(username)', user)
-console.log("Config PWDLESS ENABLE:", this.configService.get('PWDLESS_LOGIN_ENABLE'))
     if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0) {
       if (this.verifyPassword(user, plainTextPassword)) {
         const { pwdHash, salt, ...result } = user;
-console.log('validateUser with pwd step: ok', result);
         return result;
       } else {
-console.log('validateUser with pwd step: Echec', user);
         return null;
       }
     } else {
       const { ...result } = user;
-console.log('validateUser pwd less step: ok', result);
         return result;
     }
   }
