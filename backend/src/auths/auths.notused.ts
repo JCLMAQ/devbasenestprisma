@@ -1,12 +1,6 @@
 // Utilities not used
 
-  // Generate the expiration time of the JWT token
-  // async jwtTokenExpiration() {
-  //   const hoursToAdd = Number(this.configService.get<number>("JWT_VALIDITY_DURATION"));
-  //   const currentDate = new Date();
-  //   const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ (hoursToAdd*60*60*1000));
-  //   return jwtTokenExpirationDate
-  // }
+  
 
   // Fetch the token from DB to verify it's valid
   // async verifyDBTokenMatch(tokenId) {       

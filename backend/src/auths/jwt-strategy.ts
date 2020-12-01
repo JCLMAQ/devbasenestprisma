@@ -3,11 +3,13 @@ import { PassportStrategy  } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { UsersService } from 'src/users/users.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private usersService: UsersService
+    private usersService: UsersService,
+    private prismaService: PrismaService
     ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -26,8 +28,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // The idea is that the logout action unvalid the API token
 
     // TODO 
-
-    
+    let tokenExist = await this.prismaService.token.findFirst({
+      where: {
+        userId: { equals: user.id },
+        type: { equals: "API" },
+      }
+    }) 
+    if(tokenExist) {
+      if(!tokenExist.valid){
+        throw new UnauthorizedException();
+      }
+    }
     return { userId: payload.sub, username: payload.username, role: user.Role };
   }
 }

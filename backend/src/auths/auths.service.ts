@@ -35,7 +35,7 @@ export class AuthsService {
     const tokenExist = await this.prismaService.token.findFirst({
       where: {
         userId: { equals: userNotDeleted.id },
-        type: { equals:TokenType.EMAIL },
+        type: { equals:TokenType.API },
       }
     })
     if(tokenExist) {
@@ -45,7 +45,7 @@ export class AuthsService {
         },
         data: {
           emailToken: null,
-          type: TokenType.EMAIL,
+          type: TokenType.API,
           valid: false,
           expiration: new Date(),
         }
@@ -81,7 +81,72 @@ export class AuthsService {
       access_token: this.jwtService.sign(jwtPayload)
     }
   }
-  
+
+  // Generate the expiration time of the JWT token
+  async jwtTokenExpiration() {
+    const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION");
+    // Extraire la dernière lettre
+    // !!! Add nothing for now
+    let delayToAddNumber = 0
+    let letterTime = "d"
+    let secondToAdd = 0
+    if(letterTime == "d"){
+      // Day
+      secondToAdd = delayToAddNumber*24*60*60*1000
+    }
+    if(letterTime == "h"){
+      // Day
+      secondToAdd = delayToAddNumber*60*60*1000
+    }
+    if(letterTime == "s"){
+      // Day
+      secondToAdd = delayToAddNumber*60*1000
+    }
+    const currentDate = new Date();
+    const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ secondToAdd);
+    return jwtTokenExpirationDate
+  }
+
+  // Create the API token for logout
+  async mgtAPIToken(userId: string, logout: boolean) {
+    // For logout:  logout is true, valid has to be false
+    // Define the JWT token expiration time
+    const tokenExpiration = await this.jwtTokenExpiration();
+    // Find the token with the userid and the type
+    let tokenExist = await this.prismaService.token.findFirst({
+      where: {
+        userId: { equals: userId },
+        type: { equals:TokenType.API },
+      }
+    }) 
+    let tokenId = 0
+    if(!tokenExist) {
+      tokenId = 0;
+    } else {
+      tokenId = tokenExist.id;
+    }
+    // Create or update a longlived token record
+    tokenExist = await this.prismaService.token.upsert({
+      where: {
+        id: tokenId
+      },
+      update: {
+  //        emailToken: "",
+        type: TokenType.API,
+        expiration: tokenExpiration,
+        valid: !logout
+      },
+      create: {
+  //        emailToken: "",
+        type: TokenType.API,
+        expiration: tokenExpiration,
+        userId: userId,
+        valid: !logout
+      }
+    })
+  }
+    
+
   /*
     End of utilities
   */
@@ -217,6 +282,8 @@ export class AuthsService {
     // If evrything is in order, continue the process
     // If token matches the user email passed in the payload, generate long lived API token
     if (fetchedEmailToken?.user?.email == email) {
+      // Create or update the tokenAPI
+      const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId, false )
       // Create the return answer
       validEmailToken.email = email;
       validEmailToken.userId = fetchedEmailToken.userId;
