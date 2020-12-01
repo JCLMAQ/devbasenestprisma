@@ -22,6 +22,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user || user.isDeleted) {
       throw new UnauthorizedException();
     }
+    // Verify that the JWT payload is not cancel (even if the JWT is still valid - expiration time still OK)
+    // The idea is that the logout action unvalid the API token
+
+    // TODO 
+
+    
     return { userId: payload.sub, username: payload.username, role: user.Role };
   }
 }

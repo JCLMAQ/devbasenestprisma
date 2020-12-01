@@ -77,7 +77,7 @@ export class AuthsController {
         // userCredential has to content the email and the emailToken (rename to "password" to get through the localAuthGuards)
         const validCredential = await this.authsService.authenticateHandler(userCredential);
         if(!validCredential.validToken) {
-        throw new HttpException('Error on authenticate process', 400);
+            throw new HttpException('Error on authenticate process', 400);
         }
         const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.role);
         return authToken;
@@ -90,11 +90,12 @@ export class AuthsController {
 // TODO Delete one user by the user itself
 
     // PasswordLess Logout
+    @UseGuards(LocalAuthGuard)
     @Post('auth/logoutpwdless')
-    async logoutPwdLess() {
-        const isOK = await this.authsService.logout();
+    async logoutPwdLess(@Body() userCredential: AuthDto) {
+        const isOK = await this.authsService.logout(userCredential.email);
         if (!isOK) {
-            return {}
+            throw new HttpException('Error on logout process', 400);
         }
         const user = '';
         return { user }
@@ -114,9 +115,9 @@ console.log('Authcontroler (localstrategy):', req.user)
     }
 
     // Logout with password and email autehntication
-    @Post('auth/logout')
-    async logoutPwd(@Request() req ) {
-        const isOK = await this.authsService.logout();
+    @Post('auth/logoutwithpwd')
+    async logoutPwd(@Body() userCredential: AuthDto ) {
+        const isOK = await this.authsService.logout(userCredential.email);
         if (!isOK) {
             return {}
         }

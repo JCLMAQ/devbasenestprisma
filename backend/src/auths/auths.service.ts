@@ -24,9 +24,33 @@ export class AuthsService {
     private jwtService: JwtService,
   ) { }
   
-  async logout() {
-    // TODO Search for the user token and reinit for the email send token
-    
+  async logout(userEmail) {
+    // Search for the user token and reinit for the email send token - for PwdLess login
+    // Verify that the user has not been deleted or soft deleted
+    const userNotDeleted = await this.usersService.userStillExist(userEmail);
+    if(userNotDeleted.isDeleted != null) {
+      throw new HttpException('User does not exist - anymore - or has been deleted', 400)
+    }
+    // Find the corresponding token to reinit it
+    const tokenExist = await this.prismaService.token.findFirst({
+      where: {
+        userId: { equals: userNotDeleted.id },
+        type: { equals:TokenType.EMAIL },
+      }
+    })
+    if(tokenExist) {
+      const tokenUpdate = await this.prismaService.token.update({
+        where: {
+          id: tokenExist.id
+        },
+        data: {
+          emailToken: null,
+          type: TokenType.EMAIL,
+          valid: false,
+          expiration: new Date(),
+        }
+      })
+    }
     return true;
   }
 
