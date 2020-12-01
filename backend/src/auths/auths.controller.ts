@@ -8,6 +8,7 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { User } from '@prisma/client';
+import { ExtractJwt } from 'passport-jwt';
 
 @Controller('auths')
 export class AuthsController {
@@ -90,7 +91,11 @@ export class AuthsController {
 
     // PasswordLess Logout
     @Post('auth/logoutpwdless')
-    async logoutPwdLess() {
+    async logoutPwdLess(@Request() payload ) {
+        const jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
+console.log("request: ", payload)
+        const bearer = payload.headers.authorization;
+console.log("Beraer: " , bearer)
         const isOK = await this.authsService.logout();
         if (!isOK) {
             return {}
