@@ -91,11 +91,7 @@ export class AuthsController {
 
     // PasswordLess Logout
     @Post('auth/logoutpwdless')
-    async logoutPwdLess(@Request() payload ) {
-        const jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
-console.log("request: ", payload)
-        const bearer = payload.headers.authorization;
-console.log("Beraer: " , bearer)
+    async logoutPwdLess() {
         const isOK = await this.authsService.logout();
         if (!isOK) {
             return {}
@@ -119,15 +115,13 @@ console.log('Authcontroler (localstrategy):', req.user)
 
     // Logout with password and email autehntication
     @Post('auth/logout')
-    async logoutPwd() {
+    async logoutPwd(@Request() req ) {
         const isOK = await this.authsService.logout();
-console.log("AuthCOntrolers logout :", isOK)
         if (!isOK) {
             return {}
         }
         const user = '';
         const authJwtToken = '';
-console.log("AuthCOntrolers logout - done", user, authJwtToken)
         return { user, authJwtToken }
     }
 

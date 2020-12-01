@@ -21,7 +21,7 @@ import * as Joi from 'joi';
         //   .valid('development', 'production', 'test', 'provision')
         //   .default('development'),
         NEST_SERVER_PORT: Joi.number().default(3000),
-        JWT_VALIDITY_DURATION: Joi.string().default('60s')
+        JWT_VALIDITY_DURATION: Joi.string().default('240s')
       }),
     }
    

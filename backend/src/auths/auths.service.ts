@@ -25,8 +25,8 @@ export class AuthsService {
   ) { }
   
   async logout() {
-    console.log("Log out")
-    // Need to scratch the toke validity to allow new login
+    // TODO Search for the user token and reinit for the email send token
+    
     return true;
   }
 
