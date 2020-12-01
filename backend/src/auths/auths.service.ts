@@ -10,7 +10,7 @@ import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-
+import { ms } from 'ms';
 
 
 @Injectable()
@@ -87,23 +87,10 @@ export class AuthsService {
     const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION");
     // Extraire la dernière lettre
     // !!! Add nothing for now
-    let delayToAddNumber = 0
-    let letterTime = "d"
-    let secondToAdd = 0
-    if(letterTime == "d"){
-      // Day
-      secondToAdd = delayToAddNumber*24*60*60*1000
-    }
-    if(letterTime == "h"){
-      // Day
-      secondToAdd = delayToAddNumber*60*60*1000
-    }
-    if(letterTime == "s"){
-      // Day
-      secondToAdd = delayToAddNumber*60*1000
-    }
+    let milliSecondToAdd = ms(delayToAdd);
+    
     const currentDate = new Date();
-    const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ secondToAdd);
+    const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ milliSecondToAdd);
     return jwtTokenExpirationDate
   }
 
