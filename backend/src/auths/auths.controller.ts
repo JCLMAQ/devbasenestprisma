@@ -17,15 +17,13 @@ export class AuthsController {
     private usersService:  UsersService
     ) {}
 
-// TODO : Add localstrategy and jwt strategy guard
-
   // Common
     // Get the profile of the user
     @UseGuards(JwtAuthGuard)
     @Get('profile')
     async getProfile(@Request() req) {
-    console.log('Authcontroler (localstrategy): Profile return:', req.user);
-        // TODO To complete one day for profile user managment
+        // Rturn the loged user
+    console.log('Authcontroler (localstrategy): Profile return:', req.user);       
         return req.user;
     }
 
@@ -33,64 +31,65 @@ export class AuthsController {
     @UseGuards(JwtAuthGuard)
     @Post('checkCredential')
     async checkCredential(@Body('email') email: string) {
-    console.log("reload checkcredential:",email);
+        // TODO To complete one day for profile user managment
+console.log("reload checkcredential:",email);
         const user = await this.usersService.getOneUserByEmail(email);
         // console.log("user", user);
         if (!user) {
-    console.log('User does not exist on the database.');
+console.log('User does not exist on the database.');
             throw new UnauthorizedException();
         }
-    console.log("reload checkcredential user found:", user);
+console.log("reload checkcredential user found:", user);
         return {
             email: user.email,
             fullName: user.firstName + " " + user.lastName
         };
     }
 
-  /* 
-  Password less part
-  */
+    /* 
+    Password less part
+    */
 
-  // PasswordLess Login
-  @UseGuards(LocalAuthGuard)
-  @Post('auth/loginpwdless')
-  async login(@Body('email') email: string) {
-console.log('Authcontroler (localstrategy):', email);
-    const registration = false; // As we are in the login part
-    const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
-    // const sendEmailDelay = true // Delay betwwen to send email actif
-    const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") == 1;
-console.log("Autoregistration:", autoRegistration, this.configService.get("AUTO_REGISTRATION_ENABLE"))
-console.log("delaybtw email:", sendEmailDelay, this.configService.get("DELAYBTWEMAIL_ENABLE"))
-    return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
-  }
+    // PasswordLess Login
+    @UseGuards(LocalAuthGuard)
+    @Post('auth/loginpwdless')
+    async login(@Body('email') email: string) {
+    console.log('Authcontroler (localstrategy):', email);
+        const registration = false; // As we are in the login part
+        const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
+        // const sendEmailDelay = true // Delay betwwen to send email actif
+        const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") == 1;
+    console.log("Autoregistration:", autoRegistration, this.configService.get("AUTO_REGISTRATION_ENABLE"))
+    console.log("delaybtw email:", sendEmailDelay, this.configService.get("DELAYBTWEMAIL_ENABLE"))
+        return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
+    }
 
-  // PasswordLess registration
-  @UseGuards(LocalAuthGuard)
-  @Post('auth/registrationpwdless')
-  async registration(@Body('email') email: string) {
-console.log('Authcontroler (localstrategy) for registraiton:', email);
-    const registration = true; // To show that we are within the resitraton part
-    // const sendEmailDelay = true // Delay betwwen to send email actif
-    const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
-console.log("Autoregistration:", autoRegistration)
-    const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") == 1;
-console.log("delaybtw email:", sendEmailDelay)
-    return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
-  }
+    // PasswordLess registration
+    @UseGuards(LocalAuthGuard)
+    @Post('auth/registrationpwdless')
+    async registration(@Body('email') email: string) {
+    console.log('Authcontroler (localstrategy) for registraiton:', email);
+        const registration = true; // To show that we are within the resitraton part
+        // const sendEmailDelay = true // Delay betwwen to send email actif
+        const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
+    console.log("Autoregistration:", autoRegistration)
+        const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") == 1;
+    console.log("delaybtw email:", sendEmailDelay)
+        return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
+    }
 
-  // PasswordLess Authentication
-  @Post('auth/authenticatepwdless')
-      async authentication(@Body() userCredential: AuthDto) {
-        // userCredential has to content the email and the emailToken
-console.log("Usercredential received by POST: ", userCredential);
+    // PasswordLess Authentication
+    @UseGuards(LocalAuthGuard)
+    @Post('auth/authenticatepwdless')
+    async authentication(@Body() userCredential: AuthDto) {
+        // userCredential has to content the email and the emailToken (rename to "password" to get through the localAuthGuards)
         const validCredential = await this.authsService.authenticateHandler(userCredential);
         if(!validCredential.validToken) {
-          throw new HttpException('Error on authenticate process', 400);
+        throw new HttpException('Error on authenticate process', 400);
         }
-        const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.role, validCredential.tokenId);
+        const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.role);
         return authToken;
-      }
+    }
 
       // Delete one user
 // TODO Delete one user by admin
@@ -99,22 +98,20 @@ console.log("Usercredential received by POST: ", userCredential);
 // TODO Delete one user by the user itself
 
     // PasswordLess Logout
-  @Post('auth/logoutpwdless')
-  async logoutPwdLess() {
-    const isOK = await this.authsService.logout();
-console.log("AuthCOntrolers logout :", isOK)
-    if (!isOK) {
-        return {}
+    @Post('auth/logoutpwdless')
+    async logoutPwdLess() {
+        const isOK = await this.authsService.logout();
+        if (!isOK) {
+            return {}
+        }
+        const user = '';
+        return { user }
     }
-    const user = '';
-console.log("AuthCOntrolers logout - done", user)
-    return { user }
-  }
 
 
-  /*
-      Login with password (and email)
-  */
+/*
+    Login with password (and email)
+*/
     // Login with the password and the email
     // @UseGuards(LocalAuthGuard)
     @Post('auth/loginwithpwd')

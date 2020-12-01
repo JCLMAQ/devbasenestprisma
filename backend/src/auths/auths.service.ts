@@ -24,8 +24,9 @@ export class AuthsService {
     private jwtService: JwtService,
   ) { }
   
-  logout() {
+  async logout() {
     console.log("Log out")
+    // Need to scratch the toke validity to allow new login
     return true;
   }
 
@@ -49,59 +50,21 @@ export class AuthsService {
     return emailTokenExpirationDate
   }
 
-  // Generate the expiration time of the JWT token
-  async jwtTokenExpiration() {
-    const hoursToAdd = Number(this.configService.get<number>("JWT_VALIDITY_DURATION_HOURS"));
-    const currentDate = new Date();
-    const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ (hoursToAdd*60*60*1000));
-    return jwtTokenExpirationDate
-  }
-
   // Generate a signed JWT token with the tokenId in the payload
-  async generateAuthToken(userEmail: string, userId: string, role: string,  tokenId: number): Promise<any> {
-    const jwtPayload = { username: userEmail, sub: userId, role: role, tokenid: tokenId}
+  async generateAuthToken(userEmail: string, userId: string, role: string): Promise<any> {
+    const jwtPayload = { username: userEmail, sub: userId, role: role}
     return  {
       access_token: this.jwtService.sign(jwtPayload)
     }
   }
   
-  // Fetch the token from DB to verify it's valid
-  async verifyDBTokenMatch(tokenId) {       
-      const fetchedToken = await this.prismaService.token.findUnique({
-          where: {
-              id: tokenId,
-          },
-          include: {
-              user: true,
-          },
-      });
-      // Check if token could be found in database and is valid
-      if (!fetchedToken || !fetchedToken?.valid) {
-          return { isValid: false, errorMessage: 'Invalid Token' }
-      }
-      // Check token expiration
-      if (fetchedToken.expiration < new Date()) {
-          return { isValid: false, errorMessage: 'Token expired' }
-      }
-      // Token is valid return credential
-      return {
-          isValid: true,
-          credentials: {
-              tokenId: tokenId,
-              userId: fetchedToken.userId,
-              isAdmin: fetchedToken.user.isAdmin,
-          },
-      }
-  }
-    /*
-      End of utilities
-    */
+  /*
+    End of utilities
+  */
 
-    /*
-      Start PasswordLess Login process
-    */
-
-    // const {fromEmail, toEmail, subjectEmail, textEmail, htmlEmail } = emailData
+/*
+  Start PasswordLess Login process
+*/
 
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
   async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean) {
@@ -122,7 +85,6 @@ export class AuthsService {
           emailToken: { equals: emailToken
         }}});
     }
-
     // Config data for the email to send with the token
     const emailSender = this.configService.get("EMAIL_NOREPLY");
     const emailData = {
@@ -132,12 +94,9 @@ export class AuthsService {
       textEmail: `NestJS your token: ${emailToken}.`,
       htmlEmail: `Hello <br> Please, use this token to confirm your login : ${emailToken} <br>`
     }
-
     // Define the emailToken expiration time
     const tokenExpiration = await this.emailTokenExpiration();
-
     let userFound = await this.usersService.findUniqueUser({email});
-
     if(autoRegistration && !userFound) {
       userFound = await this.usersService.createUser({email}); // registration auto of a new user
     } else {
@@ -151,8 +110,6 @@ export class AuthsService {
         userFound = await this.usersService.createUser({email}); // registration of a new user
         }
     }
-    
-  
     // Need to verify that the short token exist or not
     const tokenExist = await this.prismaService.token.findFirst({
       where: {
@@ -160,25 +117,21 @@ export class AuthsService {
         type: { equals:TokenType.EMAIL },
       }
     })
-
     let tokenId = 0
     if(!tokenExist) {
       tokenId = 0;
     } else {
       tokenId = tokenExist.id;
       const delayBetweenEmailEnable = sendEmailDelay;
-      console.log("Delay d'envoi à vérifier: ", delayBetweenEmailEnable)
       if(delayBetweenEmailEnable) { 
         const delayToTest = this.configService.get("DELAYBTWEMAILMINUTE")
         const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
-  console.log("Email already send: ", testResult, "Delay to test: ", delayToTest)
         // Verify delay between emailbase on the updateAt field
           if ( testResult) {
             throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
           }
       }
     }
-
     // If exist: just update it, if does not: create a new one
     const tokenCreatedorupdated = await this.prismaService.token.upsert({
       where: {
@@ -198,10 +151,6 @@ export class AuthsService {
         userId: userFound.id,
       },
     })
-
-
-console.log("Token created or updated: ", tokenCreatedorupdated );
-
     // Send the email with the token
     const sendMail = await this.utilitiesService.sendEmailToken(emailData);
     if (sendMail) {
@@ -209,99 +158,44 @@ console.log("Token created or updated: ", tokenCreatedorupdated );
     } else {
       throw new HttpException('Error on sending email with the token', 400);
     }
-    
   }
     
   // Step 2: Verify the validity of the short token linked to the email of the user
   async authenticateHandler(userCredential) {
-    const { email, emailToken } = userCredential;
-console.log("1 authentication pwdless handler (usercredential): ", userCredential)
+    const { email, password } = userCredential;
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(email);
     if(userNotDeleted.isDeleted != null) {
       throw new HttpException('User does not exist - anymore - or has been deleted', 400)
-    }
-    
-    const validEmailToken= { email: email, userId: null, validToken: false, role: userNotDeleted.Role, tokenId: null};
-  
+    }    
+    const validEmailToken= { email: email, userId: null, validToken: false, role: userNotDeleted.Role};  
     // Get short lived email token
     const fetchedEmailToken = await this.prismaService.token.findUnique({
       where: {
-          emailToken: emailToken,
+          emailToken: password,
       },
       include: {
           user: true,
       },
     })
-console.log(" 2 ValidEmailToken", fetchedEmailToken)
     // Is the emailToken still valid ?
     if (!fetchedEmailToken?.valid) {
       // If the token doesn't exist or is not valid, return false
       validEmailToken.validToken=false;
       return validEmailToken
     }
-console.log(" 3 ValidEmailTokenExpiration: ", fetchedEmailToken.expiration < new Date())
     // Verify token again expiration limits
     if (fetchedEmailToken.expiration < new Date()) {
-        // If the the expiration time of the token is passed, return false
-        validEmailToken.validToken=false;
-        console.log("4 ValidEmailTokenExpire", validEmailToken)
-        return validEmailToken
+      // If the the expiration time of the token is passed, return false
+      validEmailToken.validToken=false;
+      return validEmailToken
     }
-
     // If evrything is in order, continue the process
     // If token matches the user email passed in the payload, generate long lived API token
     if (fetchedEmailToken?.user?.email == email) {
-      const tokenExpiration = await this.jwtTokenExpiration();
-      // Persist token in DB so it's stateful
-
-      // Find the token with the userid and the type
-      let tokenExist = await this.prismaService.token.findFirst({
-        where: {
-          userId: { equals: fetchedEmailToken.userId },
-          type: { equals:TokenType.API },
-        }
-      })
-console.log(" 5 Token Exist: ", tokenExist) 
-      let tokenId = 0
-      if(!tokenExist) {
-        tokenId = 0;
-      } else {
-        tokenId = tokenExist.id;
-      }
-console.log(" 6 tokenId:", tokenId)
-      // Create or update a longlived token record
-      tokenExist = await this.prismaService.token.upsert({
-        where: {
-          id: tokenId
-        },
-        update: {
-  //        emailToken: "",
-          type: TokenType.API,
-          expiration: tokenExpiration,
-        },
-        create: {
-  //        emailToken: "",
-          type: TokenType.API,
-          expiration: tokenExpiration,
-          userId: fetchedEmailToken.userId
-        }
-      })
-console.log("7 fetchedEmailToken: ", fetchedEmailToken)    
-      // Invalidate the email token after it's been used
-      await this.prismaService.token.update({
-          where: {
-              id: fetchedEmailToken.id,
-          },
-          data: {
-              valid: false,
-          },
-      });
-
       // Create the return answer
       validEmailToken.email = email;
       validEmailToken.userId = fetchedEmailToken.userId;
-      validEmailToken.tokenId = tokenExist.id;
       validEmailToken.validToken = true;
       return validEmailToken;
     }  
