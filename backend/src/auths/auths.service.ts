@@ -262,7 +262,7 @@ console.log(" 3 ValidEmailTokenExpiration: ", fetchedEmailToken.expiration < new
           type: { equals:TokenType.API },
         }
       })
-      console.log(" 5 Token Exist: ", tokenExist) 
+console.log(" 5 Token Exist: ", tokenExist) 
       let tokenId = 0
       if(!tokenExist) {
         tokenId = 0;
