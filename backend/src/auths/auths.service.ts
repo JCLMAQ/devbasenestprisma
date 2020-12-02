@@ -31,26 +31,13 @@ export class AuthsService {
     if(userNotDeleted.isDeleted != null) {
       throw new HttpException('User does not exist - anymore - or has been deleted', 400)
     }
-    // Find the corresponding token to reinit it
-    const tokenExist = await this.prismaService.token.findFirst({
-      where: {
-        userId: { equals: userNotDeleted.id },
-        type: { equals:TokenType.API },
-      }
-    })
-    if(tokenExist) {
-      const tokenUpdate = await this.prismaService.token.update({
-        where: {
-          id: tokenExist.id
-        },
-        data: {
-          emailToken: null,
-          type: TokenType.API,
-          valid: false,
-          expiration: new Date(),
-        }
-      })
+    // Logout with JWTLOGOUTENABLE = 1
+    if(this.configService.get("JWTLOGOUTENABLE") == 1) {
+      // If yes, then manage the API token validity
+      const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, true );
+      return createOrUpdateToken
     }
+    
     return true;
   }
 
@@ -128,6 +115,10 @@ export class AuthsService {
         valid: !logout
       }
     })
+    if(tokenExist){
+      return true
+    } else { return false}
+
   }
     
 
@@ -265,16 +256,24 @@ export class AuthsService {
       return validEmailToken
     }
     // If evrything is in order, continue the process
-    // If token matches the user email passed in the payload, generate long lived API token
+    // If token matches the user email passed in the payload, generate long lived API token (if JWTLOGOUT is = to 1)
+    validEmailToken.email = email;
+    validEmailToken.userId = "";
     if (fetchedEmailToken?.user?.email == email) {
-      // Create or update the tokenAPI
-      const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId, false )
-      // Create the return answer
-      validEmailToken.email = email;
       validEmailToken.userId = fetchedEmailToken.userId;
       validEmailToken.validToken = true;
+      // Create or update the tokenAPI
+      // JWT Logout enable ?
+      if(this.configService.get("JWTLOGOUTENABLE") == 1) {
+        // If yes, then manage the API token validity
+        const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId, false )
+        validEmailToken.validToken = createOrUpdateToken;
+      }
       return validEmailToken;
-    }  
+    }  else {
+      validEmailToken.validToken = false;
+      return validEmailToken;
+    }
   }
 
   /*
