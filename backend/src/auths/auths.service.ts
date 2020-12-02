@@ -166,7 +166,7 @@ export class AuthsService {
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
   async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean) {
     // Verify if the limitation to the email API is activeted
-    const apiActiveted = (this.configService.get<number>("API_AUTH_STARTEGY") == 1);
+    const apiActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
     if(apiActiveted){
       const appURL = this.configService.get<string>("APP_URL");
       const compareAppUrl = await this.utilitiesService.compareURLOfEmail(appURL, email);
