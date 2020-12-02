@@ -166,13 +166,13 @@ export class AuthsService {
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
   async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean) {
     // Verify if the limitation to the email API is activeted
-    const apiActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
-    if(apiActiveted){
-      const appURL = this.configService.get<string>("APP_URL");
+    const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
+    if(apiEmailActiveted){
+      const appURL = this.configService.get<string>("EMAIL_ALLOWED_DOMAIN");
       const compareAppUrl = await this.utilitiesService.compareURLOfEmail(appURL, email);
       // If yes verify the API of the email
       // If they do not correspond : reject the login or the registration
-      if(compareAppUrl) {
+      if(!compareAppUrl) {
         throw new HttpException('Email not accepted by the system', 400);
       }
     }
@@ -190,10 +190,10 @@ export class AuthsService {
       tokenAlreadyExist != null && typeof(tokenAlreadyExist) == "object"
     ) {
       emailToken = await this.generateEmailToken();
-        tokenAlreadyExist = await this.prismaService.token.findFirst({
-        where: {
-          emailToken: { equals: emailToken
-        }}});
+      tokenAlreadyExist = await this.prismaService.token.findFirst({
+      where: {
+        emailToken: { equals: emailToken}
+      }});
     }
     // Config data for the email to send with the token
     const emailSender = this.configService.get("EMAIL_NOREPLY");

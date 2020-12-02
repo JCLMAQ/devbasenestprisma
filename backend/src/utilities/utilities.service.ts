@@ -61,8 +61,12 @@ export class UtilitiesService {
         return newDate 
     }
     
-    async compareURLOfEmail(appUrl: string, email: string){
-        
-        return true
+    async compareURLOfEmail(emailUrl: string, email: string){
+        const res = email.split("@");
+        const domain = res[1];
+        if(emailUrl == domain){
+            return true
+        }
+        return false
     }
 }
