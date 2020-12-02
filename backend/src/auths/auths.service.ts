@@ -33,8 +33,8 @@ export class AuthsService {
     }
     // Reinit the sendEmail pwdless
     await this.logoutInvalidEmailToken(userNotDeleted.id)
-    // Logout with JWTLOGOUTENABLE = 1
-    if(this.configService.get("JWTLOGOUTENABLE") == 1) {
+    // Logout with JWT_LOGOUT_ENABLE = 1
+    if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
       // If yes, then manage the API token validity
       const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, true );
       return createOrUpdateToken
@@ -221,7 +221,7 @@ export class AuthsService {
       // Verify that the delay between email is still valid
       const delayBetweenEmailEnable = sendEmailDelay;
       if(delayBetweenEmailEnable) { 
-        const delayToTest = this.configService.get<string>("DELAYBTWEMAIL");
+        const delayToTest = this.configService.get<string>("DELAY_BTW_EMAIL");
         const milliSecondToAdd = MilliSecond(delayToTest);
         const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.expiration, milliSecondToAdd)
         // Verify delay between emailbase on the updateAt field
@@ -293,7 +293,7 @@ export class AuthsService {
     }
     // If evrything is in order, continue the process
     // Invalidate the email token after it's been used
-    const delayMilliSecond = MilliSecond(this.configService.get<string>("DELAYBTWEMAIL"));
+    const delayMilliSecond = MilliSecond(this.configService.get<string>("DELAY_BTW_EMAIL"));
     const newExpirationDate= await this.utilitiesService.dateLessDelay(fetchedEmailToken.expiration, delayMilliSecond)
     await this.prismaService.token.update({
       where: {
@@ -312,7 +312,7 @@ export class AuthsService {
       validEmailToken.validToken = true;
       // Create or update the tokenAPI
       // JWT Logout enable ?
-      if(this.configService.get("JWTLOGOUTENABLE") == 1) {
+      if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
         // If yes, then manage the API token validity
         const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId, false )
         validEmailToken.validToken = createOrUpdateToken;

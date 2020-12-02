@@ -54,7 +54,7 @@ export class AuthsController {
         const registration = false; // As we are in the login part
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
         // const sendEmailDelay = true // Delay betwwen to send email actif
-        const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") == 1;
+        const sendEmailDelay = this.configService.get("DELAY_BTW_EMAIL_ENABLE") == 1;
         return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
     }
 
@@ -65,7 +65,7 @@ export class AuthsController {
         const registration = true; // To show that we are within the resitraton part
         // const sendEmailDelay = true // Delay betwwen to send email actif
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
-        const sendEmailDelay = this.configService.get("DELAYBTWEMAIL_ENABLE") == 1;
+        const sendEmailDelay = this.configService.get("DELAY_BTW_EMAIL_ENABLE") == 1;
         return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
     }
 
