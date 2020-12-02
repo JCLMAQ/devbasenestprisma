@@ -31,6 +31,8 @@ export class AuthsService {
     if(userNotDeleted.isDeleted != null) {
       throw new HttpException('User does not exist - anymore - or has been deleted', 400)
     }
+    // Reinit the sendEmail pwdless
+    await this.logoutInvalidEmailToken(userNotDeleted.id)
     // Logout with JWTLOGOUTENABLE = 1
     if(this.configService.get("JWTLOGOUTENABLE") == 1) {
       // If yes, then manage the API token validity
@@ -77,11 +79,10 @@ export class AuthsService {
     return jwtTokenExpirationDate
   }
 
-  // Create the API token for logout
+  // Update the API token
   async mgtAPIToken(userId: string, logout: boolean) {
     // For logout:  logout is true, valid has to be false
-    // Define the JWT token expiration time
-    const tokenExpiration = await this.jwtTokenExpiration();
+    
     // Find the token with the userid and the type
     let tokenExist = await this.prismaService.token.findFirst({
       where: {
@@ -90,10 +91,17 @@ export class AuthsService {
       }
     }) 
     let tokenId = 0
+    let tokenExpiration= new Date();
     if(!tokenExist) {
       tokenId = 0;
     } else {
       tokenId = tokenExist.id;
+      tokenExpiration = tokenExist.expiration
+    }
+    // Define the JWT token expiration time
+    // Do not change it if logout
+    if(!logout) {
+      tokenExpiration = await this.jwtTokenExpiration();
     }
     // Create or update a longlived token record
     tokenExist = await this.prismaService.token.upsert({
@@ -116,11 +124,40 @@ export class AuthsService {
     })
     if(tokenExist){
       return true
-    } else { return false}
-
+    } else { 
+      return false
+    }
   }
     
-
+  async logoutInvalidEmailToken(userId: string){
+    // Reinit the emailToken
+    let tokenEmailExist = await this.prismaService.token.findFirst({
+      where: {
+        userId: { equals: userId },
+        type: { equals:TokenType.EMAIL },
+      }
+    }) 
+    if(tokenEmailExist) {
+      const tokenEmailId = tokenEmailExist.id;
+      // const delayMilliSecond = 
+      const delayMilliSecond = (MilliSecond(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION")))*2;
+      const newExpirationDate = await this.utilitiesService.dateLessDelay(tokenEmailExist.expiration, delayMilliSecond)
+console.log("Dealy to withdraw:", delayMilliSecond)
+console.log("old expiration date: ", tokenEmailExist.expiration)
+console.log("new expiration date: ", newExpirationDate)
+    // Update a longlived token record
+      const tokenEmailReInit = await this.prismaService.token.update({
+        where: {
+          id: tokenEmailId
+        },
+        data: {
+          emailToken: "",
+          expiration: newExpirationDate,
+          valid: false
+        }
+      })
+    }
+  }
   /*
     End of utilities
   */
@@ -157,7 +194,7 @@ export class AuthsService {
       htmlEmail: `Hello <br> Please, use this token to confirm your login : ${emailToken} <br>`
     }
     // Define the emailToken expiration time
-    const tokenExpiration = await this.emailTokenExpiration();
+    // const tokenExpiration = await this.emailTokenExpiration();
     let userFound = await this.usersService.findUniqueUser({email});
     if(autoRegistration && !userFound) {
       userFound = await this.usersService.createUser({email}); // registration auto of a new user
@@ -184,18 +221,32 @@ export class AuthsService {
       tokenId = 0;
     } else {
       tokenId = tokenExist.id;
-      const delayBetweenEmailEnable = sendEmailDelay;
-      if(delayBetweenEmailEnable) { 
-        const delayToTest = this.configService.get<string>("DELAYBTWEMAIL");
-        const milliSecondToAdd = MilliSecond(delayToTest);
-        const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, milliSecondToAdd)
-        // Verify delay between emailbase on the updateAt field
-          if ( testResult) {
-            throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
-          }
+      
+console.log("tokenExist valid: ", tokenExist.valid);
+// console.log("tokenExist expiration: ", tokenExist.expiration);
+//       if( tokenExist.valid ) {
+        // Then verify the delay between email
+console.log("Token Email still valid, so need to control delay btw email...");
+        // Verify that the delay between email is still valid
+        const delayBetweenEmailEnable = sendEmailDelay;
+        if(delayBetweenEmailEnable) { 
+          const delayToTest = this.configService.get<string>("DELAYBTWEMAIL");
+          const milliSecondToAdd = MilliSecond(delayToTest);
+    console.log(" Delay btw Email :", delayToTest, "millisecond: ", milliSecondToAdd);
+    console.log(" Update date :", tokenExist.expiration);
+          const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.expiration, milliSecondToAdd)
+    console.log("Result of the test: ", testResult);
+          // Verify delay between emailbase on the updateAt field
+            if ( testResult) {
+              throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
+            }
+        // }
       }
+  
     }
     // If exist: just update it, if does not: create a new one
+    // Define the emailToken expiration time
+    const tokenExpiration = await this.emailTokenExpiration();
     const tokenCreatedorupdated = await this.prismaService.token.upsert({
       where: {
         id: tokenId
@@ -255,6 +306,18 @@ console.log("Email token:", emailToken);
       return validEmailToken
     }
     // If evrything is in order, continue the process
+    // Invalidate the email token after it's been used
+    const delayMilliSecond = MilliSecond(this.configService.get<string>("DELAYBTWEMAIL"));
+    const newExpirationDate= await this.utilitiesService.dateLessDelay(fetchedEmailToken.expiration, delayMilliSecond)
+    await this.prismaService.token.update({
+      where: {
+          id: fetchedEmailToken.id,
+      },
+      data: {
+          valid: false,
+          // expiration: newExpirationDate
+      },
+    });
     // If token matches the user email passed in the payload, generate long lived API token (if JWTLOGOUT is = to 1)
     validEmailToken.email = email;
     validEmailToken.userId = "";
