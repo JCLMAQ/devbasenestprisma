@@ -109,8 +109,8 @@ export class AuthsController {
     @Post('auth/loginwithpwd')
     async loginWithPwd(@Request() req) {
 console.log('Authcontroler (localstrategy):', req.user)
-        // return this.authsService.loginWithPwd(req.user);
-        return req.user;
+        return this.authsService.loginWithPwd(req.user);
+        // return req.user;
     }
 
     // Logout with password and email autehntication
