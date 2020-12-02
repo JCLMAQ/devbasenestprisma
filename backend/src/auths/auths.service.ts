@@ -68,9 +68,9 @@ export class AuthsService {
 
   // Generate the expiration time of the email token
   async emailTokenExpiration() {
-    const minutestoAdd = Number(this.configService.get("EMAIL_TOKEN_EXPIRATION_MINUTES"));
+    const milliSecondToAdd = ms(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION"));
     const currentDate = new Date();
-    const emailTokenExpirationDate = new Date(currentDate.getTime()+ (minutestoAdd*60*1000));
+    const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
     return emailTokenExpirationDate
   }
 
@@ -84,11 +84,8 @@ export class AuthsService {
 
   // Generate the expiration time of the JWT token
   async jwtTokenExpiration() {
-    const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION");
-    // Extraire la dernière lettre
-    // !!! Add nothing for now
-    let milliSecondToAdd = ms(delayToAdd);
-    
+    const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION")
+    let milliSecondToAdd = ms(delayToAdd);    
     const currentDate = new Date();
     const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ milliSecondToAdd);
     return jwtTokenExpirationDate
@@ -200,8 +197,9 @@ export class AuthsService {
       tokenId = tokenExist.id;
       const delayBetweenEmailEnable = sendEmailDelay;
       if(delayBetweenEmailEnable) { 
-        const delayToTest = this.configService.get("DELAYBTWEMAILMINUTE")
-        const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, parseInt(delayToTest,10))
+        const delayToTest = this.configService.get<string>("DELAYBTWEMAIL");
+        const milliSecondToAdd = ms(delayToTest);
+        const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, milliSecondToAdd)
         // Verify delay between emailbase on the updateAt field
           if ( testResult) {
             throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
@@ -417,9 +415,9 @@ console.log('reset token', tokenForgotPwd)
 
 // Generate the expiration time of the forgot password token
   async forgotPwdTokenExpiration() {
-    const minutestoAdd = Number(this.configService.get("FORGOTPWD_TOKEN_EXPIRATION_MINUTES"));
+    const milliSecondToAdd = this.configService.get("FORGOTPWD_TOKEN_EXPIRATION");
     const currentDate = new Date();
-    const emailTokenExpirationDate = new Date(currentDate.getTime()+ (minutestoAdd*60*1000));
+    const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
     return emailTokenExpirationDate
   }
 
