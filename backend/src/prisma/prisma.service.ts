@@ -32,7 +32,6 @@ export class PrismaService extends PrismaClient
 
 // Middelwares
   deletePasswordUser: Prisma.Middleware = async (params, next) => {
-//     console.log("params:", params);
 // Work only for "findUnique"  ot for findMany
     const result = await next(params);        
     if(params.model == "User") {

@@ -34,7 +34,6 @@ export class AuthsController {
     async checkCredential(@Body('email') email: string) {
         // TODO To complete one day for profile user managment
         const user = await this.usersService.getOneUserByEmail(email);
-        // console.log("user", user);
         if (!user) {
             throw new UnauthorizedException();
         }

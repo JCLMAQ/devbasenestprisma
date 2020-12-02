@@ -120,7 +120,6 @@ console.log('usersService.createOneUser', result);
     const user = await this.getOneUserByEmail(userEmail);
     // const { pwdHash, salt, ...result } = user; // To remove pwdHash and salt from user: result = user less salt and pwdHash
     const { pwdHash, salt, isAdmin, ...result } = user;
-console.log('UserStillExist : yes', result)
     return result;
   }
 
@@ -138,12 +137,10 @@ console.log('UserStillExist : yes', result)
     const user = await this.getOneUserByEmail(userEmail);
     // Verify the user is not soft deleted !!!
     if(!user || user.isDeleted){
-console.log('UserStillExist : non (or soft deleted: ')
       return null // Soft deleted or user does not exist
     }
     const { pwdHash, salt, ...result } = user;
     // const { ...result } = user;
-console.log('UserStillExist : yes', result)
     return result;
   }
 

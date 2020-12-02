@@ -10,7 +10,7 @@ import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { ms } from 'ms';
+import * as MilliSecond from 'ms';
 
 
 @Injectable()
@@ -54,7 +54,7 @@ export class AuthsService {
 
   // Generate the expiration time of the email token
   async emailTokenExpiration() {
-    const milliSecondToAdd = ms(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION"));
+    const milliSecondToAdd = MilliSecond(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION"));
     const currentDate = new Date();
     const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
     return emailTokenExpirationDate
@@ -71,7 +71,7 @@ export class AuthsService {
   // Generate the expiration time of the JWT token
   async jwtTokenExpiration() {
     const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION")
-    let milliSecondToAdd = ms(delayToAdd);    
+    let milliSecondToAdd = MilliSecond(delayToAdd);    
     const currentDate = new Date();
     const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ milliSecondToAdd);
     return jwtTokenExpirationDate
@@ -142,7 +142,6 @@ export class AuthsService {
       tokenAlreadyExist != null && typeof(tokenAlreadyExist) == "object"
     ) {
       emailToken = await this.generateEmailToken();
-      console.log("New token : ", emailToken); 
         tokenAlreadyExist = await this.prismaService.token.findFirst({
         where: {
           emailToken: { equals: emailToken
@@ -188,7 +187,7 @@ export class AuthsService {
       const delayBetweenEmailEnable = sendEmailDelay;
       if(delayBetweenEmailEnable) { 
         const delayToTest = this.configService.get<string>("DELAYBTWEMAIL");
-        const milliSecondToAdd = ms(delayToTest);
+        const milliSecondToAdd = MilliSecond(delayToTest);
         const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.updatedAt, milliSecondToAdd)
         // Verify delay between emailbase on the updateAt field
           if ( testResult) {
@@ -218,6 +217,7 @@ export class AuthsService {
     // Send the email with the token
     const sendMail = await this.utilitiesService.sendEmailToken(emailData);
     if (sendMail) {
+console.log("Email token:", emailToken);
       return sendMail
     } else {
       throw new HttpException('Error on sending email with the token', 400);
