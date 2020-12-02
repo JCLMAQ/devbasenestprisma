@@ -61,4 +61,8 @@ export class UtilitiesService {
         return newDate 
     }
     
+    async compareURLOfEmail(appUrl: string, email: string){
+        
+        return true
+    }
 }
