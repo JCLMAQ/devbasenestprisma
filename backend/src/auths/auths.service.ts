@@ -37,7 +37,6 @@ export class AuthsService {
       const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, true );
       return createOrUpdateToken
     }
-    
     return true;
   }
 
