@@ -142,9 +142,6 @@ export class AuthsService {
       // const delayMilliSecond = 
       const delayMilliSecond = (MilliSecond(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION")))*2;
       const newExpirationDate = await this.utilitiesService.dateLessDelay(tokenEmailExist.expiration, delayMilliSecond)
-console.log("Dealy to withdraw:", delayMilliSecond)
-console.log("old expiration date: ", tokenEmailExist.expiration)
-console.log("new expiration date: ", newExpirationDate)
     // Update a longlived token record
       const tokenEmailReInit = await this.prismaService.token.update({
         where: {
@@ -221,26 +218,16 @@ console.log("new expiration date: ", newExpirationDate)
       tokenId = 0;
     } else {
       tokenId = tokenExist.id;
-      
-console.log("tokenExist valid: ", tokenExist.valid);
-// console.log("tokenExist expiration: ", tokenExist.expiration);
-//       if( tokenExist.valid ) {
-        // Then verify the delay between email
-console.log("Token Email still valid, so need to control delay btw email...");
-        // Verify that the delay between email is still valid
-        const delayBetweenEmailEnable = sendEmailDelay;
-        if(delayBetweenEmailEnable) { 
-          const delayToTest = this.configService.get<string>("DELAYBTWEMAIL");
-          const milliSecondToAdd = MilliSecond(delayToTest);
-    console.log(" Delay btw Email :", delayToTest, "millisecond: ", milliSecondToAdd);
-    console.log(" Update date :", tokenExist.expiration);
-          const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.expiration, milliSecondToAdd)
-    console.log("Result of the test: ", testResult);
-          // Verify delay between emailbase on the updateAt field
-            if ( testResult) {
-              throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
-            }
-        // }
+      // Verify that the delay between email is still valid
+      const delayBetweenEmailEnable = sendEmailDelay;
+      if(delayBetweenEmailEnable) { 
+        const delayToTest = this.configService.get<string>("DELAYBTWEMAIL");
+        const milliSecondToAdd = MilliSecond(delayToTest);
+        const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.expiration, milliSecondToAdd)
+        // Verify delay between emailbase on the updateAt field
+          if ( testResult) {
+            throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
+        }
       }
   
     }
@@ -268,7 +255,6 @@ console.log("Token Email still valid, so need to control delay btw email...");
     // Send the email with the token
     const sendMail = await this.utilitiesService.sendEmailToken(emailData);
     if (sendMail) {
-console.log("Email token:", emailToken);
       return sendMail
     } else {
       throw new HttpException('Error on sending email with the token', 400);

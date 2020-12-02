@@ -46,16 +46,14 @@ export class UtilitiesService {
 
     // Delay between the present moment and the past date time
     async timeStampDelay(dateStampToTest: Date, delayMilliSecond: number) {
-console.log("Date : ", new Date(), "Date to test: ", dateStampToTest);
-console.log("diff in millisecond between date : ", (new Date().getTime() - dateStampToTest.getTime()));
        const tooshort = (new Date().getTime() - dateStampToTest.getTime()) < delayMilliSecond;
        return tooshort;
     }
 
     // Delay between two date time
     async twoTimeStampsDelay(dateStampOne: Date, dateStampTwo: Date, delayMilliSecond: number) {
-    const tooshort = (dateStampOne.getTime() - dateStampTwo.getTime()) < delayMilliSecond;
-    return tooshort;
+        const tooshort = (dateStampOne.getTime() - dateStampTwo.getTime()) < delayMilliSecond;
+        return tooshort;
     }
 
     async dateLessDelay(dateInit: Date, delayMilliSecond: number){
