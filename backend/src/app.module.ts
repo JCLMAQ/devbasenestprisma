@@ -7,6 +7,8 @@ import { UtilitiesModule } from './utilities/utilities.module';
 import { AuthsModule } from './auths/auths.module';
 import { PrismaModule } from './prisma/prisma.module';
 import * as Joi from 'joi';
+import * as path from 'path';
+import { I18nModule, I18nJsonParser, QueryResolver, HeaderResolver, AcceptLanguageResolver } from 'nestjs-i18n';
 
 @Module({
   imports: [
@@ -23,9 +25,20 @@ import * as Joi from 'joi';
         NEST_SERVER_PORT: Joi.number().default(3000),
         JWT_VALIDITY_DURATION: Joi.string().default('240s')
       }),
-    }
-   
-  ),
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      parser: I18nJsonParser,
+      parserOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      resolvers: [
+        { use: QueryResolver, options: ['lang', 'locale', 'l'] },
+        new HeaderResolver(['x-custom-lang']),
+        AcceptLanguageResolver,
+      ],
+    }),
     PrismaModule,
     UsersModule,
     UtilitiesModule,
