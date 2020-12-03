@@ -28,6 +28,12 @@ import { I18nModule, I18nJsonParser, QueryResolver, HeaderResolver, AcceptLangua
     }),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
+      fallbacks: {
+        'en-CA': 'fr',
+        'en-*': 'en',
+        'fr-*': 'fr',
+        pt: 'pt-BR',
+      },
       parser: I18nJsonParser,
       parserOptions: {
         path: path.join(__dirname, '/i18n/'),

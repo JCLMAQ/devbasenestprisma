@@ -11,6 +11,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import * as MilliSecond from 'ms';
+import { AcceptLanguageResolver, I18nContext, I18nRequestScopeService, I18nService } from 'nestjs-i18n';
 
 
 @Injectable()
@@ -22,6 +23,9 @@ export class AuthsService {
     private prismaService: PrismaService,
     private configService: ConfigService, 
     private jwtService: JwtService,
+    // private i18n: I18nRequestScopeService
+    private i18n: I18nService,
+    // private i18nContext: I18nContext,
   ) { }
   
   async logout(userEmail) {
@@ -164,7 +168,7 @@ export class AuthsService {
 */
 
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
-  async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean) {
+  async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean, lang:  string) {
     // Verify if the limitation to the email API is activeted
     const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
     if(apiEmailActiveted){
@@ -176,9 +180,6 @@ export class AuthsService {
         throw new HttpException('Email not accepted by the system', 400);
       }
     }
-    
-
-
     let emailToken = await this.generateEmailToken();
     let tokenAlreadyExist = await this.prismaService.token.findFirst({
       where: {
@@ -227,6 +228,7 @@ export class AuthsService {
         type: { equals:TokenType.EMAIL },
       }
     })
+    // const lang= "fr";
     let tokenId = 0
     if(!tokenExist) {
       tokenId = 0;
@@ -240,7 +242,11 @@ export class AuthsService {
         const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.expiration, milliSecondToAdd)
         // Verify delay between emailbase on the updateAt field
           if ( testResult) {
-            throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
+            // throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
+            console.log(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{
+              lang: lang, }))
+            throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{
+              lang: lang, }), 400);
         }
       }
   
