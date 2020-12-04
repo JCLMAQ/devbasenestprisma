@@ -28,7 +28,7 @@ export class AuthsService {
     // private i18nContext: I18nContext,
   ) { }
   
-  async logout(userEmail) {
+  async logout(userEmail, lang: string) {
     // Search for the user token and reinit for the email send token - for PwdLess login
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(userEmail);
@@ -282,7 +282,7 @@ export class AuthsService {
   }
     
   // Step 2: Verify the validity of the short token linked to the email of the user
-  async authenticateHandler(userCredential) {
+  async authenticateHandler(userCredential, lang) {
     const { email, password } = userCredential;
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(email);

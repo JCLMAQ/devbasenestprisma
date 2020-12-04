@@ -64,7 +64,7 @@ export class AuthsController {
     // PasswordLess registration
     @UseGuards(LocalAuthGuard)
     @Post('auth/registrationpwdless')
-    async registration(@Body('email') email: string, lang: string) {
+    async registration(@Body('email') email: string, @I18nLang() lang: string) {
         const registration = true; // To show that we are within the resitraton part
         // const sendEmailDelay = true // Delay betwwen to send email actif
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
@@ -76,9 +76,9 @@ export class AuthsController {
     // PasswordLess Authentication
     @UseGuards(LocalAuthGuard)
     @Post('auth/authenticatepwdless')
-    async authentication(@Body() userCredential: AuthDto) {
+    async authentication(@Body() userCredential: AuthDto, @I18nLang() lang: string) {
         // userCredential has to content the email and the emailToken (rename to "password" to get through the localAuthGuards)
-        const validCredential = await this.authsService.authenticateHandler(userCredential);
+        const validCredential = await this.authsService.authenticateHandler(userCredential, lang);
         if(!validCredential.validToken) {
             throw new HttpException('Error on authenticate process', 400);
         }
@@ -95,8 +95,8 @@ export class AuthsController {
     // PasswordLess Logout
     @UseGuards(LocalAuthGuard)
     @Post('auth/logoutpwdless')
-    async logoutPwdLess(@Body() userCredential: AuthDto) {
-        const isOK = await this.authsService.logout(userCredential.email);
+    async logoutPwdLess(@Body() userCredential: AuthDto, @I18nLang() lang: string) {
+        const isOK = await this.authsService.logout(userCredential.email, lang);
         if (!isOK) {
             throw new HttpException('Error on logout process', 400);
         }
@@ -119,8 +119,8 @@ console.log('Authcontroler (localstrategy):', req.user)
 
     // Logout with password and email autehntication
     @Post('auth/logoutwithpwd')
-    async logoutPwd(@Body() userCredential: AuthDto ) {
-        const isOK = await this.authsService.logout(userCredential.email);
+    async logoutPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string ) {
+        const isOK = await this.authsService.logout(userCredential.email, lang);
         if (!isOK) {
             return {}
         }
