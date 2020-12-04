@@ -10,6 +10,7 @@
     "docker:down": "docker-compose -f '../db/docker-compose.yml' --env-file ../backend/.env down",
     "start:db": "npm run prisma:generate && npm run prisma-migrate:save && npm run prisma-migrate:up",
     "start:dev": "nest start --watch",
+    "start:dev-i18copy":"npm run copy-assets && npm run start:dev",
     "prisma:studio": "dotenv -e ../.development.env -- npx prisma studio",
     "seed": "dotenv -e ../.development.env ts-node prisma/seed.ts",
     "prebuild": "rimraf dist",

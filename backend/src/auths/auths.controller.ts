@@ -53,11 +53,11 @@ export class AuthsController {
     @UseGuards(LocalAuthGuard)
     @Post('auth/loginpwdless')
     async login(@Body('email') email: string, @I18nLang() lang: string) {
+        // need to add the param "lang" at the and of the post to get the lang which is used
         const registration = false; // As we are in the login part
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
         // const sendEmailDelay = true // Delay betwwen to send email actif
         const sendEmailDelay = this.configService.get("DELAY_BTW_EMAIL_ENABLE") == 1;
-        console.log("Lang :", lang)
         return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration, lang);
     }
 
