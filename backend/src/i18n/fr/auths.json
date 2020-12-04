@@ -1,0 +1,11 @@
+{
+  "EMAIL_ALREADY_SEND": "L'email avec le code a déjà été envoyé (le cas échant regarder dans les SPAM",
+    "GOODBYE_MESSAGE": "Au revoir {username}",
+    "USER_ADDED_PRODUCT": "{0.username} a ajouté {1.productName} au panier",
+    "SETUP": {
+      "WELCOME": "Bienvenue {0.username}",
+      "GOODBYE": "Au revoir {0.username}"
+    },
+    "ARRAY": ["UN", "DEUX", "TROIS"]
+  }
+  

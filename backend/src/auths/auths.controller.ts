@@ -9,13 +9,15 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { User } from '@prisma/client';
 import { ExtractJwt } from 'passport-jwt';
+import { I18n, I18nContext, I18nLang, I18nService } from 'nestjs-i18n';
 
 @Controller('auths')
 export class AuthsController {
   constructor(
     private readonly authsService: AuthsService,
     private configService: ConfigService, 
-    private usersService:  UsersService
+    private usersService:  UsersService, 
+    private i18n: I18nService,
     ) {}
 
   // Common
@@ -50,23 +52,25 @@ export class AuthsController {
     // PasswordLess Login
     @UseGuards(LocalAuthGuard)
     @Post('auth/loginpwdless')
-    async login(@Body('email') email: string) {
+    async login(@Body('email') email: string, @I18nLang() lang: string) {
+        // need to add the param "lang" at the and of the post to get the lang which is used
         const registration = false; // As we are in the login part
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
         // const sendEmailDelay = true // Delay betwwen to send email actif
         const sendEmailDelay = this.configService.get("DELAY_BTW_EMAIL_ENABLE") == 1;
-        return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
+        return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration, lang);
     }
 
     // PasswordLess registration
     @UseGuards(LocalAuthGuard)
     @Post('auth/registrationpwdless')
-    async registration(@Body('email') email: string) {
+    async registration(@Body('email') email: string, lang: string) {
         const registration = true; // To show that we are within the resitraton part
         // const sendEmailDelay = true // Delay betwwen to send email actif
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
         const sendEmailDelay = this.configService.get("DELAY_BTW_EMAIL_ENABLE") == 1;
-        return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration);
+        console.log("Lang :", lang)
+        return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration, lang);
     }
 
     // PasswordLess Authentication
