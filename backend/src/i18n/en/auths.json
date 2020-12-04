@@ -1,24 +1,13 @@
 {
     "EMAIL_ALREADY_SEND": "Email with your token already send (eventually, look in your span)",
-    "AUTH_ERROR": "Error on authenticate process",
-    "LOGOUT_ERROR": "Error on logout process", 
-    "BAD_EMAIL": "Email not accepted by the system",
-    "ALREADY_REGISTER": "You are already registered, please sign in...",
-    "REGISTER_FIRST": "You have to register first",
+    "EMAIL_BAD": "Email not accepted by the system",
     "EMAIL_TOKEN_CRASH": "Error on sending email with the token",
-    "RESET_PWD_EMAIL_ALREADY_SENT": "Reset password email alaready sent",
-    "ERROR_FORGOT_PWD": "Error on forgot password",
-    "USER_EMAIL_NOT_FOUND": "Email (user) not found",
-    "USER_DELETED": "User does not exist - anymore - or has been deleted",
-    "USER_NOT_FOUND": "User not found",
+    "AUTH_LOGIN_ERROR": "Error on authenticate process",
+    "AUTH_LOGOUT_ERROR": "Error on logout process", 
+    "REGISTER_ALREADY": "You are already registered, please sign in...",
+    "REGISTER_FIRST": "You have to register first",
+    "FORGOT_PWD_EMAIL_ALREADY_SENT": "Reset password email alaready sent",
     "FORGOT_PWD_ERROR": "Error on forgot password process",
-    "FORGOT_PWD_BAD_TOKEN": "Invalid token",
-    "GOODBYE_MESSAGE": "Goodbye {username}",
-    "USER_ADDED_PRODUCT": "{0.username} added {1.productName} to cart",
-    "SETUP": {
-      "WELCOME": "Welcome {0.username}",
-      "GOODBYE": "Goodbye {0.username}"
-    },
-    "ARRAY": ["ONE", "TWO", "THREE"]
+    "FORGOT_PWD_BAD_TOKEN": "Invalid token"
   }
   

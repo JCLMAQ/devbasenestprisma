@@ -1,11 +1,13 @@
 {
-  "EMAIL_ALREADY_SEND": "L'email avec le code a déjà été envoyé (le cas échant regarder dans les SPAM",
-    "GOODBYE_MESSAGE": "Au revoir {username}",
-    "USER_ADDED_PRODUCT": "{0.username} a ajouté {1.productName} au panier",
-    "SETUP": {
-      "WELCOME": "Bienvenue {0.username}",
-      "GOODBYE": "Au revoir {0.username}"
-    },
-    "ARRAY": ["UN", "DEUX", "TROIS"]
+  "EMAIL_ALREADY_SEND": "L'email avec le code a déjà été envoyé (le cas échant regarder dans les SPAM.",
+  "EMAIL_BAD": "L'email ne peut être accepté par le système (domaine non-accepté ou email invalide).",
+  "EMAIL_TOKEN_CRASH": "Erreur lors de l'envoi de l'email avec la clé.",
+  "AUTH_LOGIN_ERROR": "Erreur dans le processus d'authentification.",
+  "AUTH_LOGOUT_ERROR": "Erreur dans le processus de Sortie.", 
+  "REGISTER_ALREADY": "Vous êtes dèjà enregistré, Vous pouvez-vous connecter.",
+  "REGISTER_FIRST": "Vous devez d'abord vous enregistrer avant de pouvoir vous connecter.",
+  "FORGOT_PWD_EMAIL_ALREADY_SENT": "L'email pour la réinitialisation de votre mot de passe a déjà été envoyé.",
+  "FORGOT_PWD_ERROR": "Erreur dans le processus de réinitialisation de votre mot de passe.",
+  "FORGOT_PWD_BAD_TOKEN": "La clé dans ce lien n'est pas ou plus valide"
   }
   

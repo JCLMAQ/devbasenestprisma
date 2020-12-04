@@ -1,11 +1,14 @@
 {
-    "HELLO_MESSAGE": "Bonjour {username}",
-    "GOODBYE_MESSAGE": "Au revoir {username}",
-    "USER_ADDED_PRODUCT": "{0.username} a ajouté {1.productName} au panier",
-    "SETUP": {
-      "WELCOME": "Bienvenue {0.username}",
-      "GOODBYE": "Au revoir {0.username}"
-    },
-    "ARRAY": ["UN", "DEUX", "TROIS"]
+  "USER_EMAIL_NOT_FOUND": "L'email fourni n'existe pas dans nos données.",
+  "USER_DELETED": "L'utilisateur n'existe pas où plus, ou a été effacé.",
+  "USER_NOT_FOUND": "Utilisateur non-trouvé.",  
+  "HELLO_MESSAGE": "Bonjour {username}",
+  "GOODBYE_MESSAGE": "Au revoir {username}",
+  "USER_ADDED_PRODUCT": "{0.username} added {1.productName} to cart",
+  "SETUP": {
+    "WELCOME": "Bonjour {0.username}",
+    "GOODBYE": "Au revoir {0.username}"
+  },
+  "ARRAY": ["UN", "DEUX", "TROIS"]
   }
   
