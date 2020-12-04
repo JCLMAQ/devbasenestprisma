@@ -125,7 +125,6 @@ console.log('usersService.createOneUser', result);
 
   async userExistOrCreate(email: string): Promise<User> { // If user does not exist, create one
     let user = await this.prisma.user.findUnique({ where: { email } })
-    // if (!user) throw new HttpException('User not found', 400);
     if (!user) {
       // Create a new user
       user = await this.prisma.user.create({ data: { email }})
