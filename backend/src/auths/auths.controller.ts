@@ -80,7 +80,7 @@ export class AuthsController {
         // userCredential has to content the email and the emailToken (rename to "password" to get through the localAuthGuards)
         const validCredential = await this.authsService.authenticateHandler(userCredential, lang);
         if(!validCredential.validToken) {
-            throw new HttpException('Error on authenticate process', 400);
+            throw new HttpException(await this.i18n.translate("auths.AUTH_LOGIN_ERROR",{ lang: lang, }), 400);
         }
         const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.role);
         return authToken;
@@ -98,7 +98,7 @@ export class AuthsController {
     async logoutPwdLess(@Body() userCredential: AuthDto, @I18nLang() lang: string) {
         const isOK = await this.authsService.logout(userCredential.email, lang);
         if (!isOK) {
-            throw new HttpException('Error on logout process', 400);
+            throw new HttpException(await this.i18n.translate("auths.AUTH_LOGOUT_ERROR",{ lang: lang, }),400);
         }
         const user = '';
         return { user }
@@ -139,10 +139,10 @@ console.log('new user', userData);
 
     // Send the forgot password email (with the lik to come back and change password)
     @Post('auth/email/forgot-password')
-    async sendEmailForgotPassword(@Request() req): Promise<any> {
+    async sendEmailForgotPassword(@Request() req, @I18nLang() lang: string): Promise<any> {
 console.log('forgot pwd email:', req.email);
         try {
-            const isEmailSent = await this.authsService.sendEmailForgotPwd(req.body.email);
+            const isEmailSent = await this.authsService.sendEmailForgotPwd(req.body.email, lang);
             if (isEmailSent) {
                 return {
                     success: true,
@@ -164,10 +164,10 @@ console.log('forgot pwd email:', req.email);
 
     // Validate the password forgot token send back
     @Get('auth/email/reset-password/:token')
-    async validateToken(@Param() params): Promise<any> {
+    async validateToken(@Param() params, @I18nLang() lang: string): Promise<any> {
         let valideTkn;
         try {
-            valideTkn = await this.authsService.verifyForgotPwdToken(params.token);
+            valideTkn = await this.authsService.verifyForgotPwdToken(params.token, lang);
         } catch (error) {
             return {
                 success: false,
@@ -179,12 +179,12 @@ console.log('forgot pwd email:', req.email);
 
     // Reset forgotpwd: the new password and the verification password
     @Post('auth/email/reset-password/:token')
-    async resetPwd(@Param() params, @Request() req): Promise<any> {
+    async resetPwd(@Param() params, @Request() req, @I18nLang() lang: string): Promise<any> {
         const { newPassword, verifyPassword } = req.body;
         let valideTknObj;
         let user;
         try {
-            valideTknObj = await this.authsService.verifyForgotPwdToken(params.token);
+            valideTknObj = await this.authsService.verifyForgotPwdToken(params.token, lang);
 console.log('token', valideTknObj);
         } catch (error) {
             return {
@@ -198,7 +198,7 @@ console.log('token', valideTknObj);
         }
 
         try {
-            user = await this.authsService.userExist(valideTknObj.email);
+            user = await this.authsService.userExist(valideTknObj.email, lang);
         } catch (error) {
             return {
                 success: false,

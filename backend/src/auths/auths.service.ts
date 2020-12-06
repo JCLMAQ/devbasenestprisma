@@ -33,7 +33,7 @@ export class AuthsService {
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(userEmail);
     if(userNotDeleted.isDeleted != null) {
-      throw new HttpException('User does not exist - anymore - or has been deleted', 400)
+      throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
     }
     // Reinit the sendEmail pwdless
     await this.logoutInvalidEmailToken(userNotDeleted.id)
@@ -177,7 +177,7 @@ export class AuthsService {
       // If yes verify the API of the email
       // If they do not correspond : reject the login or the registration
       if(!compareAppUrl) {
-        throw new HttpException('Email not accepted by the system', 400);
+        throw new HttpException(await this.i18n.translate("auths.EMAIL_BADD",{ lang: lang, }), 400);
       }
     }
     let emailToken = await this.generateEmailToken();
@@ -212,10 +212,10 @@ export class AuthsService {
       userFound = await this.usersService.createUser({email}); // registration auto of a new user
     } else {
       if(!userFound && !registration) {  
-        throw new HttpException('You have to register first', 400);
+        throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRSTD",{ lang: lang, }), 400);
       } 
       if(userFound && registration) {  
-        throw new HttpException('You are already registered, please sign in...', 400);
+        throw new HttpException(await this.i18n.translate("users.REGISTER_ALREADY",{ lang: lang, }), 400);
       }
       if(!userFound && registration) {
         userFound = await this.usersService.createUser({email}); // registration of a new user
@@ -242,9 +242,6 @@ export class AuthsService {
         const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.expiration, milliSecondToAdd)
         // Verify delay between emailbase on the updateAt field
           if ( testResult) {
-            // throw new HttpException('Email with your token already send (eventually, look in your span)', 400);
-            console.log(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{
-              lang: lang, }))
             throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{
               lang: lang, }), 400);
         }
@@ -277,7 +274,7 @@ export class AuthsService {
     if (sendMail) {
       return sendMail
     } else {
-      throw new HttpException('Error on sending email with the token', 400);
+      throw new HttpException(await this.i18n.translate("auths.EMAIL_TOKEN_CRASH",{ lang: lang, }), 400);
     }
   }
     
@@ -287,7 +284,7 @@ export class AuthsService {
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(email);
     if(userNotDeleted.isDeleted != null) {
-      throw new HttpException('User does not exist - anymore - or has been deleted', 400)
+      throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
     }    
     const validEmailToken= { email: email, userId: null, validToken: false, role: userNotDeleted.Role};  
     // Get short lived email token
@@ -405,7 +402,7 @@ console.log('Verify password = ', isOK);
   Forgot Password process
 */
 
-  async createForgotToken(email: string): Promise<any> {
+  async createForgotToken(email: string, lang:string ): Promise<any> {
 console.log('email of forgot password', email);
 
     // Find and update or Create the forgot pwd data (specific token) in the DB
@@ -415,7 +412,7 @@ console.log('email of forgot password', email);
 
     // if a forgotPwd exist for the user (email) and if the delay is still running, do not send a new email
     if (forgotPwd && isForgotPwdTokenDelayOk ) {
-      throw new HttpException('Reset password email alaready sent', 400);
+      throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{ lang: lang, }), 400);
     } else {
       // Update or create the forgotPwd record with a pwd token and a udate/creation date
       const newForgotPwd = await this.prismaService.forgottenPwd.upsert({
@@ -433,22 +430,22 @@ console.log('email of forgot password', email);
       if (newForgotPwd) {
         return newForgotPwd
       } else {
-        throw new HttpException('Error on forgot password', 400);
+        throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
       }
     }
   }
 
   // Sending forgot password email with the link
-  async sendEmailForgotPwd(emailForgotPwd: string): Promise<boolean> {
+  async sendEmailForgotPwd(emailForgotPwd: string, lang: string): Promise<boolean> {
 
 console.log('email of forgot password', emailForgotPwd);
 
     // Verify if the user exist
     const user = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
-    if (!user) throw new HttpException('Email (user) not found', 400);
+    if (!user) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400);
 
     // Create the forgot  password token
-    const tokenForgotPwd = await this.createForgotToken(emailForgotPwd);
+    const tokenForgotPwd = await this.createForgotToken(emailForgotPwd, lang);
 
 console.log('reset token', tokenForgotPwd)
 
@@ -472,11 +469,11 @@ console.log('reset token', tokenForgotPwd)
       if (sendMail) {
         return sendMail
       } else {
-        throw new HttpException('Error on sending email with the token', 400);
+        throw new HttpException(await this.i18n.translate("auths.EMAIL_TOKEN_CRASH",{ lang: lang, }), 400);
       }
 
     } else {
-      throw new HttpException('Error on forgot password process', 400);
+      throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
     }
   }
 
@@ -489,12 +486,12 @@ console.log('reset token', tokenForgotPwd)
   }
 
   // Verify that the token received with the forgot password link is valid and in delay (used by controlers)
-  async verifyForgotPwdToken(token: string): Promise<ForgottenPwd> {
+  async verifyForgotPwdToken(token: string, lang: string): Promise<ForgottenPwd> {
     const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
     const forgotPwdModel = await this.prismaService.forgottenPwd.findUnique({ where: { pwdToken: token } });
     const isForgotPwdTokenDelayOk = (forgotPwdModel.expiration < new Date());
     if ((!forgotPwdModel )|| (isForgotPwdTokenDelayOk)) {
-      throw new HttpException('Invalid token', 400);
+      throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
       // return false;
     } else {
       // redirect
@@ -516,9 +513,9 @@ console.log('reset token', tokenForgotPwd)
     })
   }
   
-  async userExist(email: string): Promise<User> {
+  async userExist(email: string, lang: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({ where: { email } })
-    if (!user) throw new HttpException('User not found', 400);
+    if (!user) throw new HttpException(await this.i18n.translate("users.USER_NOT_FOUND",{ lang: lang, }), 400);
     return user;
   }
 }
