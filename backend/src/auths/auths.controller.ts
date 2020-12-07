@@ -69,7 +69,6 @@ export class AuthsController {
         // const sendEmailDelay = true // Delay betwwen to send email actif
         const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
         const sendEmailDelay = this.configService.get("DELAY_BTW_EMAIL_ENABLE") == 1;
-        console.log("Lang :", lang)
         return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration, lang);
     }
 
@@ -109,15 +108,15 @@ export class AuthsController {
     Login with password (and email)
 */
     // Login with the password and the email
-    // @UseGuards(LocalAuthGuard)
+    @UseGuards(LocalAuthGuard)
     @Post('auth/loginwithpwd')
-    async loginWithPwd(@Request() req) {
-console.log('Authcontroler (localstrategy):', req.user)
-        return this.authsService.loginWithPwd(req.user);
-        // return req.user;
+    async loginWithPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string) {
+        // async loginWithPwd(@Request() req, @I18nLang() lang: string) {
+console.log('Authcontroler (localstrategy):', userCredential.email, userCredential.password)
+        return this.authsService.loginWithPwd(userCredential.email, userCredential.password, lang);
     }
 
-    // Logout with password and email autehntication
+    // Logout with password and email authenntication
     @Post('auth/logoutwithpwd')
     async logoutPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string ) {
         const isOK = await this.authsService.logout(userCredential.email, lang);
@@ -129,10 +128,11 @@ console.log('Authcontroler (localstrategy):', req.user)
         return { user, authJwtToken }
     }
 
+    @UseGuards(LocalAuthGuard)
     @Post('auth/registerwithpwd')
-    async createOneUser(@Body() userData: User): Promise<boolean> {
+    async createOneUser(@Body() userData: User, @I18nLang() lang: string): Promise<boolean> {
 console.log('new user', userData);
-        return this.authsService.createOneUserWithPwd(userData);
+        return this.authsService.createOneUserWithPwd(userData, lang);
     }
 
 // Forgot Password Part

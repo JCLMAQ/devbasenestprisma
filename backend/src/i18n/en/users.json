@@ -1,7 +1,8 @@
 {
   "USER_EMAIL_NOT_FOUND": "Email (user) not found",
   "USER_DELETED": "User does not exist - anymore - or has been deleted",
-  "USER_NOT_FOUND": "User not found",  
+  "USER_NOT_FOUND": "User not found", 
+  "USER_REGISTRATION_FAIL": "Registration process failed", 
   "HELLO_MESSAGE": "Hello {username}",
   "GOODBYE_MESSAGE": "Goodbye {username}",
   "USER_ADDED_PRODUCT": "{0.username} added {1.productName} to cart",

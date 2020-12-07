@@ -159,6 +159,17 @@ export class AuthsService {
       })
     }
   }
+
+  async apiEmailVerification(email: string, lang: string){
+    // Verify that the domain of the email is the accepted one (if this option is activeted)
+    const appURL = this.configService.get<string>("EMAIL_ALLOWED_DOMAIN");
+    const compareAppUrl = await this.utilitiesService.compareURLOfEmail(appURL, email);
+    // If yes verify the API of the email
+    // If they do not correspond : reject the login or the registration
+    if(!compareAppUrl) {
+      throw new HttpException(await this.i18n.translate("auths.EMAIL_BAD",{ lang: lang, }), 400);
+    }
+  }
   /*
     End of utilities
   */
@@ -172,13 +183,7 @@ export class AuthsService {
     // Verify if the limitation to the email API is activeted
     const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
     if(apiEmailActiveted){
-      const appURL = this.configService.get<string>("EMAIL_ALLOWED_DOMAIN");
-      const compareAppUrl = await this.utilitiesService.compareURLOfEmail(appURL, email);
-      // If yes verify the API of the email
-      // If they do not correspond : reject the login or the registration
-      if(!compareAppUrl) {
-        throw new HttpException(await this.i18n.translate("auths.EMAIL_BADD",{ lang: lang, }), 400);
-      }
+      await this.apiEmailVerification(email, lang);
     }
     let emailToken = await this.generateEmailToken();
     let tokenAlreadyExist = await this.prismaService.token.findFirst({
@@ -209,10 +214,11 @@ export class AuthsService {
     // const tokenExpiration = await this.emailTokenExpiration();
     let userFound = await this.usersService.findUniqueUser({email});
     if(autoRegistration && !userFound) {
+      //   TODO "USER_REGISTRATION_FAIL": "Registration process failed" to implemenent
       userFound = await this.usersService.createUser({email}); // registration auto of a new user
     } else {
       if(!userFound && !registration) {  
-        throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRSTD",{ lang: lang, }), 400);
+        throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
       } 
       if(userFound && registration) {  
         throw new HttpException(await this.i18n.translate("users.REGISTER_ALREADY",{ lang: lang, }), 400);
@@ -345,21 +351,35 @@ export class AuthsService {
     Email and password Authentication
   */
 
-  async loginWithPwd(user: User) {
+  async loginWithPwd(email: string, plaintextPassword: string, lang: string) {
+    // Verify the email domain
+    const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
+    if(apiEmailActiveted){
+      await this.apiEmailVerification(email, lang);
+    }
+    // Verify User email exist, if not ask for register first
+    let userFound = await this.usersService.findUniqueUser({email});
+console.log("User found:", userFound)
+    if(!userFound) {
+      // need to register first
+      throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
+    }
 console.log('authService login');
-  const payload = { username: user.email, sub: user.id, role: user.Role };
+    const payload = { username: userFound.email, sub: userFound.id, role: userFound.Role };
 console.log('payload:', payload)
-  return {
-    access_token: this.jwtService.sign(payload),
-    fullName: user.firstName +" "+ user.lastName,
-    roles: user.Role
-  };
-}
+    return {
+      access_token: this.jwtService.sign(payload),
+      fullName: userFound.firstName +" "+ userFound.lastName,
+      roles: userFound.Role
+    };
+  }
 
   async validateUser(username: string, plainTextPassword: string): Promise<any> {
     // username = email
+    // Call by localStrategy
     const user = await this.usersService.getOneUserByEmail(username);
-    if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0) {
+console.log("User: ", user)
+    if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0 && user !== null) {
       if (this.verifyPassword(user, plainTextPassword)) {
         const { pwdHash, salt, ...result } = user;
         return result;
@@ -373,7 +393,7 @@ console.log('payload:', payload)
   }
 
   // Create one new user when register with a password and an email as username
-  async createOneUserWithPwd(userData): Promise<boolean> {
+  async createOneUserWithPwd(userData, lang): Promise<boolean> {
     // Create a salt and Hash the password with it 
     const salt = randomBytes(16).toString('base64');
     const pwdHash = AuthsService.hashPassword(userData.password, salt);
