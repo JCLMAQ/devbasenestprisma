@@ -421,12 +421,17 @@ console.log("User: ", user)
     // Verify if the limitation to the email API is activeted and if the email is conform
     await this.emailValidationProcess(userData.email, lang);
     // Is the User already registred ? If yes send an error, If not create the new user
-    const userFound = await this.userLoginOrRegistration(userData.email, autoRegistration, registration, lang);
+    // const userFound = await this.userLoginOrRegistration(userData.email, autoRegistration, registration, lang);
     // Create a salt and Hash the password with it 
     const salt = randomBytes(16).toString('base64');
     const pwdHash = AuthsService.hashPassword(userData.password, salt);
     const {password, ...userDataWithoutThePwd } = userData;
     const result = await this.usersService.createOneUserWithPwd(userDataWithoutThePwd, pwdHash, salt);
+    // If the creation fialed, send an error
+    if(!result) {
+      // Throw an error
+      throw new HttpException(await this.i18n.translate("users.USER_REGISTRATION_FAIL",{ lang: lang, }), 400);
+    }
 console.log("User created with password: ", result)
     return result;
   }
