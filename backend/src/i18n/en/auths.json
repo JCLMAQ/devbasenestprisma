@@ -2,6 +2,7 @@
     "EMAIL_ALREADY_SEND": "Email with your token already send (eventually, look in your span)",
     "EMAIL_BAD": "Email not accepted by the system",
     "EMAIL_TOKEN_CRASH": "Error on sending email with the token",
+    "EMAIL_NOT_VALID": "Invalid email, please verify your entry.",
     "AUTH_LOGIN_ERROR": "Error on authenticate process",
     "AUTH_LOGOUT_ERROR": "Error on logout process", 
     "REGISTER_ALREADY": "You are already registered, please sign in...",

@@ -12,6 +12,7 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import * as MilliSecond from 'ms';
 import { AcceptLanguageResolver, I18nContext, I18nRequestScopeService, I18nService } from 'nestjs-i18n';
+import { Console } from 'console';
 
 
 @Injectable()
@@ -160,16 +161,54 @@ export class AuthsService {
     }
   }
 
-  async apiEmailVerification(email: string, lang: string){
-    // Verify that the domain of the email is the accepted one (if this option is activeted)
-    const appURL = this.configService.get<string>("EMAIL_ALLOWED_DOMAIN");
-    const compareAppUrl = await this.utilitiesService.compareURLOfEmail(appURL, email);
-    // If yes verify the API of the email
-    // If they do not correspond : reject the login or the registration
-    if(!compareAppUrl) {
-      throw new HttpException(await this.i18n.translate("auths.EMAIL_BAD",{ lang: lang, }), 400);
+  async emailValidationProcess(email: string, lang: string) {
+    // Email validation against the strucure of the email and the domain (if doamin restriction active)
+     // Verify the username email looks well as an email
+     const goodEmail = await this.utilitiesService.emailValidation(email);
+     if (!goodEmail) {
+       throw new HttpException(await this.i18n.translate("auths.EMAIL_NOT_VALID",{ lang: lang, }), 400);
+     }
+     // Verify the domain is accepted
+    const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
+    if(apiEmailActiveted ){
+      const compareAppUrl = await this.utilitiesService.apiEmailVerification(email);
+      if(!compareAppUrl) {
+        throw new HttpException(await this.i18n.translate("auths.EMAIL_BAD",{ lang: lang, }), 400);
+      }
     }
   }
+
+  async userLoginOrRegistration(email: string, autoRegistration: boolean, registration: boolean, lang: string) {
+    // Is the User already registred ?
+    let userFound = await this.usersService.findUniqueUser({email});
+    if(autoRegistration && !userFound) { // Registration
+      userFound = await this.usersService.createUser({email}); // registration auto of a new user
+      // if(!userFound) {
+      //   // Registration failed
+      //   throw new HttpException(await this.i18n.translate("users.USER_REGISTRATION_FAIL",{ lang: lang, }), 400);
+      // }
+    } else {
+      if(!userFound && !registration) {  
+        throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
+      } 
+      if(userFound && registration) {  
+        throw new HttpException(await this.i18n.translate("users.REGISTER_ALREADY",{ lang: lang, }), 400);
+      }
+      if(!userFound && registration) {
+        userFound = await this.usersService.createUser({email}); // registration of a new user
+        }
+    }
+    if(!userFound) {
+      // Registration failed
+      throw new HttpException(await this.i18n.translate("users.USER_REGISTRATION_FAIL",{ lang: lang, }), 400);
+    }
+    if(!userFound) {
+        // Registration failed
+        throw new HttpException(await this.i18n.translate("users.USER_REGISTRATION_FAIL",{ lang: lang, }), 400);
+      }
+    return userFound;
+  }
+  
   /*
     End of utilities
   */
@@ -181,10 +220,10 @@ export class AuthsService {
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
   async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean, lang:  string) {
     // Verify if the limitation to the email API is activeted
-    const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
-    if(apiEmailActiveted){
-      await this.apiEmailVerification(email, lang);
-    }
+    // and Verify the username email looks well as an email
+    await this.emailValidationProcess(email, lang);
+    // Is the User already registred ? If not create the new user
+    const userFound = await this.userLoginOrRegistration(email, autoRegistration, registration, lang);
     let emailToken = await this.generateEmailToken();
     let tokenAlreadyExist = await this.prismaService.token.findFirst({
       where: {
@@ -210,23 +249,8 @@ export class AuthsService {
       textEmail: `NestJS your token: ${emailToken}.`,
       htmlEmail: `Hello <br> Please, use this token to confirm your login : ${emailToken} <br>`
     }
-    // Define the emailToken expiration time
-    // const tokenExpiration = await this.emailTokenExpiration();
-    let userFound = await this.usersService.findUniqueUser({email});
-    if(autoRegistration && !userFound) {
-      //   TODO "USER_REGISTRATION_FAIL": "Registration process failed" to implemenent
-      userFound = await this.usersService.createUser({email}); // registration auto of a new user
-    } else {
-      if(!userFound && !registration) {  
-        throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
-      } 
-      if(userFound && registration) {  
-        throw new HttpException(await this.i18n.translate("users.REGISTER_ALREADY",{ lang: lang, }), 400);
-      }
-      if(!userFound && registration) {
-        userFound = await this.usersService.createUser({email}); // registration of a new user
-        }
-    }
+    
+
     // Need to verify that the short token exist or not
     const tokenExist = await this.prismaService.token.findFirst({
       where: {
@@ -257,6 +281,7 @@ export class AuthsService {
     // If exist: just update it, if does not: create a new one
     // Define the emailToken expiration time
     const tokenExpiration = await this.emailTokenExpiration();
+    // Create or Update the email token
     const tokenCreatedorupdated = await this.prismaService.token.upsert({
       where: {
         id: tokenId
@@ -352,12 +377,9 @@ export class AuthsService {
   */
 
   async loginWithPwd(email: string, plaintextPassword: string, lang: string) {
-    // Verify the email domain
-    const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
-    if(apiEmailActiveted){
-      await this.apiEmailVerification(email, lang);
-    }
-    // Verify User email exist, if not ask for register first
+    // Verify the email domain (if restriction active) and the structure of the email
+    await this.emailValidationProcess(email, lang);
+    
     let userFound = await this.usersService.findUniqueUser({email});
 console.log("User found:", userFound)
     if(!userFound) {
@@ -393,12 +415,19 @@ console.log("User: ", user)
   }
 
   // Create one new user when register with a password and an email as username
-  async createOneUserWithPwd(userData, lang): Promise<boolean> {
+  async registerOneUserWithPwd(userData, lang): Promise<boolean> {
+    const registration = true;
+    const autoRegistration = false;
+    // Verify if the limitation to the email API is activeted and if the email is conform
+    await this.emailValidationProcess(userData.email, lang);
+    // Is the User already registred ? If yes send an error, If not create the new user
+    const userFound = await this.userLoginOrRegistration(userData.email, autoRegistration, registration, lang);
     // Create a salt and Hash the password with it 
     const salt = randomBytes(16).toString('base64');
     const pwdHash = AuthsService.hashPassword(userData.password, salt);
-    const {password, ...userDataWithoutPwd } = userData;
-    const result = await this.usersService.createOneUserWithPwd(userDataWithoutPwd, pwdHash, salt);
+    const {password, ...userDataWithoutThePwd } = userData;
+    const result = await this.usersService.createOneUserWithPwd(userDataWithoutThePwd, pwdHash, salt);
+console.log("User created with password: ", result)
     return result;
   }
 

@@ -128,12 +128,13 @@ console.log('Authcontroler (localstrategy):', userCredential.email, userCredenti
         return { user, authJwtToken }
     }
 
-    @UseGuards(LocalAuthGuard)
+    // @UseGuards(LocalAuthGuard)
     @Post('auth/registerwithpwd')
-    async createOneUser(@Body() userData: User, @I18nLang() lang: string): Promise<boolean> {
+    async registerUserWithPwd(@Body() userData: User, @I18nLang() lang: string): Promise<boolean> {
 console.log('new user', userData);
-        return this.authsService.createOneUserWithPwd(userData, lang);
+        return this.authsService.registerOneUserWithPwd(userData, lang);
     }
+
 
 // Forgot Password Part
 

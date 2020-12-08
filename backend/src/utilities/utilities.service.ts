@@ -13,6 +13,28 @@ export class UtilitiesService {
     /* 
         Email management utilities    
     */
+
+    // Compare AppURL with domain of email
+    async apiEmailVerification(email: string){
+        // Verify that the domain of the email is the accepted one (if this option is activeted)
+        const appURL = this.configService.get<string>("EMAIL_ALLOWED_DOMAIN");
+        const compareAppUrl = await this.compareURLOfEmail(appURL, email);
+        // If yes verify the API of the email
+        // If they do not correspond : reject the login or the registration
+        return compareAppUrl;
+    }
+
+    // TODO Email structure vérification: to test
+    async emailValidation(email: string) {
+        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        // Process with REGEX 
+        const okEmail = re.test(String(email).toLowerCase());;
+    console.log("Email: ", email, " is valid : ", okEmail)
+        return okEmail;
+    }
+
+
+    // Sending email
     async sendEmailToken(emailData): Promise<boolean> {    
     // Step 1: buildup the transporter - connexion to the SMTP
         // Connexion - transporter data: HOST_EMAIL, EMAIL_PORT, EMAIL_NOREPLY, PWD_NOREPLY

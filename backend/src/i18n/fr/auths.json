@@ -2,6 +2,7 @@
   "EMAIL_ALREADY_SEND": "L'email avec le code a déjà été envoyé (le cas échant regarder dans les SPAM.",
   "EMAIL_BAD": "L'email ne peut être accepté par le système (domaine non-accepté ou email invalide).",
   "EMAIL_TOKEN_CRASH": "Erreur lors de l'envoi de l'email avec la clé.",
+  "EMAIL_NOT_VALID": "Email invalide, merci de vérifier votre entrée.",
   "AUTH_LOGIN_ERROR": "Erreur dans le processus d'authentification.",
   "AUTH_LOGOUT_ERROR": "Erreur dans le processus de Sortie.", 
   "REGISTER_ALREADY": "Vous êtes dèjà enregistré, Vous pouvez-vous connecter.",
