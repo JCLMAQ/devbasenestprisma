@@ -132,7 +132,6 @@ export class AuthsController {
     @UseGuards(LocalAuthGuard)
     @Post('auth/registerwithpwd')
     async registerWithPwd(@Body() userData: User, @I18nLang() lang: string): Promise<any> {
-console.log('new user', userData);
         const isRegistered = await this.authsService.registerWithPwd(userData, lang);
         return {
             success: true,

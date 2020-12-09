@@ -24,12 +24,11 @@ export class UtilitiesService {
         return compareAppUrl;
     }
 
-    // TODO Email structure vérification: to test
+    // Email structure vérification
     async emailValidation(email: string) {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         // Process with REGEX 
         const okEmail = re.test(String(email).toLowerCase());;
-    console.log("Email: ", email, " is valid : ", okEmail)
         return okEmail;
     }
 

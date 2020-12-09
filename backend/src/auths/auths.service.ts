@@ -34,7 +34,6 @@ export class AuthsService {
     // Call by localStrategy
     // username = email
     const user = await this.usersService.getOneUserByEmail(username);
-console.log("User: ", user)
     if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0 && user !== null) {
       if (this.verifyPassword(user, plainTextPassword)) {
         const { pwdHash, salt, ...result } = user;
@@ -191,7 +190,6 @@ console.log("User: ", user)
     const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
     if(apiEmailActiveted ){
       const compareAppUrl = await this.utilitiesService.apiEmailVerification(email);
-console.log("Compare App URL : ", compareAppUrl);
       if(!compareAppUrl) {
         throw new HttpException(await this.i18n.translate("auths.EMAIL_BAD",{ lang: lang, }), 400);
       }
@@ -466,9 +464,7 @@ console.log("Compare App URL : ", compareAppUrl);
 
   verifyPassword(user, plainTextPassword: string) {
     const pwdHash = AuthsService.hashPassword(plainTextPassword, user.salt);
-console.log('Verify Password (auth.controller): ', user.pwdHash, pwdHash);
     const isOK = (pwdHash == user.pwdHash);
-console.log('Verify password = ', isOK);
     return isOK
   }
 
@@ -477,7 +473,8 @@ console.log('Verify password = ', isOK);
 */
 
   async createForgotToken(email: string, lang:string ): Promise<any> {
-console.log('email of forgot password', email);
+    
+console.log('email of create forgot password', email);
 
     // Find and update or Create the forgot pwd data (specific token) in the DB
     const forgotPwd = await this.prismaService.forgottenPwd.findUnique({ where: { email } });
