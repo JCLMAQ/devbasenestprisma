@@ -473,27 +473,34 @@ export class AuthsService {
 */
 
   async createForgotToken(email: string, lang:string ): Promise<any> {
-    
+
 console.log('email of create forgot password', email);
 
     // Find and update or Create the forgot pwd data (specific token) in the DB
     const forgotPwd = await this.prismaService.forgottenPwd.findUnique({ where: { email } });
-    const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
-    const isForgotPwdTokenDelayOk = (forgotPwd.expiration < new Date());
 
+console.log("Found forgot email token: ", forgotPwd)
+
+    let isForgotPwdTokenDelayOver = true;
+    if(forgotPwd){
+      isForgotPwdTokenDelayOver = (forgotPwd.expiration < new Date());
+console.log("Delay over : ", isForgotPwdTokenDelayOver)
+    }
+    const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
+console.log("Forgot pw delay: ", newForgotPwdDelayTime)
     // if a forgotPwd exist for the user (email) and if the delay is still running, do not send a new email
-    if (forgotPwd && isForgotPwdTokenDelayOk ) {
+    if (forgotPwd && !isForgotPwdTokenDelayOver ) {
       throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{ lang: lang, }), 400);
     } else {
-      // Update or create the forgotPwd record with a pwd token and a udate/creation date
+      // Update or create the forgotPwd record with a pwd token and a update/create date
       const newForgotPwd = await this.prismaService.forgottenPwd.upsert({
-        where: { email },
+        where: { email } ,
         update: {
           pwdToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
           expiration: newForgotPwdDelayTime
         },
         create: {
-          email,
+          email: email,
           pwdToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
           expiration: newForgotPwdDelayTime
         },
@@ -513,13 +520,16 @@ console.log('email of forgot password', emailForgotPwd);
 
     // Verify if the user exist
     const user = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
+console.log("User found : ", user)
     if (!user) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400);
+
+    // TODO need to manage soft deleted user
 
     // Create the forgot  password token
     const tokenForgotPwd = await this.createForgotToken(emailForgotPwd, lang);
 
 console.log('reset token', tokenForgotPwd)
-
+ 
     // If the token has been created, send the email
     if (tokenForgotPwd && tokenForgotPwd.pwdToken) {
       
@@ -550,7 +560,7 @@ console.log('reset token', tokenForgotPwd)
 
 // Generate the expiration time of the forgot password token
   async forgotPwdTokenExpiration() {
-    const milliSecondToAdd = this.configService.get("FORGOTPWD_TOKEN_EXPIRATION");
+    const milliSecondToAdd = MilliSecond(this.configService.get("FORGOTPWD_TOKEN_EXPIRATION"));
     const currentDate = new Date();
     const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
     return emailTokenExpirationDate
@@ -560,15 +570,16 @@ console.log('reset token', tokenForgotPwd)
   async verifyForgotPwdToken(token: string, lang: string): Promise<ForgottenPwd> {
     const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
     const forgotPwdModel = await this.prismaService.forgottenPwd.findUnique({ where: { pwdToken: token } });
-    const isForgotPwdTokenDelayOk = (forgotPwdModel.expiration < new Date());
-    if ((!forgotPwdModel )|| (isForgotPwdTokenDelayOk)) {
+    const isForgotPwdTokenDelayOver = (forgotPwdModel.expiration < new Date());
+    if ((!forgotPwdModel )|| (!isForgotPwdTokenDelayOver)) {
       throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
       // return false;
-    } else {
+    }
       // redirect
       // return true;
+console.log("forgotpwdModel: ", forgotPwdModel);
+
       return forgotPwdModel;
-    }
   }
 
   // Record the new password hasched with salt

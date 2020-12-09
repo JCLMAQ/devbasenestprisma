@@ -146,7 +146,7 @@ export class AuthsController {
     // Send the forgot password email (with the link to come back and change password)
     @Post('auth/email/forgot-password')
     async sendEmailForgotPassword(@Request() req, @I18nLang() lang: string): Promise<any> {
-console.log('forgot pwd email:', req.email);
+console.log('forgot pwd email:', req.body.email);
         try {
             const isEmailSent = await this.authsService.sendEmailForgotPwd(req.body.email, lang);
             if (isEmailSent) {
@@ -169,19 +169,20 @@ console.log('forgot pwd email:', req.email);
     }
 
     // Validate the password forgot token send back
-    @Get('auth/email/reset-password/:token')
-    async validateToken(@Param() params, @I18nLang() lang: string): Promise<any> {
-        let valideTkn;
-        try {
-            valideTkn = await this.authsService.verifyForgotPwdToken(params.token, lang);
-        } catch (error) {
-            return {
-                success: false,
-                message: `${error}`
-            }
-        }
-        return valideTkn;
-    }
+//     @Get('auth/email/reset-password/:token')
+//     async validateToken(@Param() params, @I18nLang() lang: string): Promise<any> {
+// console.log("Param received:", params.token)
+//         let valideTkn;
+//         try {
+//             valideTkn = await this.authsService.verifyForgotPwdToken(params.token, lang);
+//         } catch (error) {
+//             return {
+//                 success: false,
+//                 message: `${error}`
+//             }
+//         }
+//         return valideTkn;
+//     }
 
     // Reset forgotpwd: the new password and the verification password
     @Post('auth/email/reset-password/:token')
