@@ -141,9 +141,9 @@ export class AuthsController {
     }
 
 
-// Forgot Password Part
+// Forgot Password Part of login with password
 
-    // Send the forgot password email (with the lik to come back and change password)
+    // Send the forgot password email (with the link to come back and change password)
     @Post('auth/email/forgot-password')
     async sendEmailForgotPassword(@Request() req, @I18nLang() lang: string): Promise<any> {
 console.log('forgot pwd email:', req.email);
