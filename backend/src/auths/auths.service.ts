@@ -569,15 +569,19 @@ console.log('reset token', tokenForgotPwd)
   // Verify that the token received with the forgot password link is valid and in delay (used by controlers)
   async verifyForgotPwdToken(token: string, lang: string): Promise<ForgottenPwd> {
     const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
+    // Search for the token
     const forgotPwdModel = await this.prismaService.forgottenPwd.findUnique({ where: { pwdToken: token } });
-    const isForgotPwdTokenDelayOver = (forgotPwdModel.expiration < new Date());
-    if ((!forgotPwdModel )|| (!isForgotPwdTokenDelayOver)) {
+    // No token found : 
+    if (!forgotPwdModel) {
       throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
-      // return false;
     }
-      // redirect
-      // return true;
-console.log("forgotpwdModel: ", forgotPwdModel);
+    // Verify the token still valid
+    const isForgotPwdTokenDelayOver = (forgotPwdModel.expiration < new Date());
+    if (isForgotPwdTokenDelayOver) {
+      throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
+    }
+
+console.log("forgotpwdModel return verification is OK: ", forgotPwdModel);
 
       return forgotPwdModel;
   }
@@ -586,13 +590,15 @@ console.log("forgotpwdModel: ", forgotPwdModel);
   async editForgotPwd(pwd: string, userId: string): Promise<User> {
     const salt = randomBytes(16).toString('base64');
     const pwdHash = AuthsService.hashPassword(pwd, salt);
-    return await this.prismaService.user.update({
+    const result = await this.prismaService.user.update({
       where: { id: userId },
       data: {
         salt,
         pwdHash,
       }
     })
+console.log("Updated user: ", result)
+    return result
   }
   
   async userExist(email: string, lang: string): Promise<User> {

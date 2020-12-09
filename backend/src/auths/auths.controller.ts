@@ -192,7 +192,7 @@ console.log('forgot pwd email:', req.body.email);
         let user;
         try {
             valideTknObj = await this.authsService.verifyForgotPwdToken(params.token, lang);
-console.log('token', valideTknObj);
+console.log('token valid:', valideTknObj);
         } catch (error) {
             return {
                 success: false,
@@ -221,9 +221,11 @@ console.log('token', valideTknObj);
             success: false,
             message: 'Invalid password'
         }
-
+console.log("User update")
         const userUpdated = await this.authsService.editForgotPwd(newPassword, user.id);
-        if (userUpdated && userUpdated.id) return {
+        console.log(userUpdated)
+        if (userUpdated ) return {
+        // if (userUpdated && userUpdated.id) return {
             success: true,
             message: 'Updated succefully'
         }
