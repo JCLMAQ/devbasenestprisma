@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     const user = await this.usersService.userStillExist(payload.username);
-    if (!user || user.isDeleted) {
+    if (!user || user.isDeleted != null) {
       throw new UnauthorizedException();
     }
     // Verify that the JWT payload is not cancel (even if the JWT is still valid - expiration time still OK)

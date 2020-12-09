@@ -7,6 +7,8 @@
     "AUTH_LOGOUT_ERROR": "Error on logout process", 
     "REGISTER_ALREADY": "You are already registered, please sign in...",
     "REGISTER_FIRST": "You have to register first",
+    "REGISTRATION_FAIL": "Registration process failed", 
+    "REGISTER_ADMIN_CONTACT": "There is a problem with your registration, please contact the Adminstrator of the site",
     "FORGOT_PWD_EMAIL_ALREADY_SENT": "Reset password email alaready sent",
     "FORGOT_PWD_ERROR": "Error on forgot password process",
     "FORGOT_PWD_BAD_TOKEN": "Invalid token"

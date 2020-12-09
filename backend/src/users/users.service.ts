@@ -75,7 +75,6 @@ export class UsersService {
   async createOneUserWithPwd(userData, pwdHash, salt): Promise<boolean> {
     // async createOneUser(userData): Promise<User> {
     let userCreatedStatute = false;
-console.log('user.service: userdata to create', userData);
     const fullName = userData.firstName + ' ' + userData.lastName;
     // WARNING A new User is always created as a USER, should be by default "GUEST" ?
     // const roles: UserCreaterolesInput = Set['USER'];
@@ -93,7 +92,6 @@ console.log('user.service: userdata to create', userData);
             //  manager: { connect: {email: userData.managerId} }
         }
     });
-console.log('usersService.createOneUser', result);
     if (!!result) { userCreatedStatute = true; }
     // return resultbis;
     return userCreatedStatute;
@@ -135,11 +133,20 @@ console.log('usersService.createOneUser', result);
   async userStillExist(userEmail) {
     const user = await this.getOneUserByEmail(userEmail);
     // Verify the user is not soft deleted !!!
-    if(!user || user.isDeleted){
+    if(!user || user.isDeleted != null){
       return null // Soft deleted or user does not exist
     }
     const { pwdHash, salt, ...result } = user;
     // const { ...result } = user;
+    return result;
+  }
+
+  async userExist(userEmail) {
+    let result = false;
+    const userExist = await this.getOneUserByEmail(userEmail);
+    if(userExist != null) {
+      result = true
+    }
     return result;
   }
 

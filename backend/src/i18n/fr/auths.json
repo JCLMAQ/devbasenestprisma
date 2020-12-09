@@ -7,6 +7,8 @@
   "AUTH_LOGOUT_ERROR": "Erreur dans le processus de Sortie.", 
   "REGISTER_ALREADY": "Vous êtes dèjà enregistré, Vous pouvez-vous connecter.",
   "REGISTER_FIRST": "Vous devez d'abord vous enregistrer avant de pouvoir vous connecter.",
+  "REGISTRATION_FAIL": "L'enregistrement a échoué.", 
+  "REGISTER_ADMIN_CONTACT": "Il y a un eu un problème avec votre enregistrement, Merci de contacter l'Administrateur du site.",
   "FORGOT_PWD_EMAIL_ALREADY_SENT": "L'email pour la réinitialisation de votre mot de passe a déjà été envoyé.",
   "FORGOT_PWD_ERROR": "Erreur dans le processus de réinitialisation de votre mot de passe.",
   "FORGOT_PWD_BAD_TOKEN": "La clé dans ce lien n'est pas ou plus valide"

@@ -29,7 +29,26 @@ export class AuthsService {
     // private i18nContext: I18nContext,
   ) { }
   
-  async logout(userEmail, lang: string) {
+  // Local Strategy validation
+  async validateUser(username: string, plainTextPassword: string): Promise<any> {
+    // Call by localStrategy
+    // username = email
+    const user = await this.usersService.getOneUserByEmail(username);
+console.log("User: ", user)
+    if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0 && user !== null) {
+      if (this.verifyPassword(user, plainTextPassword)) {
+        const { pwdHash, salt, ...result } = user;
+        return result;
+      } else {
+        return null;
+      }
+    } else {
+      const { ...result } = user;
+        return result;
+    }
+  }
+
+  async logout(userEmail, lang: string): Promise<boolean> {
     // Search for the user token and reinit for the email send token - for PwdLess login
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(userEmail);
@@ -38,7 +57,7 @@ export class AuthsService {
     }
     // Reinit the sendEmail pwdless
     await this.logoutInvalidEmailToken(userNotDeleted.id)
-    // Logout with JWT_LOGOUT_ENABLE = 1
+    // Logout with JWT_LOGOUT_ENABLE = 1  - Does logout with a devalidation of the JWT token
     if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
       // If yes, then manage the API token validity
       const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, true );
@@ -161,7 +180,7 @@ export class AuthsService {
     }
   }
 
-  async emailValidationProcess(email: string, lang: string) {
+  async emailValidationProcess(email: string, lang: string): Promise<any> {
     // Email validation against the strucure of the email and the domain (if doamin restriction active)
      // Verify the username email looks well as an email
      const goodEmail = await this.utilitiesService.emailValidation(email);
@@ -172,10 +191,13 @@ export class AuthsService {
     const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
     if(apiEmailActiveted ){
       const compareAppUrl = await this.utilitiesService.apiEmailVerification(email);
+console.log("Compare App URL : ", compareAppUrl);
       if(!compareAppUrl) {
         throw new HttpException(await this.i18n.translate("auths.EMAIL_BAD",{ lang: lang, }), 400);
       }
     }
+    return true
+
   }
 
   async userLoginOrRegistration(email: string, autoRegistration: boolean, registration: boolean, lang: string) {
@@ -216,7 +238,10 @@ export class AuthsService {
 /*
   Start PasswordLess Login process
 */
+  // logout pwd Less
 
+
+  // Login pwd Less
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
   async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean, lang:  string) {
     // Verify if the limitation to the email API is activeted
@@ -378,17 +403,20 @@ export class AuthsService {
 
   async loginWithPwd(email: string, plaintextPassword: string, lang: string) {
     // Verify the email domain (if restriction active) and the structure of the email
-    await this.emailValidationProcess(email, lang);
-    
+  const emailValidation = await this.emailValidationProcess(email, lang);
+    // Verify that the user exist
     let userFound = await this.usersService.findUniqueUser({email});
-console.log("User found:", userFound)
     if(!userFound) {
       // need to register first
       throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
     }
-console.log('authService login');
+    // Create the token.API if LOGOUT with JWT cancel
+    if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
+      // If yes, then manage the API token validity
+      const createOrUpdateToken = await this.mgtAPIToken(userFound.id, false )
+    }
+    // Buildup the payload for the access token
     const payload = { username: userFound.email, sub: userFound.id, role: userFound.Role };
-console.log('payload:', payload)
     return {
       access_token: this.jwtService.sign(payload),
       fullName: userFound.firstName +" "+ userFound.lastName,
@@ -396,44 +424,36 @@ console.log('payload:', payload)
     };
   }
 
-  async validateUser(username: string, plainTextPassword: string): Promise<any> {
-    // username = email
-    // Call by localStrategy
-    const user = await this.usersService.getOneUserByEmail(username);
-console.log("User: ", user)
-    if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0 && user !== null) {
-      if (this.verifyPassword(user, plainTextPassword)) {
-        const { pwdHash, salt, ...result } = user;
-        return result;
-      } else {
-        return null;
-      }
-    } else {
-      const { ...result } = user;
-        return result;
-    }
-  }
+
 
   // Create one new user when register with a password and an email as username
-  async registerOneUserWithPwd(userData, lang): Promise<boolean> {
+  async registerWithPwd(userData, lang): Promise<any> {
     const registration = true;
     const autoRegistration = false;
     // Verify if the limitation to the email API is activeted and if the email is conform
-    await this.emailValidationProcess(userData.email, lang);
+    const emailValidation = await this.emailValidationProcess(userData.email, lang);
     // Is the User already registred ? If yes send an error, If not create the new user
-    // const userFound = await this.userLoginOrRegistration(userData.email, autoRegistration, registration, lang);
-    // Create a salt and Hash the password with it 
-    const salt = randomBytes(16).toString('base64');
-    const pwdHash = AuthsService.hashPassword(userData.password, salt);
-    const {password, ...userDataWithoutThePwd } = userData;
-    const result = await this.usersService.createOneUserWithPwd(userDataWithoutThePwd, pwdHash, salt);
-    // If the creation fialed, send an error
-    if(!result) {
-      // Throw an error
-      throw new HttpException(await this.i18n.translate("users.USER_REGISTRATION_FAIL",{ lang: lang, }), 400);
+    const userExist = await this.usersService.findUniqueUser({email: userData.email});
+    if(userExist === null){
+      // Create a salt and Hash the password with it 
+      const salt = randomBytes(16).toString('base64');
+      const pwdHash = AuthsService.hashPassword(userData.password, salt);
+      const {password, ...userDataWithoutThePwd } = userData;
+      // Try to create a new user
+      const result = await this.usersService.createOneUserWithPwd(userDataWithoutThePwd, pwdHash, salt);
+      // If the creation failed, send an error
+      if(!result) {
+        // Throw an error
+        throw new HttpException(await this.i18n.translate("auths.REGISTRATION_FAIL",{ lang: lang, }), 400);
+      }
+      return result;
     }
-console.log("User created with password: ", result)
-    return result;
+    if(userExist.isDeleted != null) {
+      // User still exist but has been soft deleted !
+      throw new HttpException(await this.i18n.translate("auths.REGISTER_ADMIN_CONTACT",{ lang: lang, }), 400);
+    }
+      // Already registered...
+    throw new HttpException(await this.i18n.translate("auths.REGISTER_ALREADY",{ lang: lang, }), 400);
   }
 
   static hashPassword(password: string, salt: string): string {

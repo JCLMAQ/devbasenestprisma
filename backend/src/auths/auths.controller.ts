@@ -110,29 +110,34 @@ export class AuthsController {
     // Login with the password and the email
     @UseGuards(LocalAuthGuard)
     @Post('auth/loginwithpwd')
-    async loginWithPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string) {
-        // async loginWithPwd(@Request() req, @I18nLang() lang: string) {
-console.log('Authcontroler (localstrategy):', userCredential.email, userCredential.password)
+    async loginWithPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string): Promise<any> {
         return this.authsService.loginWithPwd(userCredential.email, userCredential.password, lang);
     }
 
     // Logout with password and email authenntication
     @Post('auth/logoutwithpwd')
-    async logoutPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string ) {
+    async logoutPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string ): Promise<any> {
         const isOK = await this.authsService.logout(userCredential.email, lang);
         if (!isOK) {
-            return {}
+            return {
+                success: false,
+                message: 'Logout failed'
+            }
         }
         const user = '';
         const authJwtToken = '';
         return { user, authJwtToken }
     }
 
-    // @UseGuards(LocalAuthGuard)
+    @UseGuards(LocalAuthGuard)
     @Post('auth/registerwithpwd')
-    async registerUserWithPwd(@Body() userData: User, @I18nLang() lang: string): Promise<boolean> {
+    async registerWithPwd(@Body() userData: User, @I18nLang() lang: string): Promise<any> {
 console.log('new user', userData);
-        return this.authsService.registerOneUserWithPwd(userData, lang);
+        const isRegistered = await this.authsService.registerWithPwd(userData, lang);
+        return {
+            success: true,
+            message: 'Registration done'
+                    }
     }
 
 
