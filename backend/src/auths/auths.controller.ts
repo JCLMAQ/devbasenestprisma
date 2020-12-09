@@ -115,6 +115,7 @@ export class AuthsController {
     }
 
     // Logout with password and email authenntication
+    @UseGuards(LocalAuthGuard)
     @Post('auth/logoutwithpwd')
     async logoutPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string ): Promise<any> {
         const isOK = await this.authsService.logout(userCredential.email, lang);
