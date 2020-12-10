@@ -334,6 +334,7 @@ export class AuthsService {
     
   // Step 2: Verify the validity of the short token linked to the email of the user
   async authenticateHandler(userCredential, lang) {
+    // The emailToken is the "password"
     const { email, password } = userCredential;
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(email);
@@ -446,7 +447,7 @@ export class AuthsService {
       }
       return result;
     }
-    if(userExist.isDeleted != null) {
+    if(userExist?.isDeleted) {
       // User still exist but has been soft deleted !
       throw new HttpException(await this.i18n.translate("auths.REGISTER_ADMIN_CONTACT",{ lang: lang, }), 400);
     }
@@ -476,35 +477,56 @@ export class AuthsService {
 
 console.log('email of create forgot password', email);
 
+    // Verify the user exist
+    const userFound = await this.usersService.getOneUserByEmail(email);
+    if(!userFound?.id) {
+      throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400)
+    }
+    if(!userFound?.isDeleted) {
+      throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
+    }
     // Find and update or Create the forgot pwd data (specific token) in the DB
-    const forgotPwd = await this.prismaService.forgottenPwd.findUnique({ where: { email } });
+    
+    const forgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userFound.id }, type: { equals:TokenType.FORGOT },}});
 
 console.log("Found forgot email token: ", forgotPwd)
 
     let isForgotPwdTokenDelayOver = true;
+    // forgotPwd token exist, need to verify if it is stiil within validity delay
     if(forgotPwd){
       isForgotPwdTokenDelayOver = (forgotPwd.expiration < new Date());
+
 console.log("Delay over : ", isForgotPwdTokenDelayOver)
+
     }
     const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
+
 console.log("Forgot pw delay: ", newForgotPwdDelayTime)
+
     // if a forgotPwd exist for the user (email) and if the delay is still running, do not send a new email
     if (forgotPwd && !isForgotPwdTokenDelayOver ) {
       throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{ lang: lang, }), 400);
     } else {
       // Update or create the forgotPwd record with a pwd token and a update/create date
-      const newForgotPwd = await this.prismaService.forgottenPwd.upsert({
-        where: { email } ,
+      const newForgotPwd = await this.prismaService.token.upsert({
+        where: {
+          id: forgotPwd.id
+        },
         update: {
-          pwdToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
-          expiration: newForgotPwdDelayTime
+          emailToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
+          type: TokenType.FORGOT,
+          valid: true,
+          expiration: newForgotPwdDelayTime,
         },
         create: {
-          email: email,
-          pwdToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
-          expiration: newForgotPwdDelayTime
+          emailToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
+          type: TokenType.FORGOT,
+          valid: true,
+          expiration: newForgotPwdDelayTime,
+          userId: userFound.id,
         },
-      });
+      })
+
       if (newForgotPwd) {
         return newForgotPwd
       } else {
@@ -519,11 +541,14 @@ console.log("Forgot pw delay: ", newForgotPwdDelayTime)
 console.log('email of forgot password', emailForgotPwd);
 
     // Verify if the user exist
-    const user = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
-console.log("User found : ", user)
-    if (!user) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400);
+    const userExist = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
 
-    // TODO need to manage soft deleted user
+console.log("User found : ", userExist)
+
+    if (!userExist) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400);
+
+    // Need to manage soft deleted user
+    if(userExist?.isDeleted) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400);
 
     // Create the forgot  password token
     const tokenForgotPwd = await this.createForgotToken(emailForgotPwd, lang);
@@ -547,11 +572,8 @@ console.log('reset token', tokenForgotPwd)
 
       // Send the email with the link
       const sendMail = await this.utilitiesService.sendEmailToken(emailData);
-      if (sendMail) {
-        return sendMail
-      } else {
-        throw new HttpException(await this.i18n.translate("auths.EMAIL_TOKEN_CRASH",{ lang: lang, }), 400);
-      }
+      if (!sendMail) throw new HttpException(await this.i18n.translate("auths.EMAIL_TOKEN_CRASH",{ lang: lang, }), 400);
+      return sendMail
 
     } else {
       throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
@@ -601,9 +623,15 @@ console.log("Updated user: ", result)
     return result
   }
   
-  async userExist(email: string, lang: string): Promise<User> {
+  async isUserExist(email: string, lang: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({ where: { email } })
     if (!user) throw new HttpException(await this.i18n.translate("users.USER_NOT_FOUND",{ lang: lang, }), 400);
+    return user;
+  }
+
+  async isUserSoftDeleted(email: string, lang: string): Promise<User> {
+    const user = await this.prismaService.user.findUnique({ where: { email } })
+    if (!user?.isDeleted) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400);
     return user;
   }
 }

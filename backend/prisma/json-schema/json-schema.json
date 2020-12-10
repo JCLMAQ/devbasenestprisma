@@ -185,7 +185,8 @@
           "type": "string",
           "enum": [
             "EMAIL",
-            "API"
+            "API",
+            "FORGOT"
           ]
         },
         "emailToken": {

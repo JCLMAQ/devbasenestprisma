@@ -169,20 +169,20 @@ console.log('forgot pwd email:', req.body.email);
     }
 
     // Validate the password forgot token send back
-//     @Get('auth/email/reset-password/:token')
-//     async validateToken(@Param() params, @I18nLang() lang: string): Promise<any> {
-// console.log("Param received:", params.token)
-//         let valideTkn;
-//         try {
-//             valideTkn = await this.authsService.verifyForgotPwdToken(params.token, lang);
-//         } catch (error) {
-//             return {
-//                 success: false,
-//                 message: `${error}`
-//             }
-//         }
-//         return valideTkn;
-//     }
+    @Get('auth/email/reset-password/:token')
+    async validateToken(@Param() params, @I18nLang() lang: string): Promise<any> {
+console.log("Param received:", params.token)
+        let valideTkn;
+        try {
+            valideTkn = await this.authsService.verifyForgotPwdToken(params.token, lang);
+        } catch (error) {
+            return {
+                success: false,
+                message: `${error}`
+            }
+        }
+        return valideTkn;
+    }
 
     // Reset forgotpwd: the new password and the verification password
     @Post('auth/email/reset-password/:token')
@@ -205,7 +205,7 @@ console.log('token valid:', valideTknObj);
         }
 
         try {
-            user = await this.authsService.userExist(valideTknObj.email, lang);
+            user = await this.authsService.isUserExist(valideTknObj.email, lang);
         } catch (error) {
             return {
                 success: false,
@@ -221,9 +221,13 @@ console.log('token valid:', valideTknObj);
             success: false,
             message: 'Invalid password'
         }
+
 console.log("User update")
+
         const userUpdated = await this.authsService.editForgotPwd(newPassword, user.id);
-        console.log(userUpdated)
+
+console.log(userUpdated)
+
         if (userUpdated ) return {
         // if (userUpdated && userUpdated.id) return {
             success: true,
