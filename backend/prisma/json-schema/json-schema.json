@@ -392,24 +392,6 @@
         }
       }
     },
-    "ForgottenPwd": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "pwdToken": {
-          "type": "string"
-        },
-        "expiration": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "AccountValidation": {
       "type": "object",
       "properties": {
@@ -622,9 +604,6 @@
     },
     "userTodoLink": {
       "$ref": "#/definitions/UserTodoLink"
-    },
-    "forgottenPwd": {
-      "$ref": "#/definitions/ForgottenPwd"
     },
     "accountValidation": {
       "$ref": "#/definitions/AccountValidation"

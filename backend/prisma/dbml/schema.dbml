@@ -99,13 +99,6 @@ Table UserTodoLink {
   }
 }
 
-Table ForgottenPwd {
-  id String [pk]
-  email String [unique, not null]
-  pwdToken String [unique, not null]
-  expiration DateTime [not null]
-}
-
 Table AccountValidation {
   id String [pk]
   isValidated Boolean [not null]

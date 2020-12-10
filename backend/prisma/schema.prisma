@@ -85,7 +85,7 @@ model Token {
 enum TokenType {
   EMAIL // used as a short-lived token sent to the user's email
   API
-  FORGOT
+  FORGOT // Used for the loink back received by email if the pwd is forgotten
 }
 
 model Profile {
@@ -168,12 +168,12 @@ enum Role {
   SUPERADMIN
 }
 
-model ForgottenPwd {
-  id          String   @default(uuid()) @id
-  email       String   @unique
-  pwdToken    String   @unique
-  expiration  DateTime
-}
+// model ForgottenPwd {
+//   id          String   @default(uuid()) @id
+//   email       String   @unique
+//   pwdToken    String   @unique
+//   expiration  DateTime
+// }
 
 model AccountValidation{
   id           String   @default(uuid()) @id

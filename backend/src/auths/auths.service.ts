@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User,TokenType, ForgottenPwd, Prisma } from '@prisma/client';
+import { User,TokenType, Prisma, Token } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 
@@ -479,14 +479,10 @@ console.log('email of create forgot password', email);
 
     // Verify the user exist
     const userFound = await this.usersService.getOneUserByEmail(email);
-    if(!userFound?.id) {
-      throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400)
-    }
-    if(!userFound?.isDeleted) {
-      throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
-    }
-    // Find and update or Create the forgot pwd data (specific token) in the DB
-    
+    if(!userFound?.id) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400)
+    // Verify the user is not soft deleted
+    if(!userFound?.isDeleted) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
+    // Find and update or Create the forgot pwd data (specific token) in the DB   
     const forgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userFound.id }, type: { equals:TokenType.FORGOT },}});
 
 console.log("Found forgot email token: ", forgotPwd)
@@ -575,9 +571,7 @@ console.log('reset token', tokenForgotPwd)
       if (!sendMail) throw new HttpException(await this.i18n.translate("auths.EMAIL_TOKEN_CRASH",{ lang: lang, }), 400);
       return sendMail
 
-    } else {
-      throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
-    }
+    } else throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
   }
 
 // Generate the expiration time of the forgot password token
@@ -589,19 +583,16 @@ console.log('reset token', tokenForgotPwd)
   }
 
   // Verify that the token received with the forgot password link is valid and in delay (used by controlers)
-  async verifyForgotPwdToken(token: string, lang: string): Promise<ForgottenPwd> {
+  async verifyForgotPwdToken(token: string, lang: string): Promise<Token> {
     const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
     // Search for the token
-    const forgotPwdModel = await this.prismaService.forgottenPwd.findUnique({ where: { pwdToken: token } });
+    const forgotPwdModel = await this.prismaService.token.findUnique({ where: { emailToken: token } });
     // No token found : 
-    if (!forgotPwdModel) {
-      throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
-    }
+    if (!forgotPwdModel) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
+    
     // Verify the token still valid
     const isForgotPwdTokenDelayOver = (forgotPwdModel.expiration < new Date());
-    if (isForgotPwdTokenDelayOver) {
-      throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
-    }
+    if (isForgotPwdTokenDelayOver) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
 
 console.log("forgotpwdModel return verification is OK: ", forgotPwdModel);
 
