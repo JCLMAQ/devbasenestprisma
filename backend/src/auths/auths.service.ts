@@ -33,6 +33,8 @@ export class AuthsService {
   async validateUser(username: string, plainTextPassword: string): Promise<any> {
     // Call by localStrategy
     // username = email
+    // const lang = "en";
+    // const emailValidation = await this.emailValidationProcess(username, lang);
     const user = await this.usersService.getOneUserByEmail(username);
     if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0 && user !== null) {
       if (this.verifyPassword(user, plainTextPassword)) {
@@ -59,27 +61,42 @@ export class AuthsService {
     // Logout with JWT_LOGOUT_ENABLE = 1  - Does logout with a devalidation of the JWT token
     if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
       // If yes, then manage the API token validity
-      const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, "API", true );
+      const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, "API", "", true );
       if(! createOrUpdateToken) return false
     }
     return true;
   }
 
 /*
-  PasswordLess Authentication Schema
+  Common utilities
 */
-  /*
-    Utilities for passwordLess
-  */
 
   // Generate a random 8 digit number as the email token
   async generateEmailToken(): Promise<string> {
-    return Math.floor(10000000 + Math.random() * 90000000).toString()
+    let emailToken = Math.floor(10000000 + Math.random() * 90000000).toString();
+    let tokenAlreadyExist = await this.prismaService.token.findFirst({
+      where: {
+        emailToken: { equals: emailToken }
+      }
+    });
+    // Create a new emailToken if already exist
+    while (
+      tokenAlreadyExist != null && typeof(tokenAlreadyExist) == "object"
+    ) {
+      emailToken = Math.floor(10000000 + Math.random() * 90000000).toString()
+      tokenAlreadyExist = await this.prismaService.token.findFirst({
+      where: {
+        emailToken: { equals: emailToken}
+      }});
+    }
+    return emailToken
   }
 
   // Generate the expiration time of the email token
-  async emailTokenExpiration() {
-    const milliSecondToAdd = MilliSecond(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION"));
+  async emailTokenExpiration(forPwdLess: boolean) {
+    let expirationTime = "";
+    forPwdLess ? expirationTime = "EMAIL_TOKEN_EXPIRATION" : expirationTime = "FORGOT_TOKEN_EXPIRATION"
+    const milliSecondToAdd = MilliSecond(this.configService.get<string>(expirationTime));
     const currentDate = new Date();
     const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
     return emailTokenExpirationDate
@@ -103,7 +120,7 @@ export class AuthsService {
   }
 
   // Update the API token
-  async mgtAPIToken(userId: string, tokenType: TokenType, logout: boolean) {
+  async mgtAPIToken(userId: string, tokenType: TokenType, emailToken: string, logout: boolean) {
     // For logout:  logout is true, valid has to be false
     
     // Find the token with the userid and the type
@@ -125,7 +142,7 @@ export class AuthsService {
     // Do not change it if logout
     if(!logout) {
       // Token expiration are different for API and FORGOT
-      tokenType == TokenType.API ? tokenExpiration = await this.jwtTokenExpiration() : tokenExpiration = await this.forgotPwdTokenExpiration()
+      tokenType == TokenType.API ? tokenExpiration = await this.jwtTokenExpiration() : tokenExpiration = await this.emailTokenExpiration( false )
     }
     // Create or update a longlived token record
     tokenExist = await this.prismaService.token.upsert({
@@ -133,27 +150,41 @@ export class AuthsService {
         id: tokenId
       },
       update: {
-  //        emailToken: "",
+        emailToken,
         type: tokenType,
         expiration: tokenExpiration,
         valid: !logout
       },
       create: {
-  //        emailToken: "",
+        emailToken,
         type: tokenType,
         expiration: tokenExpiration,
         userId: userId,
         valid: !logout
       }
     })
-    // if(tokenExist){
-    //   return true
-    // } else { 
-    //   return false
-    // }
     return tokenExist
   }
-    
+   // Verify delay between sending email
+   async verifyDelayBtwEmailisPassed(expirationTime, lang){
+    const delayToTest = this.configService.get<string>("DELAY_BTW_EMAIL");
+    const milliSecondToAdd = MilliSecond(delayToTest);
+    const delayStillRunning =  await this.utilitiesService.timeStampDelay(expirationTime, milliSecondToAdd)
+    // Verify delay between emailbase on the updateAt field
+      if ( delayStillRunning) {
+        throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{
+          lang: lang, }), 400);
+    }
+    return delayStillRunning
+   }
+   
+  /*
+  PasswordLess Authentication Schema
+*/
+  /*
+    Utilities for passwordLess
+  */
+
   async logoutInvalidEmailToken(userId: string){
     // Reinit the emailToken
     let tokenEmailExist = await this.prismaService.token.findFirst({
@@ -240,7 +271,6 @@ export class AuthsService {
 */
   // logout pwd Less
 
-
   // Login pwd Less
   // Step 1: Login handler: with the email create or update the user and send an email to the user 
   async loginPwdLess(email: string, registration: boolean, sendEmailDelay: boolean, autoRegistration: boolean, lang:  string) {
@@ -249,22 +279,7 @@ export class AuthsService {
     await this.emailValidationProcess(email, lang);
     // Is the User already registred ? If not create the new user
     const userFound = await this.userLoginOrRegistration(email, autoRegistration, registration, lang);
-    let emailToken = await this.generateEmailToken();
-    let tokenAlreadyExist = await this.prismaService.token.findFirst({
-      where: {
-        emailToken: { equals: emailToken }
-      }
-    });
-    // Create a new emailToken if already exist
-    while (
-      tokenAlreadyExist != null && typeof(tokenAlreadyExist) == "object"
-    ) {
-      emailToken = await this.generateEmailToken();
-      tokenAlreadyExist = await this.prismaService.token.findFirst({
-      where: {
-        emailToken: { equals: emailToken}
-      }});
-    }
+    const emailToken = await this.generateEmailToken();
     // Config data for the email to send with the token
     const emailSender = this.configService.get("EMAIL_NOREPLY");
     const emailData = {
@@ -274,8 +289,6 @@ export class AuthsService {
       textEmail: `NestJS your token: ${emailToken}.`,
       htmlEmail: `Hello <br> Please, use this token to confirm your login : ${emailToken} <br>`
     }
-    
-
     // Need to verify that the short token exist or not
     const tokenExist = await this.prismaService.token.findFirst({
       where: {
@@ -283,7 +296,6 @@ export class AuthsService {
         type: { equals:TokenType.EMAIL },
       }
     })
-    // const lang= "fr";
     let tokenId = 0
     if(!tokenExist) {
       tokenId = 0;
@@ -305,7 +317,7 @@ export class AuthsService {
     }
     // If exist: just update it, if does not: create a new one
     // Define the emailToken expiration time
-    const tokenExpiration = await this.emailTokenExpiration();
+    const tokenExpiration = await this.emailTokenExpiration( true );
     // Create or Update the email token
     const tokenCreatedorupdated = await this.prismaService.token.upsert({
       where: {
@@ -388,7 +400,7 @@ export class AuthsService {
       // JWT Logout enable ?
       if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
         // If yes, then manage the API token validity
-        const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId,"API", false )
+        const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId,"API", "", false )
         !createOrUpdateToken ? validEmailToken.validToken = false : validEmailToken.validToken = true;
       }
       return validEmailToken;
@@ -414,7 +426,7 @@ export class AuthsService {
     // Create the token.API if LOGOUT with JWT cancel
     if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
       // If yes, then manage the API token validity
-      const createOrUpdateToken = await this.mgtAPIToken(userFound.id, "API", false )
+      const createOrUpdateToken = await this.mgtAPIToken(userFound.id, "API", "", false )
     }
     // Buildup the payload for the access token
     const payload = { username: userFound.email, sub: userFound.id, role: userFound.Role };
@@ -492,11 +504,12 @@ console.log("Found forgot email token: ", forgotPwd)
 console.log("Delay over : ", isForgotPwdTokenDelayOver)
 
     }
-    const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
+    const newForgotPwdDelayTime = await this.emailTokenExpiration(false);
 
 console.log("Forgot pw delay: ", newForgotPwdDelayTime)
 
-    const createOrUpdateToken = await this.mgtAPIToken(userId, "FORGOT", false )
+    const emailToken = await this.generateEmailToken()
+    const createOrUpdateToken = await this.mgtAPIToken(userId, "FORGOT", emailToken , false )
 
     if(!createOrUpdateToken) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
 
@@ -517,7 +530,8 @@ console.log("return forgotpwd 02", newForgotPwd)
   async sendEmailForgotPwd(emailForgotPwd: string, lang: string): Promise<boolean> {
 
 console.log('email of forgot password', emailForgotPwd);
-
+    // Verify the email is an email and is from an accepted domain
+    const emailValidation = await this.emailValidationProcess(emailForgotPwd, lang);
     // Verify if the user exist
     const userExist = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
 
@@ -536,7 +550,7 @@ console.log("User found 02.isDeleted: ", userExist?.isDeleted)
 console.log('reset token', tokenForgotPwd)
  
     // If the token has been created, send the email
-    if (tokenForgotPwd && tokenForgotPwd.pwdToken) {
+    if (tokenForgotPwd && tokenForgotPwd.emailToken) {
       
       // Config data for the email to send with the token
       const emailSender = this.configService.get("EMAIL_NOREPLY");
@@ -547,7 +561,7 @@ console.log('reset token', tokenForgotPwd)
         subjectEmail: `Forgot Password reinitialyse Link.`,
         textEmail: `To resert your password click on the link.`,
         htmlEmail: `Hello <br> to reset your password click the link below <br>
-        <a href='${hostWebAddress}/reset-password/${tokenForgotPwd.pwdToken}'>Click here</a>` // html body
+        <a href='${hostWebAddress}/reset-password/${tokenForgotPwd.emailToken}'>Click here</a>` // html body
       }
 
       // Send the email with the link
@@ -562,16 +576,17 @@ console.log("send email ?:", sendMail)
   }
 
 // Generate the expiration time of the forgot password token
-  async forgotPwdTokenExpiration() {
-    const milliSecondToAdd = MilliSecond(this.configService.get("FORGOTPWD_TOKEN_EXPIRATION"));
-    const currentDate = new Date();
-    const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
-    return emailTokenExpirationDate
-  }
+  // async forgotPwdTokenExpiration() {
+  //   const milliSecondToAdd = MilliSecond(this.configService.get("FORGOTPWD_TOKEN_EXPIRATION"));
+  //   const currentDate = new Date();
+  //   const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
+  //   return emailTokenExpirationDate
+  // }
 
   // Verify that the token received with the forgot password link is valid and in delay (used by controlers)
   async verifyForgotPwdToken(token: string, lang: string): Promise<Token> {
-    const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
+    const newForgotPwdDelayTime = await this.emailTokenExpiration( false );
+   // const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
     // Search for the token
     const forgotPwdModel = await this.prismaService.token.findUnique({ where: { emailToken: token } });
     // No token found : 

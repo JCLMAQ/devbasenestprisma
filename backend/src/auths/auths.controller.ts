@@ -144,6 +144,8 @@ export class AuthsController {
 // Forgot Password Part of login with password
 
     // Send the forgot password email (with the link to come back and change password)
+
+    @UseGuards(LocalAuthGuard)
     @Post('auth/email/forgot-password')
     async sendEmailForgotPassword(@Request() req, @I18nLang() lang: string): Promise<any> {
 console.log('forgot pwd email:', req.body.email);
@@ -169,6 +171,8 @@ console.log('forgot pwd email:', req.body.email);
     }
 
     // Validate the password forgot token send back
+
+    @UseGuards(LocalAuthGuard)
     @Get('auth/email/reset-password/:token')
     async validateToken(@Param() params, @I18nLang() lang: string): Promise<any> {
 console.log("Param received:", params.token)
@@ -185,6 +189,8 @@ console.log("Param received:", params.token)
     }
 
     // Reset forgotpwd: the new password and the verification password
+
+    @UseGuards(LocalAuthGuard)
     @Post('auth/email/reset-password/:token')
     async resetPwd(@Param() params, @Request() req, @I18nLang() lang: string): Promise<any> {
         const { newPassword, verifyPassword } = req.body;
