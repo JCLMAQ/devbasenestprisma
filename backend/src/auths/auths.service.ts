@@ -59,8 +59,8 @@ export class AuthsService {
     // Logout with JWT_LOGOUT_ENABLE = 1  - Does logout with a devalidation of the JWT token
     if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
       // If yes, then manage the API token validity
-      const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, true );
-      return createOrUpdateToken
+      const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, "API", true );
+      if(! createOrUpdateToken) return false
     }
     return true;
   }
@@ -103,14 +103,14 @@ export class AuthsService {
   }
 
   // Update the API token
-  async mgtAPIToken(userId: string, logout: boolean) {
+  async mgtAPIToken(userId: string, tokenType: TokenType, logout: boolean) {
     // For logout:  logout is true, valid has to be false
     
     // Find the token with the userid and the type
     let tokenExist = await this.prismaService.token.findFirst({
       where: {
         userId: { equals: userId },
-        type: { equals:TokenType.API },
+        type: { equals:tokenType },
       }
     }) 
     let tokenId = 0
@@ -124,7 +124,8 @@ export class AuthsService {
     // Define the JWT token expiration time
     // Do not change it if logout
     if(!logout) {
-      tokenExpiration = await this.jwtTokenExpiration();
+      // Token expiration are different for API and FORGOT
+      tokenType == TokenType.API ? tokenExpiration = await this.jwtTokenExpiration() : tokenExpiration = await this.forgotPwdTokenExpiration()
     }
     // Create or update a longlived token record
     tokenExist = await this.prismaService.token.upsert({
@@ -133,23 +134,24 @@ export class AuthsService {
       },
       update: {
   //        emailToken: "",
-        type: TokenType.API,
+        type: tokenType,
         expiration: tokenExpiration,
         valid: !logout
       },
       create: {
   //        emailToken: "",
-        type: TokenType.API,
+        type: tokenType,
         expiration: tokenExpiration,
         userId: userId,
         valid: !logout
       }
     })
-    if(tokenExist){
-      return true
-    } else { 
-      return false
-    }
+    // if(tokenExist){
+    //   return true
+    // } else { 
+    //   return false
+    // }
+    return tokenExist
   }
     
   async logoutInvalidEmailToken(userId: string){
@@ -386,8 +388,8 @@ export class AuthsService {
       // JWT Logout enable ?
       if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
         // If yes, then manage the API token validity
-        const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId, false )
-        validEmailToken.validToken = createOrUpdateToken;
+        const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId,"API", false )
+        !createOrUpdateToken ? validEmailToken.validToken = false : validEmailToken.validToken = true;
       }
       return validEmailToken;
     }  else {
@@ -412,7 +414,7 @@ export class AuthsService {
     // Create the token.API if LOGOUT with JWT cancel
     if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
       // If yes, then manage the API token validity
-      const createOrUpdateToken = await this.mgtAPIToken(userFound.id, false )
+      const createOrUpdateToken = await this.mgtAPIToken(userFound.id, "API", false )
     }
     // Buildup the payload for the access token
     const payload = { username: userFound.email, sub: userFound.id, role: userFound.Role };
@@ -473,17 +475,12 @@ export class AuthsService {
   Forgot Password process
 */
 
-  async createForgotToken(email: string, lang:string ): Promise<any> {
+  async createForgotToken(email: string, userId: string, lang:string ): Promise<any> {
 
 console.log('email of create forgot password', email);
+console.log('email of create forgot password: userId', userId);
 
-    // Verify the user exist
-    const userFound = await this.usersService.getOneUserByEmail(email);
-    if(!userFound?.id) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400)
-    // Verify the user is not soft deleted
-    if(!userFound?.isDeleted) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
-    // Find and update or Create the forgot pwd data (specific token) in the DB   
-    const forgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userFound.id }, type: { equals:TokenType.FORGOT },}});
+    const forgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userId }, type: { equals:TokenType.FORGOT },}});
 
 console.log("Found forgot email token: ", forgotPwd)
 
@@ -499,35 +496,20 @@ console.log("Delay over : ", isForgotPwdTokenDelayOver)
 
 console.log("Forgot pw delay: ", newForgotPwdDelayTime)
 
-    // if a forgotPwd exist for the user (email) and if the delay is still running, do not send a new email
-    if (forgotPwd && !isForgotPwdTokenDelayOver ) {
-      throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{ lang: lang, }), 400);
-    } else {
-      // Update or create the forgotPwd record with a pwd token and a update/create date
-      const newForgotPwd = await this.prismaService.token.upsert({
-        where: {
-          id: forgotPwd.id
-        },
-        update: {
-          emailToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
-          type: TokenType.FORGOT,
-          valid: true,
-          expiration: newForgotPwdDelayTime,
-        },
-        create: {
-          emailToken: (Math.floor(Math.random() * (9000000)) + 1000000).toString(),
-          type: TokenType.FORGOT,
-          valid: true,
-          expiration: newForgotPwdDelayTime,
-          userId: userFound.id,
-        },
-      })
+    const createOrUpdateToken = await this.mgtAPIToken(userId, "FORGOT", false )
 
-      if (newForgotPwd) {
-        return newForgotPwd
-      } else {
-        throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
-      }
+    if(!createOrUpdateToken) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
+
+    const newForgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userId }, type: { equals:TokenType.FORGOT },}});
+
+    if (newForgotPwd) {
+
+console.log("return forgotpwd 01", newForgotPwd)
+
+      return newForgotPwd
+    } else {
+console.log("return forgotpwd 02", newForgotPwd)
+      throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
     }
   }
 
@@ -539,15 +521,17 @@ console.log('email of forgot password', emailForgotPwd);
     // Verify if the user exist
     const userExist = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
 
-console.log("User found : ", userExist)
+console.log("User found 01: ", userExist)
 
     if (!userExist) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400);
 
+console.log("User found 02.isDeleted: ", userExist?.isDeleted)
+
     // Need to manage soft deleted user
-    if(userExist?.isDeleted) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400);
+    if(userExist?.isDeleted != null) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400);
 
     // Create the forgot  password token
-    const tokenForgotPwd = await this.createForgotToken(emailForgotPwd, lang);
+    const tokenForgotPwd = await this.createForgotToken(emailForgotPwd, userExist.id, lang);
 
 console.log('reset token', tokenForgotPwd)
  
@@ -568,6 +552,9 @@ console.log('reset token', tokenForgotPwd)
 
       // Send the email with the link
       const sendMail = await this.utilitiesService.sendEmailToken(emailData);
+
+console.log("send email ?:", sendMail)
+
       if (!sendMail) throw new HttpException(await this.i18n.translate("auths.EMAIL_TOKEN_CRASH",{ lang: lang, }), 400);
       return sendMail
 

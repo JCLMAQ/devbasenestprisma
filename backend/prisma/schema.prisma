@@ -35,9 +35,7 @@ model User {
   nickName    String?
   Gender      Gender?
   pwdHash     String?   
-  salt        String?   
-  // pwdHash     String?   @default("")
-  // salt        String?   @default("")
+  salt        String?
   social      Json?
 
   // Management of the state of the account
@@ -167,13 +165,6 @@ enum Role {
   ADMIN
   SUPERADMIN
 }
-
-// model ForgottenPwd {
-//   id          String   @default(uuid()) @id
-//   email       String   @unique
-//   pwdToken    String   @unique
-//   expiration  DateTime
-// }
 
 model AccountValidation{
   id           String   @default(uuid()) @id
