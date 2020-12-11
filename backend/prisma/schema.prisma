@@ -37,10 +37,11 @@ model User {
   pwdHash     String?   
   salt        String?
   social      Json?
+  language    String?    @default("en")
 
   // Management of the state of the account
-  isValidated  DateTime? // Null = not deleted
-  isSuspended  DateTime? // Null = not deleted
+  isValidated  DateTime? // Null = non validated
+  isSuspended  DateTime? // Null = not suspended
   isDeleted    DateTime? // Null = not deleted
   
   // Specific - Access right
