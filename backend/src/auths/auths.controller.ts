@@ -88,7 +88,7 @@ export class AuthsController {
       // Delete one user
 // TODO Delete one user by admin
 
-      // Deelte request by the user (RGPD)
+      // Delete request by the user (RGPD)
 // TODO Delete one user by the user itself
 
     // PasswordLess Logout

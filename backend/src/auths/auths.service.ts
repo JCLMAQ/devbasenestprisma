@@ -13,6 +13,7 @@ import { pbkdf2Sync, randomBytes } from 'crypto';
 import * as MilliSecond from 'ms';
 import { AcceptLanguageResolver, I18nContext, I18nRequestScopeService, I18nService } from 'nestjs-i18n';
 import { Console } from 'console';
+import { promises } from 'fs';
 
 
 @Injectable()
@@ -92,7 +93,7 @@ export class AuthsService {
     return emailToken
   }
 
-  // Generate the expiration time of the email token
+  // Generate the expiration time of the email token (pwdless and forgotpwd email)
   async emailTokenExpiration(forPwdLess: boolean) {
     let expirationTime = "";
     forPwdLess ? expirationTime = "EMAIL_TOKEN_EXPIRATION" : expirationTime = "FORGOT_TOKEN_EXPIRATION"
@@ -166,16 +167,16 @@ export class AuthsService {
     return tokenExist
   }
    // Verify delay between sending email
-   async verifyDelayBtwEmailisPassed(expirationTime, lang){
-    const delayToTest = this.configService.get<string>("DELAY_BTW_EMAIL");
-    const milliSecondToAdd = MilliSecond(delayToTest);
-    const delayStillRunning =  await this.utilitiesService.timeStampDelay(expirationTime, milliSecondToAdd)
-    // Verify delay between emailbase on the updateAt field
+   async verifyDelayBtwEmailIsStillRunning(expirationTime: Date, lang: string): Promise<boolean>{
+      let delayStillRunning = false; // Allow new email to be send
+      const delayToTest = this.configService.get<string>("DELAY_BTW_EMAIL");
+      const milliSecondToAdd = MilliSecond(delayToTest);
+      delayStillRunning =  await this.utilitiesService.timeStampDelay(expirationTime, milliSecondToAdd)
+      // Verify delay between emailbase on the updateAt field
       if ( delayStillRunning) {
-        throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{
-          lang: lang, }), 400);
-    }
-    return delayStillRunning
+        throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{ lang: lang, }), 400);
+      }
+      return delayStillRunning
    }
    
   /*
@@ -301,19 +302,11 @@ export class AuthsService {
       tokenId = 0;
     } else {
       tokenId = tokenExist.id;
-      // Verify that the delay between email is still valid
+      // Verify that the delay between email sending is still running 
       const delayBetweenEmailEnable = sendEmailDelay;
       if(delayBetweenEmailEnable) { 
-        const delayToTest = this.configService.get<string>("DELAY_BTW_EMAIL");
-        const milliSecondToAdd = MilliSecond(delayToTest);
-        const testResult =  await this.utilitiesService.timeStampDelay(tokenExist.expiration, milliSecondToAdd)
-        // Verify delay between emailbase on the updateAt field
-          if ( testResult) {
-            throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{
-              lang: lang, }), 400);
-        }
+        const delayBwnEmailStillRunning = await this.verifyDelayBtwEmailIsStillRunning(tokenExist.updatedAt, lang);
       }
-  
     }
     // If exist: just update it, if does not: create a new one
     // Define the emailToken expiration time
@@ -575,29 +568,29 @@ console.log("send email ?:", sendMail)
     } else throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
   }
 
-// Generate the expiration time of the forgot password token
-  // async forgotPwdTokenExpiration() {
-  //   const milliSecondToAdd = MilliSecond(this.configService.get("FORGOTPWD_TOKEN_EXPIRATION"));
-  //   const currentDate = new Date();
-  //   const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
-  //   return emailTokenExpirationDate
-  // }
-
   // Verify that the token received with the forgot password link is valid and in delay (used by controlers)
   async verifyForgotPwdToken(token: string, lang: string): Promise<Token> {
-    const newForgotPwdDelayTime = await this.emailTokenExpiration( false );
-   // const newForgotPwdDelayTime = await this.forgotPwdTokenExpiration();
     // Search for the token
     const forgotPwdModel = await this.prismaService.token.findUnique({ where: { emailToken: token } });
     // No token found : 
     if (!forgotPwdModel) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
-    
-    // Verify the token still valid
+    // Verify the token still valid (valid = true)
+    // Verify the token still valid (time delay)
     const isForgotPwdTokenDelayOver = (forgotPwdModel.expiration < new Date());
-    if (isForgotPwdTokenDelayOver) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
+    if (isForgotPwdTokenDelayOver || !forgotPwdModel.valid ) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
 
 console.log("forgotpwdModel return verification is OK: ", forgotPwdModel);
 
+    // Need to unvalid the token (token only one use)
+    await this.prismaService.token.update({
+      where: {
+          id: forgotPwdModel.id,
+      },
+      data: {
+          valid: false,
+          // expiration: newExpirationDate
+      },
+    });
       return forgotPwdModel;
   }
 
