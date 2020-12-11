@@ -235,3 +235,20 @@ model Comment {
   // relation scalar field  (used in the `@relation` attribute above
   authorId      String
 }
+
+model Apparam {
+  id           Int @default(autoincrement()) @id
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String
+  value         String
+  utility       String
+}
+
+model Emaildomain {
+  id           Int @default(autoincrement()) @id
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  domain        String  @unique
+  allowed       Boolean
+}

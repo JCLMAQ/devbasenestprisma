@@ -35,13 +35,13 @@ export class UtilitiesService {
     // Sending email
     async sendEmailToken(emailData): Promise<boolean> {    
     // Step 1: buildup the transporter - connexion to the SMTP
-        // Connexion - transporter data: HOST_EMAIL, EMAIL_PORT, EMAIL_NOREPLY, PWD_NOREPLY
+        // Connexion - transporter data: EMAIL_HOST, EMAIL_PORT, EMAIL_NOREPLY, EMAIL_NOREPLY_PWD
         const transporter = nodemailer.createTransport({
-            host: this.configService.get("HOST_EMAIL"),
+            host: this.configService.get("EMAIL_HOST"),
             port: this.configService.get("EMAIL_PORT"),
             auth: {
                 user: this.configService.get("EMAIL_NOREPLY"), 
-                pass: this.configService.get("PWD_NOREPLY"), 
+                pass: this.configService.get("EMAIL_NOREPLY_PWD"), 
             }
         });
     // Step 2: buildup the email

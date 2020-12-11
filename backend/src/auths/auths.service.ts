@@ -221,7 +221,7 @@ export class AuthsService {
        throw new HttpException(await this.i18n.translate("auths.EMAIL_NOT_VALID",{ lang: lang, }), 400);
      }
      // Verify the domain is accepted
-    const apiEmailActiveted = (this.configService.get<number>("LIMIT_EMAIL_URL") == 1);
+    const apiEmailActiveted = (this.configService.get<number>("EMAIL_LIMIT_DOMAIN") == 1);
     if(apiEmailActiveted ){
       const compareAppUrl = await this.utilitiesService.apiEmailVerification(email);
       if(!compareAppUrl) {

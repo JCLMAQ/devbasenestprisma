@@ -583,6 +583,53 @@
           "$ref": "#/definitions/User"
         }
       }
+    },
+    "Apparam": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "utility": {
+          "type": "string"
+        }
+      }
+    },
+    "Emaildomain": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "allowed": {
+          "type": "boolean"
+        }
+      }
     }
   },
   "type": "object",
@@ -622,6 +669,12 @@
     },
     "comment": {
       "$ref": "#/definitions/Comment"
+    },
+    "apparam": {
+      "$ref": "#/definitions/Apparam"
+    },
+    "emaildomain": {
+      "$ref": "#/definitions/Emaildomain"
     }
   }
 }

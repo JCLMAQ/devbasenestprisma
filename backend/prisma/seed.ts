@@ -18,6 +18,7 @@ async function main() {
       },
     },
   })
+
   await prismaClient.user.create({
     data: {
       firstName: 'bob',
@@ -38,6 +39,69 @@ async function main() {
         ],
       },
     },
+  })
+
+  await prismaClient.apparam.create({
+    data: {
+      name: 'DELAY_BTW_EMAIL_ENABLE',
+      value: '1',
+      utility: 'Activate limitation of asking email repeatedly.'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'DELAY_BTW_EMAIL',
+      value: '10m',
+      utility: 'Delay between two email sending'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'EMAIL_LIMIT_DOMAIN',
+      value: '1',
+      utility: 'Email domain limitation.'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'EMAIL_HOST',
+      value: 'localhost',
+      utility: 'Email host domain.'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'EMAIL_PORT',
+      value: '1025',
+      utility: 'Email host port.'
+    }
+  })
+  
+  await prismaClient.apparam.create({
+    data: {
+      name: 'EMAIL_NOREPLY_PWD',
+      value: 'secret.1',
+      utility: 'No-reply email password.'
+    }
+  })
+
+  await prismaClient.emaildomain.create({
+    data: {
+      domain: 'test.be',
+      allowed: true
+    }
+  })
+  await prismaClient.emaildomain.create({
+    data: {
+      domain: 'gmail.com',
+      allowed: true
+    }
+  })
+  await prismaClient.emaildomain.create({
+    data: {
+      domain: 'outlook.be',
+      allowed: false
+    }
   })
 }
 
