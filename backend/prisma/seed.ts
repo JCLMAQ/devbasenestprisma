@@ -76,12 +76,39 @@ async function main() {
       utility: 'Email host port.'
     }
   })
-  
   await prismaClient.apparam.create({
     data: {
       name: 'EMAIL_NOREPLY_PWD',
       value: 'secret.1',
       utility: 'No-reply email password.'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'EMAIL_TOKEN_EXPIRATION',
+      value: '10m',
+      utility: 'Expiration delay for the email token.'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'FORGOTPWD_TOKEN_EXPIRATION',
+      value: '10m',
+      utility: 'Expiration delay for the forgot paswword token.'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'JWT_LOGOUT_ENABLE',
+      value: '1',
+      utility: 'Enable JWT cancelation when logout (! nedd an access to the DB each time, JWT is send to the backend).'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'JWT_VALIDITY_DURATION',
+      value: '60s',
+      utility: 'Validity duration of the JWT token.'
     }
   })
 
