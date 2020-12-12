@@ -12,8 +12,6 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import * as MilliSecond from 'ms';
 import { AcceptLanguageResolver, I18nContext, I18nRequestScopeService, I18nService } from 'nestjs-i18n';
-import { Console } from 'console';
-import { promises } from 'fs';
 
 
 @Injectable()
@@ -169,7 +167,7 @@ export class AuthsService {
    // Verify delay between sending email
    async verifyDelayBtwEmailIsStillRunning(expirationTime: Date, lang: string): Promise<boolean>{
       let delayStillRunning = false; // Allow new email to be send
-      const delayToTest = this.configService.get<string>("DELAY_BTW_EMAIL");
+      const delayToTest = this.configService.get<string>("EMAIL_DELAY_BTW");
       const milliSecondToAdd = MilliSecond(delayToTest);
       delayStillRunning =  await this.utilitiesService.timeStampDelay(expirationTime, milliSecondToAdd)
       // Verify delay between emailbase on the updateAt field
@@ -372,7 +370,7 @@ export class AuthsService {
     }
     // If evrything is in order, continue the process
     // Invalidate the email token after it's been used
-    const delayMilliSecond = MilliSecond(this.configService.get<string>("DELAY_BTW_EMAIL"));
+    const delayMilliSecond = MilliSecond(this.configService.get<string>("EMAIL_DELAY_BTW"));
     const newExpirationDate= await this.utilitiesService.dateLessDelay(fetchedEmailToken.expiration, delayMilliSecond)
     await this.prismaService.token.update({
       where: {

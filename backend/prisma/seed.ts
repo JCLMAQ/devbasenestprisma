@@ -43,14 +43,14 @@ async function main() {
 
   await prismaClient.apparam.create({
     data: {
-      name: 'DELAY_BTW_EMAIL_ENABLE',
+      name: 'EMAIL_DELAY_BTW_ENABLE',
       value: '1',
       utility: 'Activate limitation of asking email repeatedly.'
     }
   })
   await prismaClient.apparam.create({
     data: {
-      name: 'DELAY_BTW_EMAIL',
+      name: 'EMAIL_DELAY_BTW',
       value: '10m',
       utility: 'Delay between two email sending'
     }
@@ -74,6 +74,13 @@ async function main() {
       name: 'EMAIL_PORT',
       value: '1025',
       utility: 'Email host port.'
+    }
+  })
+  await prismaClient.apparam.create({
+    data: {
+      name: 'EMAIL_NOREPLY',
+      value: 'project.1@$localhost',
+      utility: 'No-reply email address.'
     }
   })
   await prismaClient.apparam.create({

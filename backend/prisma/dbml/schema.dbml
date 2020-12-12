@@ -15,6 +15,7 @@ Table User {
   pwdHash String
   salt String
   social Json
+  language String [default: 'en']
   isValidated DateTime
   isSuspended DateTime
   isDeleted DateTime
@@ -167,7 +168,7 @@ Table Apparam {
   id Int [pk, increment]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  name String [not null]
+  name String [unique, not null]
   value String [not null]
   utility String [not null]
 }

@@ -72,7 +72,7 @@ export class UsersService {
     }
       return user; 
   }
-  async createOneUserWithPwd(userData, pwdHash, salt): Promise<boolean> {
+  async createOneUserWithPwd(userData:Prisma.UserCreateInput, pwdHash, salt): Promise<boolean> {
     // async createOneUser(userData): Promise<User> {
     let userCreatedStatute = false;
     const fullName = userData.firstName + ' ' + userData.lastName;
@@ -87,7 +87,7 @@ export class UsersService {
             nickName: userData.nickName,
             lastName: userData.lastName,
             firstName: userData.firstName,
-            Gender: userData.gender,
+            Gender: userData.Gender,
             // manager: userData.manager
             //  manager: { connect: {email: userData.managerId} }
         }

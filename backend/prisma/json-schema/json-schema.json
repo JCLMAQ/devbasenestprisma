@@ -74,6 +74,12 @@
             "null"
           ]
         },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "isValidated": {
           "type": [
             "string",
