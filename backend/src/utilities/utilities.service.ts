@@ -16,6 +16,7 @@ export class UtilitiesService {
     // Compare AppURL with domain of email
     async apiEmailVerification(email: string){
         // Verify that the domain of the email is the accepted one (if this option is activeted)
+        
         const appURL = this.configService.get<string>("EMAIL_ALLOWED_DOMAIN");
         const compareAppUrl = await this.compareURLOfEmail(appURL, email);
         // If yes verify the API of the email

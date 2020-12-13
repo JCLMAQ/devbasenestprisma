@@ -1,9 +1,16 @@
 import { Module } from '@nestjs/common';
 import { EmaildomainsService } from './emaildomains.service';
 import { EmaildomainsController } from './emaildomains.controller';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
+  imports: [
+    PrismaModule,
+  ],
   controllers: [EmaildomainsController],
-  providers: [EmaildomainsService]
+  providers: [EmaildomainsService],
+  exports: [
+    EmaildomainsService
+  ],
 })
 export class EmaildomainsModule {}

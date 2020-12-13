@@ -7,28 +7,12 @@ import { UpdateEmaildomainDto } from './dto/update-emaildomain.dto';
 export class EmaildomainsController {
   constructor(private readonly emaildomainsService: EmaildomainsService) {}
 
-  @Post()
-  create(@Body() createEmaildomainDto: CreateEmaildomainDto) {
-    return this.emaildomainsService.create(createEmaildomainDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.emaildomainsService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.emaildomainsService.findOne(+id);
+  findOneById(@Param('id') id: string) {
+    return this.emaildomainsService.findOneUnique({id: +id});
   }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateEmaildomainDto: UpdateEmaildomainDto) {
-    return this.emaildomainsService.update(+id, updateEmaildomainDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.emaildomainsService.remove(+id);
+  @Get(':id')
+  findOneByDomain(@Param('domain') domain: string) {
+    return this.emaildomainsService.findOneUnique({domain});
   }
 }

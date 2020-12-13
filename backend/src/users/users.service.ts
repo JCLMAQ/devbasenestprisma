@@ -41,6 +41,7 @@ export class UsersService {
     cursor?: Prisma.UserWhereUniqueInput;
     where?: Prisma.UserWhereInput;
     orderBy?: Prisma.UserOrderByInput;
+    select?: Prisma.UserSelect;
   }): Promise<User[]> {
     const { skip, take, cursor, where, orderBy} = params;
     return this.prisma.user.findMany({

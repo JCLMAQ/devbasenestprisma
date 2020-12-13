@@ -4,8 +4,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { 
   User as UserModel,
-  Prisma
+  Prisma,
+  Role
 } from '@prisma/client';
+import { domain } from 'process';
 
 @Controller('users')
 export class UsersController {
@@ -18,6 +20,14 @@ export class UsersController {
     return this.usersService.createUser(
       userData
     );
+  }
+
+  @Get('allusersbis')
+  async getAllUsersbis(): Promise<UserModel[]> {
+    const users = this.usersService.findUsers({ select: { lastName: true}
+    });
+
+    return users;
   }
 
   @Get('allusers')
