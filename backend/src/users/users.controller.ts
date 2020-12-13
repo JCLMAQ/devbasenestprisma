@@ -27,7 +27,7 @@ export class UsersController {
 
   @Get('someusers')
   async getSomeUsers( @Body() findParams: Prisma.FindManyUserArgs ): Promise<UserModel[]> {
-  const show = {
+    const show = {
     id: true,
     createdAt: true,
     updatedAt: true,

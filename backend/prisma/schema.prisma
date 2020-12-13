@@ -237,7 +237,7 @@ model Comment {
   authorId      String
 }
 
-model Apparam {
+model Config {
   id           Int @default(autoincrement()) @id
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

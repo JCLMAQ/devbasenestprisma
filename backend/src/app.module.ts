@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import * as Joi from 'joi';
 import * as path from 'path';
 import { I18nModule, I18nJsonParser, QueryResolver, HeaderResolver, AcceptLanguageResolver } from 'nestjs-i18n';
+import { EmaildomainsModule } from './emaildomains/emaildomains.module';
 
 @Module({
   imports: [
@@ -48,7 +49,8 @@ import { I18nModule, I18nJsonParser, QueryResolver, HeaderResolver, AcceptLangua
     PrismaModule,
     UsersModule,
     UtilitiesModule,
-    AuthsModule],
+    AuthsModule,
+    EmaildomainsModule],
   controllers: [AppController],
   providers: [AppService],
 })
