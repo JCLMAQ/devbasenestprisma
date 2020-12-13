@@ -164,7 +164,7 @@ Table Comment {
   authorId String [not null]
 }
 
-Table Apparam {
+Table Config {
   id Int [pk, increment]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]

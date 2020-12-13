@@ -590,7 +590,7 @@
         }
       }
     },
-    "Apparam": {
+    "Config": {
       "type": "object",
       "properties": {
         "id": {
@@ -676,8 +676,8 @@
     "comment": {
       "$ref": "#/definitions/Comment"
     },
-    "apparam": {
-      "$ref": "#/definitions/Apparam"
+    "config": {
+      "$ref": "#/definitions/Config"
     },
     "emaildomain": {
       "$ref": "#/definitions/Emaildomain"
