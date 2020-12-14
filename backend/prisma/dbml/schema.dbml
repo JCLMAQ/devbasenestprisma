@@ -100,13 +100,6 @@ Table UserTodoLink {
   }
 }
 
-Table AccountValidation {
-  id String [pk]
-  isValidated Boolean [not null]
-  emailToken String [unique, not null]
-  timeStamp DateTime [not null]
-}
-
 Table File {
   id String [pk]
   name String [not null]

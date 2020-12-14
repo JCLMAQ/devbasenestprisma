@@ -398,24 +398,6 @@
         }
       }
     },
-    "AccountValidation": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "isValidated": {
-          "type": "boolean"
-        },
-        "emailToken": {
-          "type": "string"
-        },
-        "timeStamp": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "File": {
       "type": "object",
       "properties": {
@@ -657,9 +639,6 @@
     },
     "userTodoLink": {
       "$ref": "#/definitions/UserTodoLink"
-    },
-    "accountValidation": {
-      "$ref": "#/definitions/AccountValidation"
     },
     "file": {
       "$ref": "#/definitions/File"
