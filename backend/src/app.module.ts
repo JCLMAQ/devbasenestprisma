@@ -10,6 +10,8 @@ import * as Joi from 'joi';
 import * as path from 'path';
 import { I18nModule, I18nJsonParser, QueryResolver, HeaderResolver, AcceptLanguageResolver } from 'nestjs-i18n';
 import { EmaildomainsModule } from './emaildomains/emaildomains.module';
+import { FilesModule } from './files/files.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -50,7 +52,11 @@ import { EmaildomainsModule } from './emaildomains/emaildomains.module';
     UsersModule,
     UtilitiesModule,
     AuthsModule,
-    EmaildomainsModule],
+    EmaildomainsModule,
+    MulterModule.register({
+      dest: '/uploadedfiles',
+    }),
+    FilesModule],
   controllers: [AppController],
   providers: [AppService],
 })
