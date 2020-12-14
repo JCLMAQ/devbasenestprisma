@@ -41,77 +41,77 @@ async function main() {
     },
   })
 
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'EMAIL_DELAY_BTW_ENABLE',
       value: '1',
       utility: 'Activate limitation of asking email repeatedly.'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'EMAIL_DELAY_BTW',
       value: '10m',
       utility: 'Delay between two email sending'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'EMAIL_LIMIT_DOMAIN',
       value: '1',
       utility: 'Email domain limitation.'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'EMAIL_HOST',
       value: 'localhost',
       utility: 'Email host domain.'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'EMAIL_PORT',
       value: '1025',
       utility: 'Email host port.'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'EMAIL_NOREPLY',
       value: 'project.1@$localhost',
       utility: 'No-reply email address.'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'EMAIL_NOREPLY_PWD',
       value: 'secret.1',
       utility: 'No-reply email password.'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'EMAIL_TOKEN_EXPIRATION',
       value: '10m',
       utility: 'Expiration delay for the email token.'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'FORGOTPWD_TOKEN_EXPIRATION',
       value: '10m',
       utility: 'Expiration delay for the forgot paswword token.'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'JWT_LOGOUT_ENABLE',
       value: '1',
       utility: 'Enable JWT cancelation when logout (! nedd an access to the DB each time, JWT is send to the backend).'
     }
   })
-  await prismaClient.config.create({
+  await prismaClient.configParam.create({
     data: {
       name: 'JWT_VALIDITY_DURATION',
       value: '60s',

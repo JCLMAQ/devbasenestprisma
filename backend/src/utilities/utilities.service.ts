@@ -1,31 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Prisma } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
+import { EmaildomainsService } from 'src/emaildomains/emaildomains.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UtilitiesService {
 
     constructor(
         private configService: ConfigService, 
+        private prisma: PrismaService,
+        private emailDomainsService: EmaildomainsService,
         ) {}
 
+    /*
+    *   DataBase config
+    */
+
+    async searchConfigParam(configItemName: string): Promise<string | null> {
+        // Search for config parameter in the DB, and if not found use the one in the .env config file
+        // TODO Eventually, inverse the seach: first within the .env and then within the DB ??? 
+        const configItem = await this.prisma.configParam.findUnique({where: { name: configItemName },})
+        let valueToReturn = null;
+        configItem?.value === null ? valueToReturn = this.configService.get<string>(configItemName) : valueToReturn = configItem?.value
+        return valueToReturn
+    }
+
     /* 
-        Email management utilities    
+    *    Email management utilities    
     */
 
     // Compare AppURL with domain of email
-    async apiEmailVerification(email: string){
-        // Verify that the domain of the email is the accepted one (if this option is activeted)
-        
-        const appURL = this.configService.get<string>("EMAIL_ALLOWED_DOMAIN");
-        const compareAppUrl = await this.compareURLOfEmail(appURL, email);
+    async domainEmailVerification(email: string): Promise<boolean> {
+        // Verify that the domain of the email is the accepted one (if this option is activeted) 
+        const compareAppUrl = await this.compareDomainOfEmailWithAllowed(email);
         // If yes verify the API of the email
         // If they do not correspond : reject the login or the registration
         return compareAppUrl;
     }
 
     // Email structure vérification
-    async emailValidation(email: string) {
+    async emailValidation(email: string): Promise<boolean> {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         // Process with REGEX 
         const okEmail = re.test(String(email).toLowerCase());;
@@ -37,13 +53,20 @@ export class UtilitiesService {
     async sendEmailToken(emailData): Promise<boolean> {    
     // Step 1: buildup the transporter - connexion to the SMTP
         // Connexion - transporter data: EMAIL_HOST, EMAIL_PORT, EMAIL_NOREPLY, EMAIL_NOREPLY_PWD
+        
         const transporter = nodemailer.createTransport({
-            host: this.configService.get("EMAIL_HOST"),
-            port: this.configService.get("EMAIL_PORT"),
+            host: await this.searchConfigParam( "EMAIL_HOST"),
+            port: await this.searchConfigParam( "EMAIL_PORT"),
             auth: {
-                user: this.configService.get("EMAIL_NOREPLY"), 
-                pass: this.configService.get("EMAIL_NOREPLY_PWD"), 
+                user: await this.searchConfigParam( "EMAIL_NOREPLY"), 
+                pass: await this.searchConfigParam( "EMAIL_NOREPLY_PWD"), 
             }
+            // host: this.configService.get("EMAIL_HOST"),
+            // port: this.configService.get("EMAIL_PORT"),
+            // auth: {
+            //     user: this.configService.get("EMAIL_NOREPLY"), 
+            //     pass: this.configService.get("EMAIL_NOREPLY_PWD"), 
+            // }
         });
     // Step 2: buildup the email
         const {fromEmail, toEmail, subjectEmail, textEmail, htmlEmail } = emailData
@@ -65,29 +88,43 @@ export class UtilitiesService {
         return sendMail;
     }
 
-    // Delay between the present moment and the past date time
-    async timeStampDelay(dateStampToTest: Date, delayMilliSecond: number) {
-       const tooshort = (new Date().getTime() - dateStampToTest.getTime()) < delayMilliSecond;
-       return tooshort;
-    }
-
-    // Delay between two date time
-    async twoTimeStampsDelay(dateStampOne: Date, dateStampTwo: Date, delayMilliSecond: number) {
-        const tooshort = (dateStampOne.getTime() - dateStampTwo.getTime()) < delayMilliSecond;
-        return tooshort;
-    }
-
-    async dateLessDelay(dateInit: Date, delayMilliSecond: number){
-        const newDate = new Date(dateInit.getTime()- delayMilliSecond);
-        return newDate 
-    }
-    
-    async compareURLOfEmail(emailUrl: string, email: string){
+    async compareURLOfEmail(emailDomain: string, email: string){
+        // Compare with received data (emailDomain and email)
         const res = email.split("@");
         const domain = res[1];
-        if(emailUrl == domain){
+        if(emailDomain == domain){
             return true
         }
         return false
     }
+
+    async compareDomainOfEmailWithAllowed(email: string): Promise<boolean> {
+        // Compare with data fo the DB
+        const res = email.split("@");
+        const domain = res[1];
+        return await this.emailDomainsService.isEmailDomainAccepted(domain);
+    }
+
+    /*
+    *   Delay utilities
+    */
+
+    // Delay between the present moment and the past date time
+    async timeStampDelay(dateStampToTest: Date, delayMilliSecond: number): Promise<boolean> {
+       const tooShort = (new Date().getTime() - dateStampToTest.getTime()) < delayMilliSecond;
+       return tooShort;
+    }
+
+    // Delay between two date time
+    async twoTimeStampsDelay(dateStampOne: Date, dateStampTwo: Date, delayMilliSecond: number): Promise<boolean> {
+        const tooShort = (dateStampOne.getTime() - dateStampTwo.getTime()) < delayMilliSecond;
+        return tooShort;
+    }
+
+    async dateLessDelay(dateInit: Date, delayMilliSecond: number): Promise<Date>{
+        const newDate = new Date(dateInit.getTime()- delayMilliSecond);
+        return newDate 
+    }
+    
+    
 }

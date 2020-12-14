@@ -590,7 +590,7 @@
         }
       }
     },
-    "Config": {
+    "ConfigParam": {
       "type": "object",
       "properties": {
         "id": {
@@ -676,8 +676,8 @@
     "comment": {
       "$ref": "#/definitions/Comment"
     },
-    "config": {
-      "$ref": "#/definitions/Config"
+    "configParam": {
+      "$ref": "#/definitions/ConfigParam"
     },
     "emaildomain": {
       "$ref": "#/definitions/Emaildomain"

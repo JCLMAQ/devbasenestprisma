@@ -58,7 +58,9 @@ export class AuthsService {
     // Reinit the sendEmail pwdless
     await this.logoutInvalidEmailToken(userNotDeleted.id)
     // Logout with JWT_LOGOUT_ENABLE = 1  - Does logout with a devalidation of the JWT token
-    if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
+    const jwtLogoutEnable = await this.utilitiesService.searchConfigParam( "JWT_LOGOUT_ENABLE" )
+    if(jwtLogoutEnable === "1") {
+      // if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
       // If yes, then manage the API token validity
       const createOrUpdateToken = await this.mgtAPIToken(userNotDeleted.id, "API", "", true );
       if(! createOrUpdateToken) return false
@@ -92,10 +94,14 @@ export class AuthsService {
   }
 
   // Generate the expiration time of the email token (pwdless and forgotpwd email)
-  async emailTokenExpiration(forPwdLess: boolean) {
-    let expirationTime = "";
+  async emailTokenExpiration(forPwdLess: boolean): Promise<Date> {
+    let expirationTime: string;
     forPwdLess ? expirationTime = "EMAIL_TOKEN_EXPIRATION" : expirationTime = "FORGOT_TOKEN_EXPIRATION"
-    const milliSecondToAdd = MilliSecond(this.configService.get<string>(expirationTime));
+    let tokenExpirationTime = await this.utilitiesService.searchConfigParam( expirationTime );
+
+console.log("token expiration time : ", tokenExpirationTime)
+
+    const milliSecondToAdd = MilliSecond(tokenExpirationTime);
     const currentDate = new Date();
     const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
     return emailTokenExpirationDate
@@ -111,7 +117,8 @@ export class AuthsService {
 
   // Generate the expiration time of the JWT token
   async jwtTokenExpiration() {
-    const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION")
+    const delayToAdd = await this.utilitiesService.searchConfigParam( "JWT_VALIDITY_DURATION" );
+    // const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION")
     let milliSecondToAdd = MilliSecond(delayToAdd);    
     const currentDate = new Date();
     const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ milliSecondToAdd);
@@ -167,7 +174,8 @@ export class AuthsService {
    // Verify delay between sending email
    async verifyDelayBtwEmailIsStillRunning(expirationTime: Date, lang: string): Promise<boolean>{
       let delayStillRunning = false; // Allow new email to be send
-      const delayToTest = this.configService.get<string>("EMAIL_DELAY_BTW");
+      const delayToTest = await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW" )
+    //  const delayToTest = this.configService.get<string>("EMAIL_DELAY_BTW");
       const milliSecondToAdd = MilliSecond(delayToTest);
       delayStillRunning =  await this.utilitiesService.timeStampDelay(expirationTime, milliSecondToAdd)
       // Verify delay between emailbase on the updateAt field
@@ -195,7 +203,9 @@ export class AuthsService {
     if(tokenEmailExist) {
       const tokenEmailId = tokenEmailExist.id;
       // const delayMilliSecond = 
-      const delayMilliSecond = (MilliSecond(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION")))*2;
+      const delayValue = await this.utilitiesService.searchConfigParam( "EMAIL_TOKEN_EXPIRATION" )
+      const delayMilliSecond = (MilliSecond(delayValue))*2;
+      // const delayMilliSecond = (MilliSecond(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION")))*2;
       const newExpirationDate = await this.utilitiesService.dateLessDelay(tokenEmailExist.expiration, delayMilliSecond)
     // Update a longlived token record
       const tokenEmailReInit = await this.prismaService.token.update({
@@ -211,23 +221,23 @@ export class AuthsService {
     }
   }
 
-  async emailValidationProcess(email: string, lang: string): Promise<any> {
+  async emailValidationProcess(email: string, lang: string): Promise<boolean> {
     // Email validation against the strucure of the email and the domain (if doamin restriction active)
      // Verify the username email looks well as an email
      const goodEmail = await this.utilitiesService.emailValidation(email);
      if (!goodEmail) {
        throw new HttpException(await this.i18n.translate("auths.EMAIL_NOT_VALID",{ lang: lang, }), 400);
      }
-     // Verify the domain is accepted
-    const apiEmailActiveted = (this.configService.get<number>("EMAIL_LIMIT_DOMAIN") == 1);
+     // Verify the domain is accepted if the fonctionality is activeted
+    // const apiEmailActiveted = (this.configService.get<number>("EMAIL_LIMIT_DOMAIN") == 1);
+    const apiEmailActiveted = (await this.utilitiesService.searchConfigParam( "EMAIL_LIMIT_DOMAIN" ) === "1");
     if(apiEmailActiveted ){
-      const compareAppUrl = await this.utilitiesService.apiEmailVerification(email);
+      const compareAppUrl = await this.utilitiesService.domainEmailVerification(email);
       if(!compareAppUrl) {
         throw new HttpException(await this.i18n.translate("auths.EMAIL_BAD",{ lang: lang, }), 400);
       }
     }
     return true
-
   }
 
   async userLoginOrRegistration(email: string, autoRegistration: boolean, registration: boolean, lang: string) {
@@ -280,7 +290,8 @@ export class AuthsService {
     const userFound = await this.userLoginOrRegistration(email, autoRegistration, registration, lang);
     const emailToken = await this.generateEmailToken();
     // Config data for the email to send with the token
-    const emailSender = this.configService.get("EMAIL_NOREPLY");
+    const emailSender = await this.utilitiesService.searchConfigParam( "EMAIL_NOREPLY" );
+    // const emailSender = this.configService.get("EMAIL_NOREPLY");
     const emailData = {
       fromEmail: `"No reply" <${emailSender}>` ,
       toEmail: email,
@@ -370,7 +381,8 @@ export class AuthsService {
     }
     // If evrything is in order, continue the process
     // Invalidate the email token after it's been used
-    const delayMilliSecond = MilliSecond(this.configService.get<string>("EMAIL_DELAY_BTW"));
+    const delayMilliSecond = MilliSecond(await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW" ));
+    // const delayMilliSecond = MilliSecond(this.configService.get<string>("EMAIL_DELAY_BTW"));
     const newExpirationDate= await this.utilitiesService.dateLessDelay(fetchedEmailToken.expiration, delayMilliSecond)
     await this.prismaService.token.update({
       where: {
@@ -389,7 +401,9 @@ export class AuthsService {
       validEmailToken.validToken = true;
       // Create or update the tokenAPI
       // JWT Logout enable ?
-      if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
+      
+      if(await this.utilitiesService.searchConfigParam( "JWT_LOGOUT_ENABLE") === "1") {
+      // if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
         // If yes, then manage the API token validity
         const createOrUpdateToken = await this.mgtAPIToken(fetchedEmailToken.userId,"API", "", false )
         !createOrUpdateToken ? validEmailToken.validToken = false : validEmailToken.validToken = true;
@@ -414,8 +428,9 @@ export class AuthsService {
       // need to register first
       throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
     }
-    // Create the token.API if LOGOUT with JWT cancel
-    if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
+    // Create the token.API if LOGOUT with JWT cancel 
+    if(await this.utilitiesService.searchConfigParam( "JWT_LOGOUT_ENABLE") === "1") {
+    // if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
       // If yes, then manage the API token validity
       const createOrUpdateToken = await this.mgtAPIToken(userFound.id, "API", "", false )
     }
@@ -544,8 +559,10 @@ console.log('reset token', tokenForgotPwd)
     if (tokenForgotPwd && tokenForgotPwd.emailToken) {
       
       // Config data for the email to send with the token
-      const emailSender = this.configService.get("EMAIL_NOREPLY");
-      const hostWebAddress = this.configService.get("APP_FRONT_END");
+      const emailSender = await this.utilitiesService.searchConfigParam( "EMAIL_NOREPLY" );
+      // const emailSender = this.configService.get("EMAIL_NOREPLY");
+      const hostWebAddress = await this.utilitiesService.searchConfigParam( "APP_FRONT_END");
+      // const hostWebAddress = this.configService.get("APP_FRONT_END");
       const emailData = {
         fromEmail: `"No reply" <${emailSender}>` ,
         toEmail: emailForgotPwd,

@@ -11,6 +11,7 @@ export class PrismaService extends PrismaClient
   ) {
     super();
     this.$use(this.deletePasswordUser);
+
     if(this.configService.get("ENABLE_SOFT_DELETE") == 1) {
       this.$use(this.softDeleteMiddelware)
       if(this.configService.get("ENABLE_NOT_FIND_SOFTDELETED") == 1) {

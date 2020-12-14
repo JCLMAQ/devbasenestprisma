@@ -10,6 +10,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { User } from '@prisma/client';
 import { ExtractJwt } from 'passport-jwt';
 import { I18n, I18nContext, I18nLang, I18nService } from 'nestjs-i18n';
+import { UtilitiesService } from 'src/utilities/utilities.service';
 
 @Controller('auths')
 export class AuthsController {
@@ -17,6 +18,7 @@ export class AuthsController {
     private readonly authsService: AuthsService,
     private configService: ConfigService, 
     private usersService:  UsersService, 
+    private utilitiesService: UtilitiesService,
     private i18n: I18nService,
     ) {}
 
@@ -55,9 +57,11 @@ export class AuthsController {
     async login(@Body('email') email: string, @I18nLang() lang: string) {
         // need to add the param "lang" at the and of the post to get the lang which is used
         const registration = false; // As we are in the login part
-        const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
+        const autoRegistration = await this.utilitiesService.searchConfigParam( "AUTO_REGISTRATION_ENABLE") === "1";
+        // const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
         // const sendEmailDelay = true // Delay betwwen to send email actif
-        const sendEmailDelay = this.configService.get("EMAIL_DELAY_BTW_ENABLE") == 1;
+        const sendEmailDelay = await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW_ENABLE") === "1";
+    //    const sendEmailDelay = this.configService.get("EMAIL_DELAY_BTW_ENABLE") == 1;
         return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration, lang);
     }
 
@@ -67,8 +71,10 @@ export class AuthsController {
     async registration(@Body('email') email: string, @I18nLang() lang: string) {
         const registration = true; // To show that we are within the resitraton part
         // const sendEmailDelay = true // Delay betwwen to send email actif
-        const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
-        const sendEmailDelay = this.configService.get("EMAIL_DELAY_BTW_ENABLE") == 1;
+        const autoRegistration = await this.utilitiesService.searchConfigParam( "AUTO_REGISTRATION_ENABLE") === "1";
+        // const autoRegistration = this.configService.get("AUTO_REGISTRATION_ENABLE") == 1;
+        const sendEmailDelay = await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW_ENABLE") === "1";
+       // const sendEmailDelay = this.configService.get("EMAIL_DELAY_BTW_ENABLE") == 1;
         return this.authsService.loginPwdLess(email, registration, sendEmailDelay, autoRegistration, lang);
     }
 
