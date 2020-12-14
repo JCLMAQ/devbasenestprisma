@@ -39,8 +39,3 @@ export const fileFileFilter = (req, file, callback) => {
   }
   callback(null, true);
 };
-
-// export const destinationFilePath = (req, file, callback) => {
-//   const destinationImage = UtilitiesService.searchConfigParam( "FILES_STORAGE_URL" );
-//   callback(null, destinationImage)
-// };
