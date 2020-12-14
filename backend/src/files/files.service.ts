@@ -16,6 +16,11 @@ export class FilesService {
     return destinationFiles
   };
 
+  async destinationImagePath(){
+    const destinationImages = await this.utilitiesService.searchConfigParam( "IMAGES_STORAGE_URL" );
+    return destinationImages
+  };
+
     
   create(createFileDto: CreateFileDto) {
     return 'This action adds a new file';
