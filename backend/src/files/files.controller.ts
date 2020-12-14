@@ -5,16 +5,23 @@ import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editFileName, fileFileFilter, imageFileFilter } from 'src/files/file-uploading.utils';
+import { UtilitiesService } from 'src/utilities/utilities.service';
 
 @Controller('files')
 export class FilesController {
-  constructor(private readonly filesService: FilesService) {}
+  constructor(
+    private readonly filesService: FilesService,
+    private readonly utilitiesService: UtilitiesService) {
+      
+    }
 
+  destinationImagePath = './uploadedimages'
   // Uploag one image file
   @Post('uploadoneimage')
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
+        // destination: destinationFilePath,
         destination: './uploadedimages',
         filename: editFileName,
       }),
@@ -60,9 +67,9 @@ export class FilesController {
     };
   }
 
-  @Get('file/:imagename')
+  @Get('image/:imagename')
   getImage(@Param('imagename') image, @Res() res) {
-    const response = res.sendFile(image, { root: './uploadedfiles' });
+    const response = res.sendFile(image, { root: './uploadedimages' });
     return {
       status: HttpStatus.OK,
       data: response,
@@ -88,6 +95,15 @@ export class FilesController {
     return {
       status: HttpStatus.OK,
       message: 'File uploaded successfully!',
+      data: response,
+    };
+  }
+
+  @Get('file/:filename')
+  getFile(@Param('filename') file, @Res() res) {
+    const response = res.sendFile(file, { root: './uploadedfiles' });
+    return {
+      status: HttpStatus.OK,
       data: response,
     };
   }

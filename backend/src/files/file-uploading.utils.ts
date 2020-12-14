@@ -1,5 +1,6 @@
 import { extname } from 'path';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { UtilitiesService } from 'src/utilities/utilities.service';
 
 // Allow only images
 export const imageFileFilter = (req, file, callback) => {
@@ -38,3 +39,8 @@ export const fileFileFilter = (req, file, callback) => {
   }
   callback(null, true);
 };
+
+// export const destinationFilePath = (req, file, callback) => {
+//   const destinationImage = UtilitiesService.searchConfigParam( "FILES_STORAGE_URL" );
+//   callback(null, destinationImage)
+// };
