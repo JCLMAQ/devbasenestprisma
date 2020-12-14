@@ -119,6 +119,15 @@ async function main() {
     }
   })
 
+  await prismaClient.configParam.create({
+    data: {
+      name: 'FILES_STORAGE_URL',
+      value: 'filesStorage',
+      utility: 'URL for the files storage location.'
+    }
+  })
+
+
   await prismaClient.emaildomain.create({
     data: {
       domain: 'test.be',

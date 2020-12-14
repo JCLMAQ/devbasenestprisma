@@ -167,12 +167,12 @@ enum Role {
   SUPERADMIN
 }
 
-model AccountValidation{
-  id           String   @default(uuid()) @id
-  isValidated  Boolean
-  emailToken   String   @unique
-  timeStamp    DateTime
-}
+// model AccountValidation{
+//   id           String   @default(uuid()) @id
+//   isValidated  Boolean
+//   emailToken   String   @unique
+//   timeStamp    DateTime
+// }
 
 model File {
   id          String @default(uuid()) @id
