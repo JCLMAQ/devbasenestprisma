@@ -177,10 +177,10 @@ enum Role {
 model File {
   id          String @default(uuid()) @id
   name        String
+  storageName String @unique
   type        String
   data        String
   owner       String
-  storageName String @unique
 }
 
 model ChangesTracking {

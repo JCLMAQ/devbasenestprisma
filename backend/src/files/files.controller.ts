@@ -16,7 +16,6 @@ export class FilesController {
       
     }
 
-  destinationImagePath = './uploadedimages'
   // Uploag one image file
   @Post('uploadoneimage')
   @UseInterceptors(
@@ -82,7 +81,7 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploadedfiles',
+        // destination: './uploadedfiles',
         filename: editFileName,
       }),
       fileFilter: fileFileFilter,
@@ -111,6 +110,7 @@ export class FilesController {
 
   @Post('file/deleteonefile/:filename')
   async deleteOneFile(@Param('filename') fileName, @Res() res, @I18nLang() lang: string) {
+    // File has to be within the right directory (diskstorage directory define in .env)
    return this.filesService.deleteOneFile(fileName, lang);
   }
 }

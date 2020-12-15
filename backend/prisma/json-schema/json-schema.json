@@ -407,6 +407,9 @@
         "name": {
           "type": "string"
         },
+        "storageName": {
+          "type": "string"
+        },
         "type": {
           "type": "string"
         },
@@ -414,9 +417,6 @@
           "type": "string"
         },
         "owner": {
-          "type": "string"
-        },
-        "storageName": {
           "type": "string"
         }
       }

@@ -1,6 +1,5 @@
 import { extname } from 'path';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { UtilitiesService } from 'src/utilities/utilities.service';
 
 // Allow only images
 export const imageFileFilter = (req, file, callback) => {
@@ -28,7 +27,7 @@ export const editFileName = (req, file, callback) => {
 };
 
 export const fileFileFilter = (req, file, callback) => {
-  if (!file.originalname.match(/\.(pdf|doc|xls|txt)$/)) {
+  if (!file.originalname.match(/\.(pdf|doc|docx|xlsx|xls|txt)$/)) {
     return callback(
       new HttpException(
         'Only some types of files are allowed!',

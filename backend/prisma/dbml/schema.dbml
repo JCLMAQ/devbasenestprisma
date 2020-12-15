@@ -103,10 +103,10 @@ Table UserTodoLink {
 Table File {
   id String [pk]
   name String [not null]
+  storageName String [unique, not null]
   type String [not null]
   data String [not null]
   owner String [not null]
-  storageName String [unique, not null]
 }
 
 Table ChangesTracking {
