@@ -39,8 +39,3 @@ export const fileFileFilter = (req, file, callback) => {
   }
   callback(null, true);
 };
-
-// export const imageStorageLocation = () => {
-
-//   return this.filesService.destinationImagePath()
-// };

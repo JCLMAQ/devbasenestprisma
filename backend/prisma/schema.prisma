@@ -180,6 +180,7 @@ model File {
   type        String
   data        String
   owner       String
+  storageName String @unique
 }
 
 model ChangesTracking {

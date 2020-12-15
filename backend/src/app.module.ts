@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -53,8 +53,12 @@ import { MulterModule } from '@nestjs/platform-express';
     UtilitiesModule,
     AuthsModule,
     EmaildomainsModule,
-    MulterModule.register({
-      dest: '/uploadedfiles',
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        dest: configService.get<string>('FILES_STORAGE_DEST'),
+      }),
+      inject: [ConfigService],
     }),
     FilesModule],
   controllers: [AppController],
