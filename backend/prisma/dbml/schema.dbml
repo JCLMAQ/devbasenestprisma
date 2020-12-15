@@ -106,6 +106,7 @@ Table File {
   type String [not null]
   data String [not null]
   owner String [not null]
+  storageName String [unique, not null]
 }
 
 Table ChangesTracking {

@@ -415,6 +415,9 @@
         },
         "owner": {
           "type": "string"
+        },
+        "storageName": {
+          "type": "string"
         }
       }
     },

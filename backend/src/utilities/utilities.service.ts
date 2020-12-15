@@ -22,8 +22,16 @@ export class UtilitiesService {
         // Search for config parameter in the DB, and if not found use the one in the .env config file
         // TODO Eventually, inverse the search: first within the .env and then within the DB ??? 
         const configItem = await this.prisma.configParam.findUnique({where: { name: configItemName },})
+console.log("configItem Name : ", configItemName)
+console.log("configItem : ", configItem)
         let valueToReturn = null;
+        if(!configItem) {
+            valueToReturn = this.configService.get<string>(configItemName);
+            console.log("value to return : ", valueToReturn)
+            return valueToReturn
+        }
         configItem?.value === null ? valueToReturn = this.configService.get<string>(configItemName) : valueToReturn = configItem?.value
+console.log("value to return : ", valueToReturn)
         return valueToReturn
     }
 

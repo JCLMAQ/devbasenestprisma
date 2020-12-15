@@ -6,6 +6,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editFileName, fileFileFilter, imageFileFilter } from 'src/files/file-uploading.utils';
 import { UtilitiesService } from 'src/utilities/utilities.service';
+import { I18nLang } from 'nestjs-i18n';
 
 @Controller('files')
 export class FilesController {
@@ -106,5 +107,10 @@ export class FilesController {
       status: HttpStatus.OK,
       data: response,
     };
+  }
+
+  @Post('file/deleteonefile/:filename')
+  async deleteOneFile(@Param('filename') fileName, @Res() res, @I18nLang() lang: string) {
+   return this.filesService.deleteOneFile(fileName, lang);
   }
 }
