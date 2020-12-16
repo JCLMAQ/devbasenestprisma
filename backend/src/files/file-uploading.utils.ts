@@ -1,5 +1,6 @@
 import { extname } from 'path';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 // Allow only images
 export const imageFileFilter = (req, file, callback) => {
@@ -37,4 +38,15 @@ export const fileFileFilter = (req, file, callback) => {
     );
   }
   callback(null, true);
+};
+
+export const destinationFilePath = (req, file, callback) => {
+  const valueCallBack = './uploadedfiles'
+  callback(null, valueCallBack);
+};
+
+export const destinationImagePath = (req, file, callback) => {
+  const valueCallBack = './uploadedfiles'
+
+  callback(null, valueCallBack);
 };

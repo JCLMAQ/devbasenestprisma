@@ -56,7 +56,7 @@ import { MulterModule } from '@nestjs/platform-express';
     MulterModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        dest: configService.get<string>('FILES_STORAGE_DEST'),
+        dest: configService.get<string>('FILES_STORAGE_DEST') || './uploadedfiles',
       }),
       inject: [ConfigService],
     }),

@@ -4,16 +4,18 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { editFileName, fileFileFilter, imageFileFilter } from 'src/files/file-uploading.utils';
+import { editFileName, fileFileFilter, imageFileFilter, destinationFilePath, destinationImagePath } from 'src/files/file-uploading.utils';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 import { I18nLang } from 'nestjs-i18n';
+import { config } from 'dotenv/types';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('files')
 export class FilesController {
   constructor(
     private readonly filesService: FilesService,
     private readonly utilitiesService: UtilitiesService) {
-      
+
     }
 
   // Uploag one image file
@@ -21,8 +23,7 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        // destination: destinationFilePath,
-       // destination: './uploadedimages',
+        destination: destinationImagePath,
         filename: editFileName,
       }),
       fileFilter: imageFileFilter,
@@ -39,13 +40,13 @@ export class FilesController {
       data: response,
     };
   }
-
+ 
   // Upload multiple image files
-  @Post('uploadmultipleimage')
+  @Post('uploadmultipleimages')
   @UseInterceptors(
     FilesInterceptor('image', 10, {
       storage: diskStorage({
-        //destination: './uploadedimages',
+        destination: destinationImagePath,
         filename: editFileName,
       }),
       fileFilter: imageFileFilter,
@@ -69,19 +70,26 @@ export class FilesController {
 
   @Get('image/:imagename')
   getImage(@Param('imagename') image, @Res() res) {
-    const response = res.sendFile(image, { root: './uploadedimages' });
+    const response = res.sendFile(image, { root: './uploadedfiles' });
     return {
       status: HttpStatus.OK,
       data: response,
     };
   }
 
-  // Upload one file
+  // @Post('file/deleteonefile/:filename')
+  // async deleteOneImage(@Param('filename') fileName, @Res() res, @I18nLang() lang: string) {
+  //   // File has to be within the right directory (diskstorage directory define in  - hardcode for now)
+  //  return this.filesService.deleteOneImage(fileName, lang);
+  // }
+  // Upload file(s)
+  
+
   @Post('uploadonefile')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        // destination: './uploadedfiles',
+        destination: destinationFilePath,
         filename: editFileName,
       }),
       fileFilter: fileFileFilter,
@@ -95,6 +103,33 @@ export class FilesController {
     return {
       status: HttpStatus.OK,
       message: 'File uploaded successfully!',
+      data: response,
+    };
+  }
+
+  // Upload multiple image files
+  @Post('uploadmultiplefiles')
+  @UseInterceptors(
+    FilesInterceptor('image', 10, {
+      storage: diskStorage({
+        destination: destinationFilePath,
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadMultipleFiles(@UploadedFiles() files) {
+    const response = [];
+    files.forEach(file => {
+      const fileReponse = {
+        originalname: file.originalname,
+        filename: file.filename,
+      };
+      response.push(fileReponse);
+    });
+    return {
+      status: HttpStatus.OK,
+      message: 'Images uploaded successfully!',
       data: response,
     };
   }

@@ -6,13 +6,16 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import fse from 'fs-extra';
 import path from 'path';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FilesService {
+  static destinationFilePath: any;
   constructor(
     private prisma: PrismaService,
     private utilitiesService: UtilitiesService,
     private i18n: I18nService,
+    private configService: ConfigService
   ) {}
 
   async destinationFilePath(): Promise<string>{
@@ -27,11 +30,76 @@ export class FilesService {
   };
 
   
-  async deleteOneFile(fileName: string, lang: string): Promise<any> {
+//   async deleteOneFile(fileName: string, lang: string): Promise<any> {
+//     // Delete one file from the diskstorage
+//     // Seach for the location
+//     const storagePath = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
+//     const path = require('path')
+//     const pathSep = path.sep;
+// console.log("Path sep: ", pathSep)
+//     const fullPath = storagePath+pathSep+fileName;
+// console.log("full path:", fullPath)
+//     const fse = require('fs-extra');
+//     try{
+//       await fse.exists(fullPath);
+//       console.log('File exist and is deleted');
+//       // Now delete it
+//       try {
+//         await  fse.unlink(fullPath)
+//         return {
+//           status: HttpStatus.OK,
+//           data: "File has been deleted",
+//         };
+//       } catch (err) {
+//         console.error(err)
+//         console.log('Error File not deleted'); 
+//         throw new HttpException(this.i18n.translate("files.FILE_NOT_DELETED",{ lang: lang, }), 400);
+//       }
+//     } catch (err) {
+//         console.error(err)
+//         console.log('File does not exist'); 
+//         throw new HttpException(this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
+//     }
+//   }
+
+async deleteOneFile(fileName: string, lang: string): Promise<any> {
+  // Delete one file from the diskstorage
+  // Seach for the location
+  const storagePath = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
+  const path = require('path')
+  const pathSep = path.sep;
+console.log("Path sep: ", pathSep)
+  const fullPath = storagePath+pathSep+fileName;
+console.log("full path:", fullPath)
+  const fse = require('fs-extra');
+  
+    const isExist = await fse.exists(fullPath);
+console.log("File exist ?", isExist)
+    if(isExist) {
+      const result = fse.unlink(fullPath, (err) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+      })
+      console.log('File exist and is deleted', result);
+      return true
+    } else {
+      throw new HttpException(this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
+      // return false
+    }
+    
+}
+
+
+  async deleteOneImage(fileName: string, lang: string): Promise<any> {
     // Delete one file from the diskstorage
     // Seach for the location
+    const path = require('path');
+    const fse = require('fs-extra');
     const storagePath = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
-    const fullPath = storagePath+"/"+fileName;
+    const pathSep = path.sep;
+    const fullPath = storagePath+pathSep+fileName;
 console.log("full path:", fullPath)
     // const fse = require('fs-extra');
     try{
@@ -58,6 +126,7 @@ console.log("full path:", fullPath)
 
   async copyFiles (fromPath: string, toPath: string, fileNameWithExt: string, lang: string): Promise<boolean> {
     // Copy one file from one place to the other
+    const path = require('path');
     const pathSep = path.sep
     const fullPathFrom = fromPath+pathSep+fileNameWithExt;
     const fullPathTo = toPath+pathSep+fileNameWithExt;
@@ -74,6 +143,7 @@ console.log("full path:", fullPath)
 
     async renameOneFile(pathToFile: string, oldFileNameWithExt: string, newFileNameWithExt: string, lang: string): Promise<boolean> {
       // Rename a file (with its extension)
+      const path = require('path');
       const pathSep = path.sep
       console.log("Path separator : ", pathSep)
       const fullPathOld = pathToFile+pathSep+oldFileNameWithExt;
@@ -91,6 +161,7 @@ console.log("full path:", fullPath)
     async parsePath(pathToParse: string, lang: string): Promise<Object> {
       // From a path to the parts of the path:
       // Returns: { root: '/', dir: '/home/user/dir', base: 'file.txt', ext: '.txt', name: 'file' }
+      const path = require('path');
       try {
         const result = await path.parse(pathToParse);
         
