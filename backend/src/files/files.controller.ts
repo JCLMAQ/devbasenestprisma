@@ -15,7 +15,6 @@ export class FilesController {
   constructor(
     private readonly filesService: FilesService,
     private readonly utilitiesService: UtilitiesService) {
-
     }
 
   // Uploag one image file
@@ -23,7 +22,8 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: destinationImagePath,
+        // destination: destinationImagePath,
+        destination: destinationImagePath ,
         filename: editFileName,
       }),
       fileFilter: imageFileFilter,
@@ -77,12 +77,15 @@ export class FilesController {
     };
   }
 
-  // @Post('file/deleteonefile/:filename')
-  // async deleteOneImage(@Param('filename') fileName, @Res() res, @I18nLang() lang: string) {
-  //   // File has to be within the right directory (diskstorage directory define in  - hardcode for now)
-  //  return this.filesService.deleteOneImage(fileName, lang);
-  // }
-  // Upload file(s)
+  @Post('file/deleteoneimage/:filename')
+  async deleteOneImage(@Param('filename') fileName, @Res() res, @I18nLang() lang: string) {
+    // TODO File has to be within the right directory (diskstorage directory define in .env)
+    const response = this.filesService.deleteOneImage(fileName, lang);
+   return {
+    status: HttpStatus.OK,
+    data: response,
+    };
+  }
   
 
   @Post('uploadonefile')
@@ -146,6 +149,11 @@ export class FilesController {
   @Post('file/deleteonefile/:filename')
   async deleteOneFile(@Param('filename') fileName, @Res() res, @I18nLang() lang: string) {
     // File has to be within the right directory (diskstorage directory define in .env)
-   return this.filesService.deleteOneFile(fileName, lang);
+   const response = this.filesService.deleteOneFile(fileName, lang);
+   return {
+    status: HttpStatus.OK,
+    data: response,
+    };
   }
+
 }

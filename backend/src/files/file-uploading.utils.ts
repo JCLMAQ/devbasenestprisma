@@ -2,6 +2,7 @@ import { extname } from 'path';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+
 // Allow only images
 export const imageFileFilter = (req, file, callback) => {
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -41,12 +42,13 @@ export const fileFileFilter = (req, file, callback) => {
 };
 
 export const destinationFilePath = (req, file, callback) => {
-  const valueCallBack = './uploadedfiles'
+  const storagePath = process.env.FILES_STORAGE_DEST;
+  const valueCallBack = storagePath; //'./uploadedfiles'
   callback(null, valueCallBack);
 };
 
 export const destinationImagePath = (req, file, callback) => {
-  const valueCallBack = './uploadedfiles'
-
+  const storagePath = process.env.IMAGES_STORAGE_DEST;
+  const valueCallBack =storagePath // './uploadedimages'
   callback(null, valueCallBack);
 };

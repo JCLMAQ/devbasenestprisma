@@ -18,6 +18,8 @@ export class FilesService {
     private configService: ConfigService
   ) {}
 
+  // TODO Create directory for files storage id it does not exist
+
   async destinationFilePath(): Promise<string>{
     // Path of the files storage directory
     const destinationFiles = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
@@ -29,43 +31,11 @@ export class FilesService {
     return destinationImages
   };
 
-  
-//   async deleteOneFile(fileName: string, lang: string): Promise<any> {
-//     // Delete one file from the diskstorage
-//     // Seach for the location
-//     const storagePath = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
-//     const path = require('path')
-//     const pathSep = path.sep;
-// console.log("Path sep: ", pathSep)
-//     const fullPath = storagePath+pathSep+fileName;
-// console.log("full path:", fullPath)
-//     const fse = require('fs-extra');
-//     try{
-//       await fse.exists(fullPath);
-//       console.log('File exist and is deleted');
-//       // Now delete it
-//       try {
-//         await  fse.unlink(fullPath)
-//         return {
-//           status: HttpStatus.OK,
-//           data: "File has been deleted",
-//         };
-//       } catch (err) {
-//         console.error(err)
-//         console.log('Error File not deleted'); 
-//         throw new HttpException(this.i18n.translate("files.FILE_NOT_DELETED",{ lang: lang, }), 400);
-//       }
-//     } catch (err) {
-//         console.error(err)
-//         console.log('File does not exist'); 
-//         throw new HttpException(this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
-//     }
-//   }
-
 async deleteOneFile(fileName: string, lang: string): Promise<any> {
   // Delete one file from the diskstorage
   // Seach for the location
-  const storagePath = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
+  const storagePath = process.env.FILES_STORAGE_DEST;
+  // const storagePath = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
   const path = require('path')
   const pathSep = path.sep;
 console.log("Path sep: ", pathSep)
@@ -79,35 +49,38 @@ console.log("File exist ?", isExist)
       const result = fse.unlink(fullPath, (err) => {
         if (err) {
           console.error(err)
-          return
+          return false
         }
+        console.log('File is deleted', result);
+        return true
       })
-      console.log('File exist and is deleted', result);
-      return true
+      // console.log('File exist and is deleted', result);
+      // return true
     } else {
+console.log('Error File not deleted'); 
+// TODO Bug: does not send httpException ?
       throw new HttpException(this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
-      // return false
     }
     
 }
-
 
   async deleteOneImage(fileName: string, lang: string): Promise<any> {
     // Delete one file from the diskstorage
     // Seach for the location
     const path = require('path');
     const fse = require('fs-extra');
-    const storagePath = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
+    const storagePath = process.env.IMAGES_STORAGE_DEST;
+    // const storagePath = await this.utilitiesService.searchConfigParam( "IMAGES_STORAGE_DEST" );
     const pathSep = path.sep;
     const fullPath = storagePath+pathSep+fileName;
 console.log("full path:", fullPath)
-    // const fse = require('fs-extra');
     try{
       await fse.exists(fullPath);
-      console.log('File exist and is deleted');
+      console.log('File exist');
       // Now delete it
       try {
-        await  fse.unlink(fullPath)
+        await  fse.unlink(fullPath);
+        console.log('File is deleted');
         return {
           status: HttpStatus.OK,
           data: "File has been deleted",
@@ -185,26 +158,4 @@ console.log("full path:", fullPath)
 
       return true
     }
-  /*
-  * Classic for CRUD
-  create(createFileDto: CreateFileDto) {
-    return 'This action adds a new file';
-  }
-
-  findAll() {
-    return `This action returns all files`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} file`;
-  }
-
-  update(id: number, updateFileDto: UpdateFileDto) {
-    return `This action updates a #${id} file`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} file`;
-  }
-*/
 }
