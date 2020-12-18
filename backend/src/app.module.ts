@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -10,6 +10,8 @@ import * as Joi from 'joi';
 import * as path from 'path';
 import { I18nModule, I18nJsonParser, QueryResolver, HeaderResolver, AcceptLanguageResolver } from 'nestjs-i18n';
 import { EmaildomainsModule } from './emaildomains/emaildomains.module';
+import { FilesModule } from './files/files.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -50,7 +52,15 @@ import { EmaildomainsModule } from './emaildomains/emaildomains.module';
     UsersModule,
     UtilitiesModule,
     AuthsModule,
-    EmaildomainsModule],
+    EmaildomainsModule,
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        dest: configService.get<string>('FILES_STORAGE_DEST') || './upload',
+      }),
+      inject: [ConfigService],
+    }),
+    FilesModule],
   controllers: [AppController],
   providers: [AppService],
 })

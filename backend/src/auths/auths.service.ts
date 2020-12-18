@@ -172,18 +172,18 @@ console.log("token expiration time : ", tokenExpirationTime)
     return tokenExist
   }
    // Verify delay between sending email
-   async verifyDelayBtwEmailIsStillRunning(expirationTime: Date, lang: string): Promise<boolean>{
-      let delayStillRunning = false; // Allow new email to be send
-      const delayToTest = await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW" )
-    //  const delayToTest = this.configService.get<string>("EMAIL_DELAY_BTW");
-      const milliSecondToAdd = MilliSecond(delayToTest);
-      delayStillRunning =  await this.utilitiesService.timeStampDelay(expirationTime, milliSecondToAdd)
-      // Verify delay between emailbase on the updateAt field
-      if ( delayStillRunning) {
-        throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{ lang: lang, }), 400);
-      }
-      return delayStillRunning
-   }
+  async verifyDelayBtwEmailIsStillRunning(expirationTime: Date, lang: string): Promise<boolean>{
+    let delayStillRunning = false; // Allow new email to be send
+    const delayToTest = await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW" )
+  //  const delayToTest = this.configService.get<string>("EMAIL_DELAY_BTW");
+    const milliSecondToAdd = MilliSecond(delayToTest);
+    delayStillRunning =  await this.utilitiesService.timeStampDelay(expirationTime, milliSecondToAdd)
+    // Verify delay between emailbase on the updateAt field
+    if ( delayStillRunning) {
+      throw new HttpException(await this.i18n.translate("auths.EMAIL_ALREADY_SEND",{ lang: lang, }), 400);
+    }
+    return delayStillRunning
+  }
    
   /*
   PasswordLess Authentication Schema
@@ -224,10 +224,10 @@ console.log("token expiration time : ", tokenExpirationTime)
   async emailValidationProcess(email: string, lang: string): Promise<boolean> {
     // Email validation against the strucure of the email and the domain (if doamin restriction active)
      // Verify the username email looks well as an email
-     const goodEmail = await this.utilitiesService.emailValidation(email);
-     if (!goodEmail) {
-       throw new HttpException(await this.i18n.translate("auths.EMAIL_NOT_VALID",{ lang: lang, }), 400);
-     }
+    const goodEmail = await this.utilitiesService.emailValidation(email);
+    if (!goodEmail) {
+      throw new HttpException(await this.i18n.translate("auths.EMAIL_NOT_VALID",{ lang: lang, }), 400);
+    }
      // Verify the domain is accepted if the fonctionality is activeted
     // const apiEmailActiveted = (this.configService.get<number>("EMAIL_LIMIT_DOMAIN") == 1);
     const apiEmailActiveted = (await this.utilitiesService.searchConfigParam( "EMAIL_LIMIT_DOMAIN" ) === "1");

@@ -121,9 +121,17 @@ async function main() {
 
   await prismaClient.configParam.create({
     data: {
-      name: 'FILES_STORAGE_URL',
-      value: 'filesStorage',
-      utility: 'URL for the files storage location.'
+      name: 'FILES_STORAGE_DEST',
+      value: './uploadedfiles',
+      utility: '! Not used for now - URL for the files storage location.'
+    }
+  })
+
+  await prismaClient.configParam.create({
+    data: {
+      name: 'IMAGESS_STORAGE_DEST',
+      value: './uploadedfiles',
+      utility: " ! Not used for now - URL for the files storage location."
     }
   })
 
