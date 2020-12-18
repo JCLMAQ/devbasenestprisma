@@ -5,7 +5,9 @@ import { ConfigService } from '@nestjs/config';
 
 // Allow only images
 export const imageFileFilter = (req, file, callback) => {
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+  // const listOfExtensions = "/\.(jpg|jpeg|png|gif)$/"
+  const listOfExtensions = process.env.IMAGES_EXTENSIONS_REGEX;
+  if (!file.originalname.match(listOfExtensions)) {
     return callback(
       new HttpException(
         'Only image files are allowed!',
@@ -29,7 +31,9 @@ export const editFileName = (req, file, callback) => {
 };
 
 export const fileFileFilter = (req, file, callback) => {
-  if (!file.originalname.match(/\.(pdf|doc|docx|xlsx|xls|txt)$/)) {
+  // const listOfExtensions = "/\.(pdf|doc|docx|xlsx|xls|txt)$/"
+  const listOfExtensions = process.env.IMAGES_EXTENSIONS_REGEX;
+  if (!file.originalname.match(listOfExtensions)) {
     return callback(
       new HttpException(
         'Only some types of files are allowed!',

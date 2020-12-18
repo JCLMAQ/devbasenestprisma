@@ -34,6 +34,8 @@ export class FilesController {
       originalname: file.originalname,
       filename: file.filename,
     };
+    // Create the record in DB
+    
     return {
       status: HttpStatus.OK,
       message: 'Image uploaded successfully!',
