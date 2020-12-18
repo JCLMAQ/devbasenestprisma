@@ -108,6 +108,7 @@ Table File {
   data String
   owner String
   size Int
+  isDeleted DateTime
 }
 
 Table ChangesTracking {

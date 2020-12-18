@@ -4,6 +4,8 @@
 
 # Primsa Migration
 /prisma/migrations
+/dbml
+/json-schema
 
 # Logs
 logs

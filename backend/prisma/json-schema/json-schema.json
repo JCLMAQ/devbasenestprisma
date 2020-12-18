@@ -433,6 +433,13 @@
             "integer",
             "null"
           ]
+        },
+        "isDeleted": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
       }
     },
