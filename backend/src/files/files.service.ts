@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { File, Prisma } from '@prisma/client';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
@@ -19,7 +20,7 @@ export class FilesService {
     private configService: ConfigService
   ) {}
 
-  // TODO Create directory for files storage id it does not exist
+  // TODO Create directory for files storage id if does not exist
 
   async destinationFilePath(): Promise<string>{
     // Path of the files storage directory
@@ -134,4 +135,46 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
 
       return true
     }
+
+    /*
+    * CRUD part for the file mgt in DB
+    */
+
+    async createOneFileRecord(data: Prisma.FileCreateInput): Promise<File> {
+        return this.prisma.file.create({ data,
+        });
+      }
+
+    async findUniqueFile(where: Prisma.FileWhereUniqueInput): Promise<File | null> {
+      return this.prisma.file.findUnique({
+        where,
+      });
+    }
+
+    async updateOneFile(params: {
+      where: Prisma.FileWhereUniqueInput;
+      data: Prisma.FileUpdateInput;
+    }): Promise<File> {
+      const { where, data } = params;
+      return this.prisma.file.update({
+        data,
+        where,
+      });
+    }
+  
+    async deleteOneFileRecord(where: Prisma.FileWhereUniqueInput): Promise<File> {
+      return this.prisma.file.delete({
+        where,
+      });
+    }
+
+    async createOrUpdateFile( data: Prisma.FileUpsertArgs): Promise<File> {
+      const {where, create, update} = data
+      return this.prisma.file.upsert({
+        where,
+        create,
+        update,
+        })
+    }
+
 }
