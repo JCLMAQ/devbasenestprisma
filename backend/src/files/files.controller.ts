@@ -79,9 +79,7 @@ export class FilesController {
 
   @Post('file/deleteoneimage/:filename')
   async deleteOneImage(@Param('filename') fileName, @I18nLang() lang: string) {
-    // TODO File has to be within the right directory (diskstorage directory define in .env)
     const response = await this.filesService.deleteOneImage(fileName, lang);
-   console.log("Image Received answer : " , response)
    return {
     status: HttpStatus.OK,
     data: response,
@@ -99,7 +97,6 @@ export class FilesController {
       fileFilter: fileFileFilter,
     }),
   )
-  // TODO Server error if the file to load does not exist or is not found
   async uploadedFile(@UploadedFile() file) {
     const response = {
       originalname: file.originalname,
@@ -153,7 +150,6 @@ export class FilesController {
   async deleteOneFile(@Param('filename') fileName, @I18nLang() lang: string) {
     // File has to be within the right directory (diskstorage directory define in .env)
    const response = await this.filesService.deleteOneFile(fileName, lang);
-   console.log("Received answer : " , response)
    return {
     status: HttpStatus.OK,
     data: response,

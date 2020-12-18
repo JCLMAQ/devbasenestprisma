@@ -35,56 +35,44 @@ export class FilesService {
   async deleteOneFile(fileName: string, lang: string): Promise<any> {
     // Delete one file from the diskstorage
     let response = null;
-    console.log("FileName to delete: ", fileName)
     // Seach for the location
     const storagePath = process.env.FILES_STORAGE_DEST;
-  console.log("path to FileName to delete: ", storagePath)
     const pathSep = sep;
     // const pathSep = path.sep;
     const fullPath = storagePath+pathSep+fileName;
     const fse = require('fs-extra');
     const isExist = await fse.exists(fullPath);
-  console.log("File exist ?", isExist)
     if(!isExist){
       throw new HttpException(await this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
     }
     await fse.unlink(fullPath,(err) => {
       if (err) {
         console.error(err)
-        console.log('Error File not deleted'); 
         throw new HttpException(this.i18n.translate("files.FILE_NOT_DELETED",{ lang: lang, }), 400);
     }}) 
     const result  = "File deleted: "+fileName
-    console.log('File exist and is deleted', result);
     return result;  
   }
 
 async deleteOneImage(fileName: string, lang: string): Promise<any> {
     // Delete one image from the diskstorage
     let response = null;
-    console.log("Image name to delete: ", fileName)
     // Seach for the location
     const storagePath = process.env.IMAGES_STORAGE_DEST;
-  console.log("path to Image name to delete: ", storagePath)
     const pathSep = sep;
     // const pathSep = path.sep;
     const fullPath = storagePath+pathSep+fileName;
-    console.log("full path to image to delete:", fullPath)
-    const fse = require('fs-extra');
-    
+    const fse = require('fs-extra');   
     const isExist = await fse.exists(fullPath);
-  console.log("Image exist ?", isExist)
     if(!isExist){
       throw new HttpException(await this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
     }
     await fse.unlink(fullPath,(err) => {
       if (err) {
         console.error(err)
-        console.log('Error File not deleted'); 
         throw new HttpException(this.i18n.translate("files.FILE_NOT_DELETED",{ lang: lang, }), 400);
     }}) 
     const result  = "Image deleted: "+fileName
-    console.log('Image exist and is deleted', result);
     return result;  
   }
 
@@ -98,7 +86,6 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
     try {
       await fse.copy(fullPathFrom, fullPathTo)
       // await fse.copy('/tmp/myfile', '/tmp/mynewfile')
-      console.log('success!')
       return true
     } catch (err) {
       console.error(err)
@@ -110,12 +97,10 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
       // Rename a file (with its extension)
       const path = require('path');
       const pathSep = path.sep
-      console.log("Path separator : ", pathSep)
       const fullPathOld = pathToFile+pathSep+oldFileNameWithExt;
       const fullPathNew = pathToFile+pathSep+newFileNameWithExt;
       try {
         await fse.rename(fullPathOld, fullPathNew)
-        console.log('success!')
         return true
       } catch (err) {
         console.error(err)
@@ -141,7 +126,6 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
       // Verify that a folder exist, and if not create it (if the path is correct)
       try {
         await fse.ensureDir(directoryToFix)
-        console.log('success!')
         return true
       } catch (err) {
         console.error(err)
