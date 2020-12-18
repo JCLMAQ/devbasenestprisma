@@ -104,9 +104,10 @@ Table File {
   id String [pk]
   name String [not null]
   storageName String [unique, not null]
-  type String [not null]
-  data String [not null]
-  owner String [not null]
+  type String
+  data String
+  owner String
+  size Int
 }
 
 Table ChangesTracking {

@@ -411,13 +411,28 @@
           "type": "string"
         },
         "type": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "data": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "owner": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "size": {
+          "type": [
+            "integer",
+            "null"
+          ]
         }
       }
     },

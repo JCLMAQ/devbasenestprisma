@@ -57,6 +57,7 @@ import { MulterModule } from '@nestjs/platform-express';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         dest: configService.get<string>('FILES_STORAGE_DEST') || './upload',
+        limits: {fileSize: configService.get<number>('FILES_MAX_SIZE') || 2000000} 
       }),
       inject: [ConfigService],
     }),

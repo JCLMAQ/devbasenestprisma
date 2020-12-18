@@ -2,13 +2,16 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseInterceptors, Uploa
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { editFileName, fileFileFilter, imageFileFilter, destinationFilePath, destinationImagePath } from 'src/files/file-uploading.utils';
+import { editFileName, fileFileFilter, imageFileFilter, destinationFilePath, destinationImagePath, imageMaxSize } from 'src/files/file-uploading.utils';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 import { I18nLang } from 'nestjs-i18n';
 import { config } from 'dotenv/types';
 import { ConfigService } from '@nestjs/config';
+import { number } from 'joi';
+import { imageMulterOptions } from './multer-image-options';
+import { fileMulterOptions } from './multer-files-options';
 
 @Controller('files')
 export class FilesController {
@@ -18,28 +21,24 @@ export class FilesController {
     }
 
   // Uploag one image file
+
   @Post('uploadoneimage')
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        // destination: destinationImagePath,
-        destination: destinationImagePath ,
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
+  @UseInterceptors(FileInterceptor('image', imageMulterOptions))
   async uploadedImage(@UploadedFile() file) {
-    const response = {
-      originalname: file.originalname,
-      filename: file.filename,
-    };
+    console.log("File data back: ", file)
     // Create the record in DB
-    
+    const response = {
+      originalName: file.originalname,
+      fileName: file.filename,
+      typeFile: file.mimetype,
+      size: file.size
+    };
+    const result = await this.filesService.createOneFileInDB(response)
     return {
       status: HttpStatus.OK,
       message: 'Image uploaded successfully!',
       data: response,
+      db: result,
     };
   }
  
@@ -90,24 +89,21 @@ export class FilesController {
   
 
   @Post('uploadonefile')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: destinationFilePath,
-        filename: editFileName,
-      }),
-      fileFilter: fileFileFilter,
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file', fileMulterOptions))
   async uploadedFile(@UploadedFile() file) {
+    console.log(file)
     const response = {
-      originalname: file.originalname,
-      filename: file.filename,
+      originalName: file.originalname,
+      fileName: file.filename,
+      typeFile: file.mimetype,
+      size: file.size
     };
+    const result = await this.filesService.createOneFileInDB(response)
     return {
       status: HttpStatus.OK,
       message: 'File uploaded successfully!',
       data: response,
+      db: result
     };
   }
 

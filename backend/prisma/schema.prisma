@@ -178,10 +178,12 @@ model File {
   id          String @default(uuid()) @id
   name        String
   storageName String @unique
-  type        String
-  data        String
-  owner       String
-}
+  type        String?
+  data        String?
+  owner       String?
+  size        Int?
+  isDeleted   DateTime? // Null = not deleted
+  }
 
 model ChangesTracking {
   id           Int      @default(autoincrement()) @id

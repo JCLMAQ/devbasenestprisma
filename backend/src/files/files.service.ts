@@ -139,7 +139,14 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
     /*
     * CRUD part for the file mgt in DB
     */
-
+    async createOneFileInDB(response){
+      // Create the record in DB
+      const dataFile = "";
+      const ownerFile = "";
+      const data = {name: response.originalName, storageName: response.fileName, type: response.typeFile, data: dataFile, owner: ownerFile, size: response.size };
+      return await this.createOneFileRecord(data);
+    }
+    
     async createOneFileRecord(data: Prisma.FileCreateInput): Promise<File> {
         return this.prisma.file.create({ data,
         });
