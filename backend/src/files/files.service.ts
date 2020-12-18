@@ -5,6 +5,7 @@ import { UtilitiesService } from 'src/utilities/utilities.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import fse from 'fs-extra';
+import { sep, extname } from 'path';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
 
@@ -36,8 +37,9 @@ async deleteOneFile(fileName: string, lang: string): Promise<any> {
   // Seach for the location
   const storagePath = process.env.FILES_STORAGE_DEST;
   // const storagePath = await this.utilitiesService.searchConfigParam( "FILES_STORAGE_DEST" );
-  const path = require('path')
-  const pathSep = path.sep;
+  // const path = require('path')
+  const pathSep = sep;
+  // const pathSep = path.sep;
 console.log("Path sep: ", pathSep)
   const fullPath = storagePath+pathSep+fileName;
 console.log("full path:", fullPath)
@@ -67,11 +69,12 @@ console.log('Error File not deleted');
   async deleteOneImage(fileName: string, lang: string): Promise<any> {
     // Delete one file from the diskstorage
     // Seach for the location
-    const path = require('path');
     const fse = require('fs-extra');
     const storagePath = process.env.IMAGES_STORAGE_DEST;
     // const storagePath = await this.utilitiesService.searchConfigParam( "IMAGES_STORAGE_DEST" );
-    const pathSep = path.sep;
+    // const path = require('path')
+    const pathSep = sep;
+    // const pathSep = path.sep;
     const fullPath = storagePath+pathSep+fileName;
 console.log("full path:", fullPath)
     try{
