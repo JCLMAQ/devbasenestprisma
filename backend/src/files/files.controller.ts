@@ -3,13 +3,8 @@ import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { editFileName, fileFileFilter, imageFileFilter, destinationFilePath, destinationImagePath, imageMaxSize } from 'src/files/files-utilities';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 import { I18nLang } from 'nestjs-i18n';
-import { config } from 'dotenv/types';
-import { ConfigService } from '@nestjs/config';
-import { number } from 'joi';
 import { imageMulterOptions } from './files-image-multer-options';
 import { fileMulterOptions } from './files-file-multer-options';
 import * as sharp from 'sharp';
@@ -80,6 +75,15 @@ export class FilesController {
 
   @Get('image/:imagename')
   getImage(@Param('imagename') image, @Res() res) {
+    const response = res.sendFile(image, { root: './uploadedimages' });
+    return {
+      status: HttpStatus.OK,
+      data: response,
+    };
+  }
+
+  @Get('image/:imagenamesize')
+  getImageSized(@Param('imagename') image,@Param('imagesized') size, @Res() res) {
     const response = res.sendFile(image, { root: './uploadedimages' });
     return {
       status: HttpStatus.OK,
