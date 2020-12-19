@@ -30,7 +30,7 @@ export class FilesController {
   async uploadedImage(@UploadedFile() file) {
     console.log("File data back: ", file)
     // Create the different image sizes
-    await this.saveImages(file);
+    await this.filesService.saveSizedImages(file);
     // Create the record in DB
     const response = {
       originalName: file.originalname,
@@ -55,7 +55,7 @@ export class FilesController {
     const response = [];
     const resultdb = [];
     files.forEach(file => {
-      this.saveImages(file);
+      this.filesService.saveSizedImages(file);
       const fileReponse = {
         originalname: file.originalname,
         filename: file.filename,
@@ -76,6 +76,7 @@ export class FilesController {
 
   @Get('image/:imagename')
   getImage(@Param('imagename') image, @Res() res) {
+    // Get the original image (not sized)
     const response = res.sendFile(image, { root: './uploadedimages' });
     return {
       status: HttpStatus.OK,
@@ -84,6 +85,7 @@ export class FilesController {
   }
 
   @Get('imagesized/:imagename/:size')
+  // Get the image for a specific predefined size
   getImageSized(@Param('imagename') image, @Param('size') size, @Res() res) {
     // size ex '25X25', '50X50', '100X100', '200X200', '400X400', '900X900'
     const rootFolder = './uploadedimages'+path.sep+size
@@ -122,7 +124,6 @@ export class FilesController {
       db: result
     };
   }
-
 
   // Upload multiple image files
   @Post('uploadmultiplefiles')
@@ -168,25 +169,25 @@ export class FilesController {
     };
   }
 
-  private async saveImages (file): Promise<void> {
-    const [, ext] = file.mimetype.split('/');
-    if (['jpeg', 'jpg', 'png'].includes(ext)) {
-      this.sizes.forEach((s: string) => {
-        const [size] = s.split('X');
-        // console.log(`${__dirname}/../uploadedimages/${s}/${file.fileName}`)
-        readFileAsyc(file.path)
-          .then((b: Buffer) => {
-            return sharp(b)
-              .resize(+size)
-              .toFile(
-                // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
-                `./uploadedimages/${s}/${file.filename}`,
-              );
-          })
-          .then(console.log)
-          .catch(console.error);
-      });
-    }
-  }
+  // private async saveImages (file): Promise<void> {
+  //   const [, ext] = file.mimetype.split('/');
+  //   if (['jpeg', 'jpg', 'png'].includes(ext)) {
+  //     this.sizes.forEach((s: string) => {
+  //       const [size] = s.split('X');
+  //       // console.log(`${__dirname}/../uploadedimages/${s}/${file.fileName}`)
+  //       readFileAsyc(file.path)
+  //         .then((b: Buffer) => {
+  //           return sharp(b)
+  //             .resize(+size)
+  //             .toFile(
+  //               // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
+  //               `./uploadedimages/${s}/${file.filename}`,
+  //             );
+  //         })
+  //         .then(console.log)
+  //         .catch(console.error);
+  //     });
+  //   }
+  // }
 
 }

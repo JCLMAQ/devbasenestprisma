@@ -5,22 +5,28 @@ import { File, Prisma } from '@prisma/client';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
-import fse from 'fs-extra';
-import { sep, extname } from 'path';
-import path from 'path';
+import * as sharp from 'sharp';
+import * as fse from 'fs-extra';
+import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
+import { promisify } from 'util';
 
+const readFileAsyc = promisify(fse.readFile);
 @Injectable()
 export class FilesService {
+  private readonly sizes: string[];
   static destinationFilePath: any;
   constructor(
     private prisma: PrismaService,
     private utilitiesService: UtilitiesService,
     private i18n: I18nService,
     private configService: ConfigService
-  ) {}
+  ) {
+    this.sizes = ['25X25', '50X50', '100X100', '200X200', '400X400', '900X900'];
+  }
 
-  // TODO Create directory for files storage id if does not exist
+  // TODO Create directory for files storage if it does not exist
+  // TODO Manage special caracters within file name 
 
   async destinationFilePath(): Promise<string>{
     // Path of the files storage directory
@@ -38,10 +44,7 @@ export class FilesService {
     let response = null;
     // Seach for the location
     const storagePath = process.env.FILES_STORAGE_DEST;
-    const pathSep = sep;
-    // const pathSep = path.sep;
-    const fullPath = storagePath+pathSep+fileName;
-    const fse = require('fs-extra');
+    const fullPath = storagePath+path.sep+fileName;
     const isExist = await fse.exists(fullPath);
     if(!isExist){
       throw new HttpException(await this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
@@ -58,13 +61,13 @@ export class FilesService {
 async deleteOneImage(fileName: string, lang: string): Promise<any> {
     // Delete one image from the diskstorage
     let response = null;
-    // Seach for the location
+    // Search for the location
     const storagePath = process.env.IMAGES_STORAGE_DEST;
-    const pathSep = sep;
-    // const pathSep = path.sep;
-    const fullPath = storagePath+pathSep+fileName;
-    const fse = require('fs-extra');   
+    const fullPath = storagePath+path.sep+fileName;
     const isExist = await fse.exists(fullPath);
+
+    // TODO We have now to delete also all the sized images
+
     if(!isExist){
       throw new HttpException(await this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
     }
@@ -77,13 +80,10 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
     return result;  
   }
 
-
   async copyFiles (fromPath: string, toPath: string, fileNameWithExt: string, lang: string): Promise<boolean> {
     // Copy one file from one place to the other
-    const path = require('path');
-    const pathSep = path.sep
-    const fullPathFrom = fromPath+pathSep+fileNameWithExt;
-    const fullPathTo = toPath+pathSep+fileNameWithExt;
+    const fullPathFrom = fromPath+path.sep+fileNameWithExt;
+    const fullPathTo = toPath+path.sep+fileNameWithExt;
     try {
       await fse.copy(fullPathFrom, fullPathTo)
       // await fse.copy('/tmp/myfile', '/tmp/mynewfile')
@@ -96,10 +96,8 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
 
     async renameOneFile(pathToFile: string, oldFileNameWithExt: string, newFileNameWithExt: string, lang: string): Promise<boolean> {
       // Rename a file (with its extension)
-      const path = require('path');
-      const pathSep = path.sep
-      const fullPathOld = pathToFile+pathSep+oldFileNameWithExt;
-      const fullPathNew = pathToFile+pathSep+newFileNameWithExt;
+      const fullPathOld = pathToFile+path.sep+oldFileNameWithExt;
+      const fullPathNew = pathToFile+path.sep+newFileNameWithExt;
       try {
         await fse.rename(fullPathOld, fullPathNew)
         return true
@@ -112,10 +110,8 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
     async parsePath(pathToParse: string, lang: string): Promise<Object> {
       // From a path to the parts of the path:
       // Returns: { root: '/', dir: '/home/user/dir', base: 'file.txt', ext: '.txt', name: 'file' }
-      const path = require('path');
       try {
-        const result = await path.parse(pathToParse);
-        
+        const result = await path.parse(pathToParse); 
         return result
       } catch (err) {
         console.error(err)
@@ -132,9 +128,50 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
         console.error(err)
         throw new HttpException(this.i18n.translate("files.FILE_BAD_DIRECTORY",{ lang: lang, }), 400); 
       }
-
-      return true
     }
+
+    async saveSizedImages (file): Promise<void> {
+      // Resize images to specific sizes : 
+      // '25X25', '50X50', '100X100', '200X200', '400X400', '900X900'
+      const [, ext] = file.mimetype.split('/');
+      const pathSep = path.sep;
+      const storagePath = process.env.IMAGES_STORAGE_DEST;
+      if (['jpeg', 'jpg', 'png'].includes(ext)) {
+        this.sizes.forEach((s: string) => {
+          const [size] = s.split('X');
+          readFileAsyc(file.path)
+            .then((b: Buffer) => {
+              return sharp(b)
+                .resize(+size)
+                .toFile(
+                  // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
+                  `${storagePath}${pathSep}${s}${pathSep}${file.filename}`,
+                  // `./uploadedimages/${s}/${file.filename}`,
+                );
+            })
+            .then(console.log)
+            .catch(console.error);
+        });
+      }
+    }
+
+    async deleteSizedImages (fileName: string): Promise<void> {
+      // Delete sized images if they exist
+      this.sizes.forEach((size: string) => { 
+        // Size format is ex 25X25
+        const storagePath = process.env.IMAGES_STORAGE_DEST;
+        const fullPath = storagePath+path.sep+size+path.sep+fileName;
+        console.log("path to delete : ", fullPath)
+        const isExist = fse.exists(fullPath);
+        if(isExist) {  // Then delete it
+          fse.unlink(fullPath,(err) => {
+            if (err) {
+              console.error(err)
+          }}) 
+        }
+      });
+    }
+
 
     /*
     * CRUD part for the file mgt in DB
