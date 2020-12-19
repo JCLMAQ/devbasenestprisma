@@ -8,6 +8,7 @@ import { I18nLang } from 'nestjs-i18n';
 import { imageMulterOptions } from './files-image-multer-options';
 import { fileMulterOptions } from './files-file-multer-options';
 import * as sharp from 'sharp';
+import * as path from 'path';
 import { promisify } from 'util';
 import { readFile } from 'fs';
 
@@ -19,7 +20,7 @@ export class FilesController {
   constructor(
     private readonly filesService: FilesService,
     private readonly utilitiesService: UtilitiesService) {
-      this.sizes = ['25X25', '50X50', '50X50', '200X200', '400X400', '900X900'];
+      this.sizes = ['25X25', '50X50', '100X100', '200X200', '400X400', '900X900'];
     }
 
   // Uploag one image file
@@ -82,9 +83,11 @@ export class FilesController {
     };
   }
 
-  @Get('image/:imagenamesize')
-  getImageSized(@Param('imagename') image,@Param('imagesized') size, @Res() res) {
-    const response = res.sendFile(image, { root: './uploadedimages' });
+  @Get('imagesized/:imagename/:size')
+  getImageSized(@Param('imagename') image, @Param('size') size, @Res() res) {
+    // size ex '25X25', '50X50', '100X100', '200X200', '400X400', '900X900'
+    const rootFolder = './uploadedimages'+path.sep+size
+    const response = res.sendFile(image, { root: rootFolder });
     return {
       status: HttpStatus.OK,
       data: response,
@@ -94,9 +97,9 @@ export class FilesController {
   @Post('file/deleteoneimage/:filename')
   async deleteOneImage(@Param('filename') fileName, @I18nLang() lang: string) {
     const response = await this.filesService.deleteOneImage(fileName, lang);
-   return {
-    status: HttpStatus.OK,
-    data: response,
+    return {
+      status: HttpStatus.OK,
+      data: response,
     };
   }
   
@@ -132,7 +135,7 @@ export class FilesController {
         originalname: file.originalname,
         filename: file.filename,
         typeFile: file.mimetype,
-      size: file.size
+        size: file.size
       };
       const result = this.filesService.createOneFileInDB(fileReponse)
       response.push(fileReponse);
@@ -170,12 +173,14 @@ export class FilesController {
     if (['jpeg', 'jpg', 'png'].includes(ext)) {
       this.sizes.forEach((s: string) => {
         const [size] = s.split('X');
+        // console.log(`${__dirname}/../uploadedimages/${s}/${file.fileName}`)
         readFileAsyc(file.path)
           .then((b: Buffer) => {
             return sharp(b)
               .resize(+size)
               .toFile(
-                `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
+                // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
+                `./uploadedimages/${s}/${file.filename}`,
               );
           })
           .then(console.log)
