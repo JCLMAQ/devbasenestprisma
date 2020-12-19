@@ -15,8 +15,10 @@ export const editFileName = (req, file, callback) => {
 
 // Allow only images
 export const imageFileFilter = (req, file, callback) => {
-  const listOfExtensions = "/\.(jpg|jpeg|png|gif)$/"
+  const listOfExtensions = "\.(jpg|jpeg|png|gif)$"
+  // for the regex to work with the const .env var: scratch the first and the last /
   // const listOfExtensions = process.env.IMAGES_EXTENSIONS_REGEX;
+  // if (!file.originalname.match(`${listOfExtensions}`)) {
   console.log("list of extensions: ", listOfExtensions)
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
     return callback(
@@ -31,8 +33,10 @@ export const imageFileFilter = (req, file, callback) => {
 };
 
 export const fileFileFilter = (req, file, callback) => {
-  // const listOfExtensions = "/\.(pdf|doc|docx|xlsx|xls|txt)$/"
-  const listOfExtensions = process.env.FILES_EXTENSIONS_REGEX;
+  // const listOfExtensions = "\.(pdf|doc|docx|xlsx|xls|txt)$"
+  // for the regex to work with the const .env var: scratch the first and the last /
+  // const listOfExtensions = process.env.FILES_EXTENSIONS_REGEX;
+  // if (!file.originalname.match(`${listOfExtensions}`)) {
   if (!file.originalname.match(/\.(pdf|doc|docx|xlsx|xls|txt)$/)) {
     return callback(
       new HttpException(

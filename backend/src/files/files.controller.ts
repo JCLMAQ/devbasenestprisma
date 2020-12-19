@@ -10,8 +10,8 @@ import { I18nLang } from 'nestjs-i18n';
 import { config } from 'dotenv/types';
 import { ConfigService } from '@nestjs/config';
 import { number } from 'joi';
-import { imageMulterOptions } from './multer-image-options';
-import { fileMulterOptions } from './multer-files-options';
+import { imageMulterOptions } from './files-image-multer-options';
+import { fileMulterOptions } from './files-file-multer-options';
 
 @Controller('files')
 export class FilesController {
