@@ -12,12 +12,19 @@ import { ConfigService } from '@nestjs/config';
 import { number } from 'joi';
 import { imageMulterOptions } from './files-image-multer-options';
 import { fileMulterOptions } from './files-file-multer-options';
+import * as sharp from 'sharp';
+import { promisify } from 'util';
+import { readFile } from 'fs';
+
+const readFileAsyc = promisify(readFile);
 
 @Controller('files')
 export class FilesController {
+  private readonly sizes: string[];
   constructor(
     private readonly filesService: FilesService,
     private readonly utilitiesService: UtilitiesService) {
+      this.sizes = ['25X25', '50X50', '50X50', '200X200', '400X400', '900X900'];
     }
 
   // Uploag one image file
@@ -26,6 +33,8 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('image', imageMulterOptions))
   async uploadedImage(@UploadedFile() file) {
     console.log("File data back: ", file)
+    // Create the different image sizes
+    this.saveImages(file);
     // Create the record in DB
     const response = {
       originalName: file.originalname,
@@ -152,6 +161,25 @@ export class FilesController {
     status: HttpStatus.OK,
     data: response,
     };
+  }
+
+  private async saveImages (file): Promise<void> {
+    const [, ext] = file.mimetype.split('/');
+    if (['jpeg', 'jpg', 'png'].includes(ext)) {
+      this.sizes.forEach((s: string) => {
+        const [size] = s.split('X');
+        readFileAsyc(file.path)
+          .then((b: Buffer) => {
+            return sharp(b)
+              .resize(+size)
+              .toFile(
+                `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
+              );
+          })
+          .then(console.log)
+          .catch(console.error);
+      });
+    }
   }
 
 }

@@ -53,14 +53,15 @@ import { MulterModule } from '@nestjs/platform-express';
     UtilitiesModule,
     AuthsModule,
     EmaildomainsModule,
-    MulterModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        dest: configService.get<string>('FILES_STORAGE_DEST') || './upload',
-        limits: {fileSize: configService.get<number>('FILES_MAX_SIZE') || 2000000} 
-      }),
-      inject: [ConfigService],
-    }),
+    MulterModule,
+    // MulterModule.registerAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     dest: configService.get<string>('FILES_STORAGE_DEST') || './upload',
+    //     limits: {fileSize: configService.get<number>('FILES_MAX_SIZE') || 2000000} 
+    //   }),
+    //   inject: [ConfigService],
+    // }),
     FilesModule],
   controllers: [AppController],
   providers: [AppService],
