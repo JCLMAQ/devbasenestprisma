@@ -4,7 +4,7 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { editFileName, fileFileFilter, imageFileFilter, destinationFilePath, destinationImagePath, imageMaxSize } from 'src/files/file-uploading.utils';
+import { editFileName, fileFileFilter, imageFileFilter, destinationFilePath, destinationImagePath, imageMaxSize } from 'src/files/files-utilities';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 import { I18nLang } from 'nestjs-i18n';
 import { config } from 'dotenv/types';
@@ -34,7 +34,7 @@ export class FilesController {
   async uploadedImage(@UploadedFile() file) {
     console.log("File data back: ", file)
     // Create the different image sizes
-    this.saveImages(file);
+    await this.saveImages(file);
     // Create the record in DB
     const response = {
       originalName: file.originalname,
@@ -54,33 +54,33 @@ export class FilesController {
   // Upload multiple image files
   @Post('uploadmultipleimages')
   @UseInterceptors(
-    FilesInterceptor('image', 10, {
-      storage: diskStorage({
-        destination: destinationImagePath,
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
+    FilesInterceptor('image', 10, imageMulterOptions))
   async uploadMultipleImages(@UploadedFiles() files) {
     const response = [];
+    const resultdb = [];
     files.forEach(file => {
+      this.saveImages(file);
       const fileReponse = {
         originalname: file.originalname,
         filename: file.filename,
+        typeFile: file.mimetype,
+        size: file.size
       };
+      const fileResult = this.filesService.createOneFileInDB(fileReponse)
       response.push(fileReponse);
+      resultdb.push(fileResult)
     });
     return {
       status: HttpStatus.OK,
       message: 'Images uploaded successfully!',
       data: response,
+      db: resultdb,
     };
   }
 
   @Get('image/:imagename')
   getImage(@Param('imagename') image, @Res() res) {
-    const response = res.sendFile(image, { root: './uploadedfiles' });
+    const response = res.sendFile(image, { root: './uploadedimages' });
     return {
       status: HttpStatus.OK,
       data: response,
@@ -119,28 +119,26 @@ export class FilesController {
 
   // Upload multiple image files
   @Post('uploadmultiplefiles')
-  @UseInterceptors(
-    FilesInterceptor('image', 10, {
-      storage: diskStorage({
-        destination: destinationFilePath,
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
+  @UseInterceptors(FilesInterceptor('file', 10, fileMulterOptions))
   async uploadMultipleFiles(@UploadedFiles() files) {
     const response = [];
+    const resultdb = [];
     files.forEach(file => {
       const fileReponse = {
         originalname: file.originalname,
         filename: file.filename,
+        typeFile: file.mimetype,
+      size: file.size
       };
+      const result = this.filesService.createOneFileInDB(fileReponse)
       response.push(fileReponse);
+      resultdb.push(result);
     });
     return {
       status: HttpStatus.OK,
       message: 'Images uploaded successfully!',
       data: response,
+      db: resultdb
     };
   }
 
@@ -156,10 +154,10 @@ export class FilesController {
   @Post('file/deleteonefile/:filename')
   async deleteOneFile(@Param('filename') fileName, @I18nLang() lang: string) {
     // File has to be within the right directory (diskstorage directory define in .env)
-   const response = await this.filesService.deleteOneFile(fileName, lang);
-   return {
-    status: HttpStatus.OK,
-    data: response,
+    const response = await this.filesService.deleteOneFile(fileName, lang);
+    return {
+      status: HttpStatus.OK,
+      data: response,
     };
   }
 
