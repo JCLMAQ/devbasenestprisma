@@ -183,30 +183,36 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
       const pathSep = path.sep;
       const storagePath = process.env.IMAGES_TEMP_STORAGE_DEST;
       // test if folder exist and if not create it
-      const isExist = fse.exists(`${storagePath}`);
-      if (!isExist) { fse.mkdir(`${storagePath}`); };
+      const fullPath = `${storagePath}${pathSep}${file.filename}${widthxheight}${ext}`
+      const isExist = fse.exists(fullPath);
+      if (isExist) { fse.unlink(fullPath); };
       if (['jpeg', 'jpg', 'png'].includes(ext)) {
-          // output.png is a yyy pixels wide and zzz pixels high image
-          // containing a nearest-neighbour scaled version
-          // contained within the north-east corner of a semi-transparent white canvas
-          readFileAsyc(file.path)
-            .then((b: Buffer) => {
-              return sharp(b)
-                .resize(+size[0], +size[1], {
-                  kernel: sharp.kernel.nearest,
-                  fit: 'contain',
-                  position: 'right top',
-                  background: { r: 255, g: 255, b: 255, alpha: 0.5 }
-                })
-                .toFile(
-                  // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
-                  `${storagePath}${pathSep}${file.filename}`,
-                  // `./uploadedimages/${s}/${file.filename}`,
-                );
-            })
-            .then(console.log)
-            .catch(console.error);
-          return file.filename
+        // output.png is a yyy pixels wide and zzz pixels high image
+        // containing a nearest-neighbour scaled version
+        // contained within the north-east corner of a semi-transparent white canvas
+        // verify first that the file does'not exist
+        // `${storagePath}${pathSep}${file.filename}${widthxheight}${ext}`
+        const isExist = fse.exists(`${storagePath}`);
+        if (!isExist) { fse.mkdir(`${storagePath}`); };
+        readFileAsyc(file.path)
+          .then((b: Buffer) => {
+            return sharp(b)
+              .resize(+size[0], +size[1], {
+                kernel: sharp.kernel.nearest,
+                fit: 'contain',
+                position: 'right top',
+                background: { r: 255, g: 255, b: 255, alpha: 0.5 }
+              })
+              .toFile(
+                // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
+                `${storagePath}${pathSep}${file.filename}${widthxheight}${ext}`,
+                // `./uploadedimages/${s}/${file.filename}`,
+              );
+          })
+          .then(console.log)
+          .catch(console.error);
+        const newFileName = `${file.filename}${widthxheight}${ext}`;
+        return newFileName
       }
     }
 
