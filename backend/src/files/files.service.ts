@@ -120,7 +120,7 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
     }
 
     async verifyOrCreateOneFolder(directoryToFix: string, lang: string): Promise<Boolean> {
-      // Verify that a folder exist, and if not create it (if the path is correct)
+      // Verify that a folder exist, and if not create it (if the path is correct)oo
       try {
         await fse.ensureDir(directoryToFix)
         return true
@@ -137,7 +137,7 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
       const pathSep = path.sep;
       const storagePath = process.env.IMAGES_STORAGE_DEST;
       if (['jpeg', 'jpg', 'png'].includes(ext)) {
-        this.sizes.forEach((s: string) => {
+        await this.sizes.forEach((s: string) => {
           // test if folder exist and if not create it
           const isExist = fse.exists(`${storagePath}${pathSep}${s}`);
           if (!isExist) { fse.mkdir(`${storagePath}${pathSep}${s}`); }
@@ -149,7 +149,6 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
                 .toFile(
                   // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
                   `${storagePath}${pathSep}${s}${pathSep}${file.filename}`,
-                  // `./uploadedimages/${s}/${file.filename}`,
                 );
             })
             .then(console.log)
@@ -160,14 +159,14 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
 
     async deleteSizedImages (fileName: string): Promise<void> {
       // Delete sized images if they exist
-      this.sizes.forEach((size: string) => { 
+      await this.sizes.forEach((size: string) => { 
         // Size format is ex 25X25
         const storagePath = process.env.IMAGES_STORAGE_DEST;
-        const fullPath = storagePath+path.sep+size+path.sep+fileName;
-        console.log("path to delete : ", fullPath)
-        const isExist = fse.exists(fullPath);
+        const fullPathDest = storagePath+path.sep+size+path.sep+fileName;
+console.log("path to delete : ", fullPathDest)
+        const isExist = fse.exists(fullPathDest);
         if(isExist) {  // Then delete it
-          fse.unlink(fullPath,(err) => {
+          fse.unlink(fullPathDest,(err) => {
             if (err) {
               console.error(err)
           }}) 
@@ -175,26 +174,32 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
       });
     }
 
-    async resizeImage (file, widthxheight ): Promise<string> {
-      // Resize images to any sizes with yyyXzzz
+    async resizeImage (fileName, widthxheight: string ): Promise<string> {
+      // Resize images to any sizes with yyyXzzz: ex 2500X200
       // width x height
-      const [size] = widthxheight.split('X');
-      const [, ext] = file.mimetype.split('/');
+      const size = widthxheight.split('X');
+      const fileSplit = fileName.split('.');
+      // verify first that the file does'not exist
       const pathSep = path.sep;
       const storagePath = process.env.IMAGES_TEMP_STORAGE_DEST;
-      // test if folder exist and if not create it
-      const fullPath = `${storagePath}${pathSep}${file.filename}${widthxheight}${ext}`
-      const isExist = fse.exists(fullPath);
-      if (isExist) { fse.unlink(fullPath); };
-      if (['jpeg', 'jpg', 'png'].includes(ext)) {
-        // output.png is a yyy pixels wide and zzz pixels high image
-        // containing a nearest-neighbour scaled version
-        // contained within the north-east corner of a semi-transparent white canvas
-        // verify first that the file does'not exist
-        // `${storagePath}${pathSep}${file.filename}${widthxheight}${ext}`
-        const isExist = fse.exists(`${storagePath}`);
-        if (!isExist) { fse.mkdir(`${storagePath}`); };
-        readFileAsyc(file.path)
+      const fullPath = `${storagePath}${pathSep}${fileSplit[0]}-${widthxheight}.${fileSplit[1]}`
+      const isExist = await fse.exists(fullPath);
+      if (isExist) { await fse.unlink(fullPath); };
+      // Limit resizing to somme extensions
+      if (['jpeg', 'jpg', 'png'].includes(fileSplit[1])) {
+        /* 
+        * output.png is a yyy pixels wide and zzz pixels high image
+        * containing a nearest-neighbour scaled version
+        * contained within the north-east corner of a semi-transparent white canvas
+        */  
+       // Get the file from the storage place
+        const originStoragePath = process.env.IMAGES_STORAGE_DEST;
+        const pathToOriginalFile = `${originStoragePath}${pathSep}${fileName}`
+        // test if folder where to store the new file exist and if not create it
+        const isExist = await fse.exists(`${storagePath}`);
+        if (!isExist) { await fse.mkdir(`${storagePath}`); };
+        // Create the file and store it
+        await readFileAsyc(pathToOriginalFile)
           .then((b: Buffer) => {
             return sharp(b)
               .resize(+size[0], +size[1], {
@@ -204,14 +209,12 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
                 background: { r: 255, g: 255, b: 255, alpha: 0.5 }
               })
               .toFile(
-                // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
-                `${storagePath}${pathSep}${file.filename}${widthxheight}${ext}`,
-                // `./uploadedimages/${s}/${file.filename}`,
+                `${storagePath}${pathSep}${fileSplit[0]}-${widthxheight}.${fileSplit[1]}`,
               );
           })
           .then(console.log)
           .catch(console.error);
-        const newFileName = `${file.filename}${widthxheight}${ext}`;
+        const newFileName = `${fileSplit[0]}-${widthxheight}.${fileSplit[1]}`;
         return newFileName
       }
     }

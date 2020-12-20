@@ -9,6 +9,7 @@ import { imageMulterOptions } from './files-image-multer-options';
 import { fileMulterOptions } from './files-file-multer-options';
 import * as sharp from 'sharp';
 import * as path from 'path';
+import * as fse from 'fs-extra';
 import { promisify } from 'util';
 import { readFile } from 'fs';
 
@@ -23,8 +24,7 @@ export class FilesController {
       this.sizes = ['25X25', '50X50', '100X100', '200X200', '400X400', '900X900'];
     }
 
-  // Uploag one image file
-
+  // Upload one image file
   @Post('uploadoneimage')
   @UseInterceptors(FileInterceptor('image', imageMulterOptions))
   async uploadedImage(@UploadedFile() file) {
@@ -102,11 +102,19 @@ export class FilesController {
   // Get the image for a specific predefined size
   async getImageSpecSized(@Param('imagename') image, @Param('size') widthxheight, @Res() res) {
     // size ex '150X100' but maintain proportion
+    // Get the image to resize first
+    const pathSep = path.sep
+    const storagePath = process.env.IMAGES_STORAGE_DEST;
+    const tempStoragePath = process.env.IMAGES_TEMP_STORAGE_DEST
     // Create the specific image
     const resizedImage = await this.filesService.resizeImage (image, widthxheight);
     // Get the specific images
     const rootFolder = process.env.IMAGES_TEMP_STORAGE_DEST;
     const response = res.sendFile(resizedImage, { root: rootFolder });
+    // Delete the stored images
+    // const fullPath = `${tempStoragePath}${pathSep}${resizedImage}`
+    // const isExist = await fse.exists(fullPath);
+    // if (isExist) { await fse.unlink(fullPath); };
     return {
       status: HttpStatus.OK,
       data: response,
@@ -122,11 +130,9 @@ export class FilesController {
     };
   }
   
-
   @Post('uploadonefile')
   @UseInterceptors(FileInterceptor('file', fileMulterOptions))
   async uploadedFile(@UploadedFile() file) {
-    console.log(file)
     const response = {
       originalName: file.originalname,
       fileName: file.filename,
@@ -169,7 +175,8 @@ export class FilesController {
 
   @Get('file/:filename')
   getFile(@Param('filename') file, @Res() res) {
-    const response = res.sendFile(file, { root: './uploadedfiles' });
+    const rootFolder = process.env.FILES_STORAGE_DEST;
+    const response = res.sendFile(file, { root: rootFolder });
     return {
       status: HttpStatus.OK,
       data: response,
