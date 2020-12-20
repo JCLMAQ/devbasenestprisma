@@ -75,9 +75,10 @@ export class FilesController {
   }
 
   @Get('image/:imagename')
-  getImage(@Param('imagename') image, @Res() res) {
+  async getImage(@Param('imagename') image, @Res() res) {
     // Get the original image (not sized)
-    const response = res.sendFile(image, { root: './uploadedimages' });
+    const storagePath = process.env.IMAGES_STORAGE_DEST;
+    const response = res.sendFile(image, { root: storagePath });
     return {
       status: HttpStatus.OK,
       data: response,
@@ -86,10 +87,26 @@ export class FilesController {
 
   @Get('imagesized/:imagename/:size')
   // Get the image for a specific predefined size
-  getImageSized(@Param('imagename') image, @Param('size') size, @Res() res) {
+  async getImageSized(@Param('imagename') image, @Param('size') size, @Res() res) {
     // size ex '25X25', '50X50', '100X100', '200X200', '400X400', '900X900'
-    const rootFolder = './uploadedimages'+path.sep+size
+    const storagePath = process.env.IMAGES_STORAGE_DEST;
+    const rootFolder = storagePath+path.sep+size
     const response = res.sendFile(image, { root: rootFolder });
+    return {
+      status: HttpStatus.OK,
+      data: response,
+    };
+  }
+
+  @Get('imagespecsized/:imagename/:size')
+  // Get the image for a specific predefined size
+  async getImageSpecSized(@Param('imagename') image, @Param('size') widthxheight, @Res() res) {
+    // size ex '150X100' but maintain proportion
+    // Create the specific image
+    const resizedImage = await this.filesService.resizeImage (image, widthxheight);
+    // Get the specific images
+    const rootFolder = process.env.IMAGES_TEMP_STORAGE_DEST;
+    const response = res.sendFile(resizedImage, { root: rootFolder });
     return {
       status: HttpStatus.OK,
       data: response,

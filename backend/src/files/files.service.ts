@@ -138,6 +138,9 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
       const storagePath = process.env.IMAGES_STORAGE_DEST;
       if (['jpeg', 'jpg', 'png'].includes(ext)) {
         this.sizes.forEach((s: string) => {
+          // test if folder exist and if not create it
+          const isExist = fse.exists(`${storagePath}${pathSep}${s}`);
+          if (!isExist) { fse.mkdir(`${storagePath}${pathSep}${s}`); }
           const [size] = s.split('X');
           readFileAsyc(file.path)
             .then((b: Buffer) => {
@@ -172,6 +175,40 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
       });
     }
 
+    async resizeImage (file, widthxheight ): Promise<string> {
+      // Resize images to any sizes with yyyXzzz
+      // width x height
+      const [size] = widthxheight.split('X');
+      const [, ext] = file.mimetype.split('/');
+      const pathSep = path.sep;
+      const storagePath = process.env.IMAGES_TEMP_STORAGE_DEST;
+      // test if folder exist and if not create it
+      const isExist = fse.exists(`${storagePath}`);
+      if (!isExist) { fse.mkdir(`${storagePath}`); };
+      if (['jpeg', 'jpg', 'png'].includes(ext)) {
+          // output.png is a yyy pixels wide and zzz pixels high image
+          // containing a nearest-neighbour scaled version
+          // contained within the north-east corner of a semi-transparent white canvas
+          readFileAsyc(file.path)
+            .then((b: Buffer) => {
+              return sharp(b)
+                .resize(+size[0], +size[1], {
+                  kernel: sharp.kernel.nearest,
+                  fit: 'contain',
+                  position: 'right top',
+                  background: { r: 255, g: 255, b: 255, alpha: 0.5 }
+                })
+                .toFile(
+                  // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
+                  `${storagePath}${pathSep}${file.filename}`,
+                  // `./uploadedimages/${s}/${file.filename}`,
+                );
+            })
+            .then(console.log)
+            .catch(console.error);
+          return file.filename
+      }
+    }
 
     /*
     * CRUD part for the file mgt in DB
