@@ -10,6 +10,7 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { promisify } from 'util';
+import { of } from 'rxjs';
 
 const readFileAsyc = promisify(fse.readFile);
 @Injectable()
@@ -22,11 +23,9 @@ export class FilesService {
     private i18n: I18nService,
     private configService: ConfigService
   ) {
-    this.sizes = ['25X25', '50X50', '100X100', '200X200', '400X400', '900X900'];
+    // this.sizes = ['25X25', '50X50', '100X100', '200X200', '400X400', '900X900'];
+    this.sizes = process.env.IMAGES_SIZING.split(",");
   }
-
-  // TODO Create directory for files storage if it does not exist
-  // TODO Manage special caracters within file name 
 
   async destinationFilePath(): Promise<string>{
     // Path of the files storage directory
@@ -54,6 +53,8 @@ export class FilesService {
         console.error(err)
         throw new HttpException(this.i18n.translate("files.FILE_NOT_DELETED",{ lang: lang, }), 400);
     }}) 
+    //  Delete the image within the DB
+    await this.deleteOneFileInDB(fileName);
     const result  = "File deleted: "+fileName
     return result;  
   }
@@ -65,9 +66,6 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
     const storagePath = process.env.IMAGES_STORAGE_DEST;
     const fullPath = storagePath+path.sep+fileName;
     const isExist = await fse.exists(fullPath);
-
-    // TODO We have now to delete also all the sized images
-
     if(!isExist){
       throw new HttpException(await this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
     }
@@ -76,51 +74,16 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
         console.error(err)
         throw new HttpException(this.i18n.translate("files.FILE_NOT_DELETED",{ lang: lang, }), 400);
     }}) 
+    //  Delete the image within the DB
+    await this.deleteOneFileInDB(fileName);
     const result  = "Image deleted: "+fileName
+    // Delete sized images
+    await this.deleteSizedImages(fileName);
     return result;  
   }
 
-  async copyFiles (fromPath: string, toPath: string, fileNameWithExt: string, lang: string): Promise<boolean> {
-    // Copy one file from one place to the other
-    const fullPathFrom = fromPath+path.sep+fileNameWithExt;
-    const fullPathTo = toPath+path.sep+fileNameWithExt;
-    try {
-      await fse.copy(fullPathFrom, fullPathTo)
-      // await fse.copy('/tmp/myfile', '/tmp/mynewfile')
-      return true
-    } catch (err) {
-      console.error(err)
-      throw new HttpException(this.i18n.translate("files.FILE_NOT_COPIED",{ lang: lang, }), 400); 
-    }
-  }
-
-    async renameOneFile(pathToFile: string, oldFileNameWithExt: string, newFileNameWithExt: string, lang: string): Promise<boolean> {
-      // Rename a file (with its extension)
-      const fullPathOld = pathToFile+path.sep+oldFileNameWithExt;
-      const fullPathNew = pathToFile+path.sep+newFileNameWithExt;
-      try {
-        await fse.rename(fullPathOld, fullPathNew)
-        return true
-      } catch (err) {
-        console.error(err)
-        throw new HttpException(this.i18n.translate("files.FILE_NOT_RENAMED",{ lang: lang, }), 400); 
-      }
-    }
-
-    async parsePath(pathToParse: string, lang: string): Promise<Object> {
-      // From a path to the parts of the path:
-      // Returns: { root: '/', dir: '/home/user/dir', base: 'file.txt', ext: '.txt', name: 'file' }
-      try {
-        const result = await path.parse(pathToParse); 
-        return result
-      } catch (err) {
-        console.error(err)
-        throw new HttpException(this.i18n.translate("files.FILE_PARSE_ERROR",{ lang: lang, }), 400); 
-      }
-    }
-
     async verifyOrCreateOneFolder(directoryToFix: string, lang: string): Promise<Boolean> {
-      // Verify that a folder exist, and if not create it (if the path is correct)oo
+      // Verify that a folder exist, and if not create it (if the path is correct)
       try {
         await fse.ensureDir(directoryToFix)
         return true
@@ -133,14 +96,16 @@ async deleteOneImage(fileName: string, lang: string): Promise<any> {
     async saveSizedImages (file): Promise<void> {
       // Resize images to specific sizes : 
       // '25X25', '50X50', '100X100', '200X200', '400X400', '900X900'
+      const lang = "en";
       const [, ext] = file.mimetype.split('/');
       const pathSep = path.sep;
       const storagePath = process.env.IMAGES_STORAGE_DEST;
       if (['jpeg', 'jpg', 'png'].includes(ext)) {
         await this.sizes.forEach((s: string) => {
           // test if folder exist and if not create it
-          const isExist = fse.exists(`${storagePath}${pathSep}${s}`);
-          if (!isExist) { fse.mkdir(`${storagePath}${pathSep}${s}`); }
+          this.verifyOrCreateOneFolder(`${storagePath}${pathSep}${s}`, lang);
+          // const isExist = fse.exists(`${storagePath}${pathSep}${s}`);
+          // if (!isExist) { fse.mkdir(`${storagePath}${pathSep}${s}`); }
           const [size] = s.split('X');
           readFileAsyc(file.path)
             .then((b: Buffer) => {
@@ -177,12 +142,16 @@ console.log("path to delete : ", fullPathDest)
     async resizeImage (fileName, widthxheight: string ): Promise<string> {
       // Resize images to any sizes with yyyXzzz: ex 2500X200
       // width x height
+      // Name of the resized fimage : fileName-widthxheight.ext
+      const lang = "en";
       const size = widthxheight.split('X');
       const fileSplit = fileName.split('.');
-      // verify first that the file does'not exist
       const pathSep = path.sep;
       const storagePath = process.env.IMAGES_TEMP_STORAGE_DEST;
       const fullPath = `${storagePath}${pathSep}${fileSplit[0]}-${widthxheight}.${fileSplit[1]}`
+      // test if folder where to store the new file exist and if not create it
+      await this.verifyOrCreateOneFolder(`${storagePath}`, lang);
+      // verify first that the file does'not exist, if exist delete it
       const isExist = await fse.exists(fullPath);
       if (isExist) { await fse.unlink(fullPath); };
       // Limit resizing to somme extensions
@@ -195,9 +164,6 @@ console.log("path to delete : ", fullPathDest)
        // Get the file from the storage place
         const originStoragePath = process.env.IMAGES_STORAGE_DEST;
         const pathToOriginalFile = `${originStoragePath}${pathSep}${fileName}`
-        // test if folder where to store the new file exist and if not create it
-        const isExist = await fse.exists(`${storagePath}`);
-        if (!isExist) { await fse.mkdir(`${storagePath}`); };
         // Create the file and store it
         await readFileAsyc(pathToOriginalFile)
           .then((b: Buffer) => {
@@ -220,6 +186,58 @@ console.log("path to delete : ", fullPathDest)
     }
 
     /*
+    * Not used for now
+    */
+
+   async illegalFileNameCharacterReplace(fileName) {
+    // WithDraw and replace illegal characters in file name and replace it with _
+    // filename = filename.replace(/[/\\?%*:|"<>]/g, '-');
+    return fileName.replace(/[/\\?%*:|"<>]/g, '_');
+  }
+
+   async parsePath(pathToParse: string, lang: string): Promise<Object> {
+    //  TOBETESTED
+    // From a path to the parts of the path:
+    // Returns: { root: '/', dir: '/home/user/dir', base: 'file.txt', ext: '.txt', name: 'file' }
+    try {
+      const result = await path.parse(pathToParse); 
+      return result
+    } catch (err) {
+      console.error(err)
+      throw new HttpException(this.i18n.translate("files.FILE_PARSE_ERROR",{ lang: lang, }), 400); 
+    }
+  }
+
+  async renameOneFile(pathToFile: string, oldFileNameWithExt: string, newFileNameWithExt: string, lang: string): Promise<boolean> {
+    //  TOBETESTED
+    // Rename a file (with its extension)
+    const fullPathOld = pathToFile+path.sep+oldFileNameWithExt;
+    const fullPathNew = pathToFile+path.sep+newFileNameWithExt;
+    try {
+      await fse.rename(fullPathOld, fullPathNew)
+      return true
+    } catch (err) {
+      console.error(err)
+      throw new HttpException(this.i18n.translate("files.FILE_NOT_RENAMED",{ lang: lang, }), 400); 
+    }
+  }
+
+  async copyFiles (fromPath: string, toPath: string, fileNameWithExt: string, lang: string): Promise<boolean> {
+    //  TOBETESTED 
+  // Copy one file from one place to the other
+  const fullPathFrom = fromPath+path.sep+fileNameWithExt;
+  const fullPathTo = toPath+path.sep+fileNameWithExt;
+  try {
+    await fse.copy(fullPathFrom, fullPathTo)
+    // await fse.copy('/tmp/myfile', '/tmp/mynewfile')
+    return true
+  } catch (err) {
+    console.error(err)
+    throw new HttpException(this.i18n.translate("files.FILE_NOT_COPIED",{ lang: lang, }), 400); 
+  }
+}
+
+    /*
     * CRUD part for the file mgt in DB
     */
     async createOneFileInDB(response){
@@ -228,6 +246,23 @@ console.log("path to delete : ", fullPathDest)
       const ownerFile = "";
       const data = {name: response.originalName, storageName: response.fileName, type: response.typeFile, data: dataFile, owner: ownerFile, size: response.size };
       return await this.createOneFileRecord(data);
+    }
+
+    async deleteOneFileInDB(storageName) {
+      const dataFile = "";
+      const ownerFile = "";
+      const softDelete = this.configService.get<number>("ENABLE_SOFT_DELETE") === 1
+      if(softDelete) {   
+        // Soft delete
+        const where = { storageName : storageName };
+        const data = { isDeleted: new Date() }
+        const params = { where, data }
+        return await this.updateOneFile(params)
+      } else {
+        // Hard delete
+        const where = { storageName: storageName };
+        return await this.deleteOneFileRecord(where);
+      }
     }
     
     async createOneFileRecord(data: Prisma.FileCreateInput): Promise<File> {

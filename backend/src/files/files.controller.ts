@@ -7,9 +7,7 @@ import { UtilitiesService } from 'src/utilities/utilities.service';
 import { I18nLang } from 'nestjs-i18n';
 import { imageMulterOptions } from './files-image-multer-options';
 import { fileMulterOptions } from './files-file-multer-options';
-import * as sharp from 'sharp';
 import * as path from 'path';
-import * as fse from 'fs-extra';
 import { promisify } from 'util';
 import { readFile } from 'fs';
 
@@ -21,7 +19,8 @@ export class FilesController {
   constructor(
     private readonly filesService: FilesService,
     private readonly utilitiesService: UtilitiesService) {
-      this.sizes = ['25X25', '50X50', '100X100', '200X200', '400X400', '900X900'];
+      // this.sizes = ['25X25', '50X50', '100X100', '200X200', '400X400', '900X900'];
+      this.sizes = process.env.IMAGES_SIZING.split(",");
     }
 
   // Upload one image file
@@ -111,6 +110,7 @@ export class FilesController {
     // Get the specific images
     const rootFolder = process.env.IMAGES_TEMP_STORAGE_DEST;
     const response = res.sendFile(resizedImage, { root: rootFolder });
+    // TODO Delete the specific sized image once used (send back to the frontend )
     // Delete the stored images
     // const fullPath = `${tempStoragePath}${pathSep}${resizedImage}`
     // const isExist = await fse.exists(fullPath);
@@ -132,7 +132,7 @@ export class FilesController {
   
   @Post('uploadonefile')
   @UseInterceptors(FileInterceptor('file', fileMulterOptions))
-  async uploadedFile(@UploadedFile() file) {
+  async uploadedFile(@UploadedFile() file, @I18nLang() lang: string) {
     const response = {
       originalName: file.originalname,
       fileName: file.filename,
@@ -151,7 +151,7 @@ export class FilesController {
   // Upload multiple image files
   @Post('uploadmultiplefiles')
   @UseInterceptors(FilesInterceptor('file', 10, fileMulterOptions))
-  async uploadMultipleFiles(@UploadedFiles() files) {
+  async uploadMultipleFiles(@UploadedFiles() files, @I18nLang() lang: string) {
     const response = [];
     const resultdb = [];
     files.forEach(file => {
@@ -192,26 +192,5 @@ export class FilesController {
       data: response,
     };
   }
-
-  // private async saveImages (file): Promise<void> {
-  //   const [, ext] = file.mimetype.split('/');
-  //   if (['jpeg', 'jpg', 'png'].includes(ext)) {
-  //     this.sizes.forEach((s: string) => {
-  //       const [size] = s.split('X');
-  //       // console.log(`${__dirname}/../uploadedimages/${s}/${file.fileName}`)
-  //       readFileAsyc(file.path)
-  //         .then((b: Buffer) => {
-  //           return sharp(b)
-  //             .resize(+size)
-  //             .toFile(
-  //               // `${__dirname}/../uploadedimages/${s}/${file.fileName}`,
-  //               `./uploadedimages/${s}/${file.filename}`,
-  //             );
-  //         })
-  //         .then(console.log)
-  //         .catch(console.error);
-  //     });
-  //   }
-  // }
 
 }

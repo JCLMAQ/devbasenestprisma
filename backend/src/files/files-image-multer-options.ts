@@ -42,7 +42,8 @@ export const imageMulterOptions = {
         },
         // File modification details
         filename: (req: any, file: any, cb: any) => {
-            const name = file.originalname.split('.')[0];
+            // const name = file.originalname.split('.')[0]
+            const name = file.originalname.split('.')[0].replace(/[/\\?%*:|"<>]/g, '_');
             const fileExtName = extname(file.originalname);
             const randomName = Array(4).fill(null).map(() => Math.round(Math.random() * 10).toString(10)).join('');
             // Calling the callback passing the random name generated with the original extension name

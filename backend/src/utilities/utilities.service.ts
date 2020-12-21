@@ -37,7 +37,7 @@ console.log("value to return final: ", valueToReturn)
     }
 
     async searchConfigParamEnvFirst(configItemName: string): Promise<string | null> {
-        // TODO To be tested for error free
+        // TOBETESTED
         // Search for config parameter in .env config file, and if not found use the one in the DB 
         // Return "" if no value found
         let valueToReturn = null;

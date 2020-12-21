@@ -183,6 +183,7 @@ model File {
   owner       String?
   size        Int?
   isDeleted   DateTime? // Null = not deleted
+  isArchived  DateTime? // Null = not archived
   }
 
 model ChangesTracking {
