@@ -1,6 +1,5 @@
 import { extname } from 'path';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 export const editFileName = (req, file, callback) => {
   // Add a random 10 number to the uploaded file name
