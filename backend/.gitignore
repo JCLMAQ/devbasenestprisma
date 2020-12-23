@@ -41,9 +41,4 @@ lerna-debug.log*
 
 # Package-lock
 package-lock.json
-
-#Uploaded files
-/uploaded
-/uploadedimages
-/uploadedfiles
-/uploadedtempimages
+/backend/prisma/migrations
