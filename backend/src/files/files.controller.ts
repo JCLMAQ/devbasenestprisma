@@ -125,6 +125,17 @@ export class FilesController {
     };
   }
 
+  // Delete the temp folder for specific predefined size images
+  @Post('imagespecsized/deletefolder')
+  async deleteTempImgesFolder() {
+    const pathToDelete = process.env.IMAGES_TEMP_STORAGE_DEST;
+    const result= await this.filesService.deleteOneFolder(pathToDelete)
+      return {
+        status: HttpStatus.OK,
+        data: result,
+      };
+  }
+
   // Delete one image (not a specific siezd one)
   @Post('file/deleteoneimage/:filename')
   async deleteOneImage(@Param('filename') fileName, @I18nLang() lang: string) {

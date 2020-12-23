@@ -138,12 +138,13 @@ console.log("path to delete : ", fullPathDest)
       const storagePath = process.env.IMAGES_TEMP_STORAGE_DEST;
       const fullPath = `${storagePath}${pathSep}${fileSplit[0]}-${widthxheight}.${fileSplit[1]}`
       // test if folder where to store the new file exist and if not create it
-      await this.verifyOrCreateOneFolder(`${storagePath}`, lang);
+      const testfolder = await this.verifyOrCreateOneFolder(`${storagePath}`, lang);
+      console.log(testfolder)
       // verify first that the file does'not exist, if exist delete it
       const isExist = await fse.exists(fullPath);
       if (isExist) { await fse.unlink(fullPath); };
       // Limit resizing to somme extensions
-      if (['jpeg', 'jpg', 'png'].includes(fileSplit[1])) {
+      if (['jpeg', 'jpg', 'png', 'tiff'].includes(fileSplit[1])) {
         /* 
         * output.png is a yyy pixels wide and zzz pixels high image
         * containing a nearest-neighbour scaled version
@@ -169,10 +170,16 @@ console.log("path to delete : ", fullPathDest)
           .then(console.log)
           .catch(console.error);
         const newFileName = `${fileSplit[0]}-${widthxheight}.${fileSplit[1]}`;
+        console.log(newFileName)
         return newFileName
       }
     }
 
+    async deleteOneFolder(pathToDelete: string): Promise<any>{
+        const result = await fse.remove(pathToDelete);
+        console.log("delete one folder: ", result)
+      return result
+    }
     /*
     * Not used for now
     */
