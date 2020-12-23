@@ -18,9 +18,10 @@ export const fileMulterOptions = {
     // Check the mimetypes to allow for upload
     fileFilter: (req: any, file: any, cb: any) => {
         // cb = callback
-        const listOfExtensions = process.env.FILES_EXTENSIONS_REGEX     
-        if (file.mimetype.match(`${listOfExtensions}`)) {
-            // if (file.mimetype.match(/\/(pdf|doc|docx|xlsx|xls|txt)$/)) {
+        const listOfExtensions = process.env.FILES_EXTENSIONS_REGEX  
+        const exts = process.env.FILES_EXTENSIONS_REGEX.split("|");
+        const fileExtension = file.originalname.split('.')[1]
+        if (exts.includes(fileExtension)){   
             // Allow storage of file
             cb(null, true);
         } else {
@@ -41,7 +42,10 @@ export const fileMulterOptions = {
         },
         // File modification details
         filename: (req: any, file: any, cb: any) => {
-            const name = file.originalname.split('.')[0];
+            // const name = file.originalname.split('.')[0]
+            let name = file.originalname.split('.')[0].replace(/[/\\?%*:|"<>]/g, '_'); // Replace illegal charactere with _
+            name = name.replace(/\s/g, "-"); // replace blank with -
+            // Avoiding illegal charactere : fileName = fileName.replace(/[/\\?%*:|"<>]/g, '_');
             const fileExtName = extname(file.originalname);
             const randomName = Array(4).fill(null).map(() => Math.round(Math.random() * 10).toString(10)).join('');
             // Calling the callback passing the random name generated with the original extension name

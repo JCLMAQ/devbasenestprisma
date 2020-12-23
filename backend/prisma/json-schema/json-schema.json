@@ -440,6 +440,13 @@
             "null"
           ],
           "format": "date-time"
+        },
+        "isArchived": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
       }
     },

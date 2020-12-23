@@ -34,7 +34,7 @@ export class PrismaService extends PrismaClient
 
 //   async searchConfigParam(configItemName: string): Promise<string | null> {
 //     // Search for config parameter in the DB, and if not found use the one in the .env config file
-//     // TODO Eventually, inverse the seach: first within the .env and then within the DB ??? 
+//     //  Eventually, inverse the search: first within the .env and then within the DB ??? 
 //     const configItem = await PrismaService.configParam.findUnique({where: { name: configItemName },})
 //     let valueToReturn = null;
 //     configItem?.value === null ? valueToReturn = this.configService.get<string>(configItemName) : valueToReturn = configItem?.value
