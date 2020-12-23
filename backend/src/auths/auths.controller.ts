@@ -84,6 +84,7 @@ export class AuthsController {
     async authentication(@Body() userCredential: AuthDto, @I18nLang() lang: string) {
         // userCredential has to content the email and the emailToken (rename to "password" to get through the localAuthGuards)
         const validCredential = await this.authsService.authenticateHandler(userCredential, lang);
+        console.log("valid credential 01: ", validCredential)
         if(!validCredential.validToken) {
             throw new HttpException(await this.i18n.translate("auths.AUTH_LOGIN_ERROR",{ lang: lang, }), 400);
         }

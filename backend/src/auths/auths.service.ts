@@ -128,6 +128,8 @@ console.log("token expiration time : ", tokenExpirationTime)
   // Update the API token
   async mgtAPIToken(userId: string, tokenType: TokenType, emailToken: string, logout: boolean) {
     // For logout:  logout is true, valid has to be false
+    // Email token has to be unique, so for API token use the userId to fill it
+    if(emailToken === ""){ emailToken = userId };
     
     // Find the token with the userid and the type
     let tokenExist = await this.prismaService.token.findFirst({
