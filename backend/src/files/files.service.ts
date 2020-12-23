@@ -88,7 +88,7 @@ export class FilesService {
       const [, ext] = file.mimetype.split('/');
       const pathSep = path.sep;
       const storagePath = process.env.IMAGES_STORAGE_DEST;
-      if (['jpeg', 'jpg', 'png'].includes(ext)) {
+      if (['jpeg', 'jpg', 'png', 'tiff'].includes(ext)) {
         await this.sizes.forEach((s: string) => {
           // test if folder exist and if not create it
           this.verifyOrCreateOneFolder(`${storagePath}${pathSep}${s}`, lang);

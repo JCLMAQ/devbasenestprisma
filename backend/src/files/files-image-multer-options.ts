@@ -20,7 +20,7 @@ export const imageMulterOptions = {
     fileFilter: (req: any, file: any, cb: any) => {
         // cb = callback
         const listOfExtensions = process.env.IMAGES_EXTENSIONS_REGEX
-        // if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+        // if (file.mimetype.match(/\/(jpe?g|png|gif|tiff)$/)) {
         if (file.mimetype.match(`${listOfExtensions}`)) {
             // Allow storage of file
             cb(null, true);
@@ -43,7 +43,8 @@ export const imageMulterOptions = {
         // File modification details
         filename: (req: any, file: any, cb: any) => {
             // const name = file.originalname.split('.')[0]
-            const name = file.originalname.split('.')[0].replace(/[/\\?%*:|"<>]/g, '_');
+            let name = file.originalname.split('.')[0].replace(/[/\\?%*:|"<>]/g, '_');
+            name = name.replace(/\s/g, "-");
             const fileExtName = extname(file.originalname);
             const randomName = Array(4).fill(null).map(() => Math.round(Math.random() * 10).toString(10)).join('');
             // Calling the callback passing the random name generated with the original extension name
