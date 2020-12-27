@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { 
@@ -8,6 +9,7 @@ import {
   Role
 } from '@prisma/client';
 import { domain } from 'process';
+import { UserPersonalData } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -31,7 +33,7 @@ export class UsersController {
   }
 
   @Get('allusers')
-  async getAllUsers(): Promise<UserModel[]> {
+  async getAllUsers(): Promise<UserPersonalData[]> {
     return this.usersService.findUsers({});
   }
 

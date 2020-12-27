@@ -53,6 +53,10 @@ export class UsersService {
     });
   }
 
+  async allUsers(): Promise<User[]> {
+    return this.prisma.user.findMany()
+  }
+
   async findUniqueUser(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
