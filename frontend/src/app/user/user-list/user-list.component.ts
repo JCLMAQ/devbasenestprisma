@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { MatTableDataSource } from '@angular/material/table';
 import { User } from '../user.model';
 import { UserService } from '../user.service';
 
@@ -9,8 +9,9 @@ import { UserService } from '../user.service';
   styleUrls: ['./user-list.component.scss']
 })
 export class UserListComponent implements OnInit {
-  // users$?: Observable<User[]>;
-users?: User[];
+  dataSource?: MatTableDataSource<User>;
+  tableColumns  :  string[] = [ 'nickName', 'lastName', 'firstName'] //, 'tools'];
+  users?: User[];
   constructor(
     private userService: UserService
     ) {
@@ -19,12 +20,12 @@ users?: User[];
         const arrayResult = Object.values(objectResult)
         console.log('arrayResult ', arrayResult)
         this.users = arrayResult;
-        // this.dataSource  =  new MatTableDataSource(result);
+        this.dataSource  =  new MatTableDataSource(objectResult);
+        console.log('Datasource: ',this.dataSource)
         })
-      // const users$ = this.userService.getAllUsers();
-      // console.log(users$)
 
-     }
+
+    }
 
   ngOnInit(): void {
 
