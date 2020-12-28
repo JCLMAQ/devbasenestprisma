@@ -1,10 +1,26 @@
 <p>user-list works! Hello</p>
 <h2>Users</h2>
 
-<div *ngFor="let user of users">
-
-  <h3>
-     Bonjour :  {{ user.lastName}}
-  </h3>
-
+<div class="mat-elevation-z8">
+<mat-table [dataSource]="dataSource" matSort>
+  <ng-container matColumnDef="nickName">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> NickName </mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.nickName}} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="lastName">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Last Name </mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.lastName}} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="firstName">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> First Name </mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.firstName}} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="email">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.email}} </mat-cell>
+  </ng-container>
+  <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+</mat-table>
+<mat-paginator [pageSizeOptions]="[2, 5, 20]" showFirstLastButtons></mat-paginator>
 </div>
