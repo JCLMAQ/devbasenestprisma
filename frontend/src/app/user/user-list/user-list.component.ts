@@ -18,8 +18,8 @@ export class UserListComponent implements OnInit, AfterViewInit{
   tableColumns  :  string[] = [ 'nickName', 'lastName', 'firstName', 'email'];
   users?: User[];
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
 
   constructor(
