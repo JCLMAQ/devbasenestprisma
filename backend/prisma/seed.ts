@@ -24,6 +24,7 @@ async function main() {
       firstName: 'bob',
       lastName: 'Morane',
       email: 'bob@prisma.io',
+      nickName: 'MOBOB',
       Post: {
         create: [
           {
@@ -40,6 +41,40 @@ async function main() {
       },
     },
   })
+
+  await prismaClient.user.create({
+    data: {
+      firstName: 'Moi',
+      lastName: 'MAQ',
+      email: 'jcm@jcm.be',
+      nickName: 'JCM'
+    },
+  })
+  await prismaClient.user.create({
+    data: {
+      firstName: 'Toi',
+      lastName: 'TOIT',
+      email: 'toi@toit.be',
+      nickName: 'TOITOI'
+    },
+  })
+  await prismaClient.user.create({
+    data: {
+      firstName: 'Toto',
+      lastName: 'THE BEST',
+      email: 'toto@toto.be',
+      nickName: 'TOTO'
+    },
+  })
+  await prismaClient.user.create({
+    data: {
+      firstName: 'Best',
+      lastName: 'TOTO',
+      email: 'best@toto.be',
+      nickName: 'BTOTO'
+    },
+  })
+
 
   await prismaClient.configParam.create({
     data: {

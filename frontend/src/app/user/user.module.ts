@@ -7,7 +7,6 @@ import { UserListComponent } from './user-list/user-list.component';
 import { UserDetailComponent } from './user-detail/user-detail.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from '../shared/shared.module';
-import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 @NgModule({
@@ -17,7 +16,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     UserRoutingModule,
     HttpClientModule,
     SharedModule,
-    MatPaginatorModule
   ]
 })
 export class UserModule { }
