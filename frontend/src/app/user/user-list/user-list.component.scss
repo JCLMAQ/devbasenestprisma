@@ -3,3 +3,13 @@
   font-size: 14px;
   width: 100%;
 }
+
+.mat-table-sticky {
+  // background: #59abfd;
+  opacity: 1;
+}
+
+.mat-header-cell, .mat-footer-cell, .mat-cell {
+  min-width: 80px;
+  box-sizing: border-box;
+}
