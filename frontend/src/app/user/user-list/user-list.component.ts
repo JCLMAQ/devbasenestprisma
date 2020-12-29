@@ -24,8 +24,15 @@ import { UserService } from '../user.service';
 export class UserListComponent implements OnInit, AfterViewInit{
   dataSource!: MatTableDataSource<User>;
   selection = new SelectionModel<User>(true, []);
-  tableColumns  :  string[] = [ 'select','nickName', 'lastName', 'firstName', 'email'];
+  tableColumns  :  string[] = [ 'select','nickName', 'lastName', 'firstName', 'email', 'tools'];
   users?: User[];
+
+  routeToDetail = 'user/form';
+
+  edit = true; // True : allow editiing (detail form)
+  view = true; // True : allow view detail (view page)
+  master = false; // true : button is disable
+  owner = false; // true button is disable
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -34,7 +41,7 @@ export class UserListComponent implements OnInit, AfterViewInit{
   constructor(
     private userService: UserService,
     private router: Router,
-    ) {    }
+    ) { }
 
   ngOnInit(): void {
     this.userService.getAllUsers().subscribe((objectResult) => {
@@ -51,10 +58,42 @@ export class UserListComponent implements OnInit, AfterViewInit{
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    // this.dataSource.paginator = this.paginator;
+    // this.dataSource.sort = this.sort;
   }
 
+
+  onNavigate() {
+
+  }
+
+  // Goto the detail page for view only
+  navigate(id: String, index: String) {
+    this.router.navigate([this.routeToDetail, id, 'view']);
+  }
+
+  navigateButton(id: String, toEdit: Boolean) {
+    // toEdit: 'true' | 'false';
+    if (toEdit) {
+      this.router.navigate([this.routeToDetail, id, 'edit']);
+    } else {
+      this.router.navigate([this.routeToDetail, id, 'view']);
+    }
+  }
+
+  // Delete the selected item
+  async remove( item: String ) {
+
+  }
+
+// Pseudo delete (flag delete)
+  async virtualRemove( item: String ) {
+
+  }
+  // On click row action
+  onRowClicked(row: Number) {
+    console.log('Row clicked: ', row);
+  }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

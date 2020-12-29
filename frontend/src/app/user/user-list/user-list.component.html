@@ -42,6 +42,32 @@
     <mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
     <mat-cell *matCellDef="let row"> {{row?.email}} </mat-cell>
   </ng-container>
+
+  <ng-container matColumnDef="tools">
+    <mat-header-cell *matHeaderCellDef> Tools </mat-header-cell>
+
+    <mat-cell *matCellDef="let row">
+      <!-- <button mat-icon-button routerLink="{{one.ID}}"> -->
+          <button mat-icon-button (click)="navigateButton(row.ID, edit)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <!-- <button mat-icon-button routerLink="{{one.ID}}/view"> -->
+        <button mat-icon-button (click)="navigateButton(row.ID, view)">
+        <mat-icon>remove_red_eye</mat-icon>
+      </button>
+      <button mat-icon-button [disabled]=owner (click)="virtualRemove(row)">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <!-- <button mat-icon-button *ngIf="owner" (click)="virtualRemove(one)">
+          <mat-icon>delete</mat-icon>
+        </button> -->
+      <button mat-icon-button [disabled]=master (click)="remove(row)">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+    </mat-cell>
+  </ng-container>
+
+
   <mat-header-row *matHeaderRowDef="tableColumns; sticky: true"></mat-header-row>
   <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
 
@@ -51,5 +77,5 @@
   </tr>
 
 </mat-table>
-<mat-paginator [pageSizeOptions]="[2, 5, 20]" showFirstLastButtons></mat-paginator>
+<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
 </div>

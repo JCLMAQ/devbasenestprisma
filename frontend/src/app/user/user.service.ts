@@ -13,6 +13,5 @@ export class UserService {
     const result = this.httpClient.get<User[]>('api/users/allusers');
     console.log(result)
     return result
-    // return this.httpClient.get<User[]>('http://localhost:3000/Users');
   }
 }
