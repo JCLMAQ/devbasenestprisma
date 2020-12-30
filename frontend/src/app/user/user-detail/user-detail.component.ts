@@ -19,7 +19,8 @@ export class UserDetailComponent implements OnInit {
   public editing = false;
 
   public userForm =  new FormGroup({
-    fisrtName: new FormControl(''),
+    id: new FormControl(''),
+    firstName: new FormControl(''),
     lastName: new FormControl(''),
     email: new FormControl('')
   });
@@ -46,11 +47,11 @@ export class UserDetailComponent implements OnInit {
 
 
  public async setEditForm() {
-  const user = await this.userService.getOneUser(this.editingIndex)
-console.log("user fetch result : ", user)
+  const user: User = await this.userService.getOneUser(this.editingIndex)
+console.log("user fetch result : ", user.id)
   this.userForm.patchValue({
     id: user?.id,
-    fisrtName: user?.firstName,
+    firstName: user?.firstName,
     lastName: user?.lastName,
     email: user?.email,
   });
