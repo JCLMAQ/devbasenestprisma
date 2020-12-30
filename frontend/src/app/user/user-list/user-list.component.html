@@ -48,11 +48,11 @@
 
     <mat-cell *matCellDef="let row">
       <!-- <button mat-icon-button routerLink="{{one.ID}}"> -->
-          <button mat-icon-button (click)="navigateButton(row.ID, edit)">
+          <button mat-icon-button (click)="navigateButton(row.id, true)">
         <mat-icon>edit</mat-icon>
       </button>
       <!-- <button mat-icon-button routerLink="{{one.ID}}/view"> -->
-        <button mat-icon-button (click)="navigateButton(row.ID, view)">
+        <button mat-icon-button (click)="navigateButton(row.id, false)">
         <mat-icon>remove_red_eye</mat-icon>
       </button>
       <button mat-icon-button [disabled]=owner (click)="virtualRemove(row)">
@@ -79,3 +79,4 @@
 </mat-table>
 <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
 </div>
+

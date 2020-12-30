@@ -1,1 +1,69 @@
 <p>user-detail works!</p>
+
+<mat-card>
+ <mat-card-actions>
+
+    </mat-card-actions>
+    <mat-card-title>
+      Details pour l'utilisateur
+      <mat-card-subtitle>
+        ID "{{user?.id}}"
+      </mat-card-subtitle>
+    </mat-card-title>
+       <hr />
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+    <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="lastName" placeHolder="Last Name"/>
+          </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" type="submit">Save</button>
+        <button mat-raised-button routerLink="">Cancel</button>
+      </mat-card-actions>
+  </form>
+</mat-card>
+
+
+<!-- <mat-card *ngIf="currentItem">
+    <mat-card-actions>
+
+    </mat-card-actions>
+    <mat-card-title>
+      Details pour l'utilisateur
+      <mat-card-subtitle>
+        ID "{{currentItem?.id}}"
+      </mat-card-subtitle>
+    </mat-card-title>
+    <mat-card-content >
+    <div class="container"
+      fxLayout
+      fxLayout.xs="row"
+      fxLayoutAlign="center"
+      fxLayoutGap="10px"
+      fxLayoutGap.xs="0" fxFlexFill>
+      <div fxFlex class="user-detail-card">
+        <mat-form-field>
+            <input  matInput placeholder="Nom"
+            type="text" [(ngModel)]="currentItem.lastName"
+            [disabled]="!editbutton">
+        </mat-form-field>
+        <mat-form-field>
+          <input  matInput placeholder="Prénom"
+                  type="text" [(ngModel)]="currentItem.firstName"
+                  [disabled]="!editbutton">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <input  matInput placeholder="Email"
+                  type="text" [(ngModel)]="currentItem.email"
+                  [disabled]="!editbutton">
+        </mat-form-field>
+        <section class="example-section">
+            <mat-checkbox class="example-margin" [(ngModel)]="currentItem.isDeleted" [disabled]="!editbutton">Supprimé</mat-checkbox>
+        </section>
+      </div>
+    </div>
+    </mat-card-content>
+  </mat-card> -->

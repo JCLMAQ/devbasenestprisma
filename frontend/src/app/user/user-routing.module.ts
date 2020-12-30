@@ -1,16 +1,27 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { UserDetailComponent } from './user-detail/user-detail.component';
 import { UserListComponent } from './user-list/user-list.component';
 
 import { UserComponent } from './user.component';
 
 const userRoutes: Routes = [
- { path: '', component: UserComponent,//},
-  // { path: 'users', component: UserComponent,
-      children: [
-            { path: 'list', component: UserListComponent},
-          ]
-  },
+  { path: 'userdetail/:id/view', component: UserDetailComponent },
+  { path: 'userdetail', component: UserDetailComponent },
+  { path: 'users', component: UserListComponent},
+  { path: '', component: UserComponent},
+
+
+      // children: [
+      //   { path: 'users', component: UserListComponent},
+      //   { path: 'list', component: UserListComponent},
+      //   { path: 'detail', component: UserDetailComponent}
+      //   // { path: 'detail/:id/view', component: UserDetailComponent,
+      //   //     data: { editbutton: false, owner: false , master: false }
+      //   // },
+
+      // ]
+  // },
 
 ];
 

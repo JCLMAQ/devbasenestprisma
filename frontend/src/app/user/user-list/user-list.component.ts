@@ -27,9 +27,9 @@ export class UserListComponent implements OnInit, AfterViewInit{
   tableColumns  :  string[] = [ 'select','nickName', 'lastName', 'firstName', 'email', 'tools'];
   users?: User[];
 
-  routeToDetail = 'user/form';
+  routeToDetail = 'users/userdetail';
 
-  edit = true; // True : allow editiing (detail form)
+  edit = false; // True : allow editiing (detail form)
   view = true; // True : allow view detail (view page)
   master = false; // true : button is disable
   owner = false; // true button is disable

@@ -14,4 +14,12 @@ export class UserService {
     console.log(result)
     return result
   }
+
+  async getOneUser(id: string): Promise<User> {
+    const result = await this.httpClient.get<User>(`api/users/oneuser/${id}`).toPromise();;
+    console.log(result);
+    // const resultArray = Object.values(result)
+    // console.log(resultArray);
+    return result;
+  }
 }

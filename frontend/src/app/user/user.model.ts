@@ -15,6 +15,7 @@ export class User {
   posts: Array<string> | undefined;
   comments: Array<string> | undefined;
   todos: Array<string> | undefined;
+  isDeleted: Date | undefined;
 }
 
 export interface ILoginResponse {

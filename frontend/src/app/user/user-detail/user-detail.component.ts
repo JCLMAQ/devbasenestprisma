@@ -1,4 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { User } from '../user.model';
+import { UserService } from '../user.service';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms'
+import { identifierModuleUrl } from '@angular/compiler';
 
 @Component({
   selector: 'app-user-detail',
@@ -7,9 +14,62 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserDetailComponent implements OnInit {
 
-  constructor() { }
+  public user?: User;
+  public editingIndex!: string;
+  public editing = false;
 
-  ngOnInit(): void {
+  public userForm =  new FormGroup({
+    fisrtName: new FormControl(''),
+    lastName: new FormControl(''),
+    email: new FormControl('')
+  });
+
+ constructor(
+  //  private http: HttpClient,
+   private route: ActivatedRoute,
+   private router: Router,
+  //  private fb: FormBuilder,
+   private userService: UserService,
+ ) {}
+
+ ngOnInit(): void {
+
+  const routeParam = this.route.snapshot.paramMap.get('id');
+
+    if (routeParam) {
+      this.editingIndex = routeParam;
+      this.editing = true;
+      this.setEditForm();
+    }
+
+ }
+
+
+ public setEditForm() {
+  const result = this.userService.getOneUser(this.editingIndex)
+console.log("user fetch result : ", result)
+  this.userForm.patchValue({
+    id: this.user?.id,
+    fisrtName: this.user?.firstName,
+    lastName: this.user?.lastName,
+    email: this.user?.email,
+  });
+}
+
+public onSubmit() {
+  const habit = this.userForm.value as User;
+
+  if (this.editing) {
+    // this.habits.splice(this.editingIndex, 1, habit);
+  } else {
+    // this.habits.push(habit);
   }
+  this.exitForm();
 
+  this.router.navigate(['/']);
+}
+exitForm() {
+  this.userForm.reset();
+  this.editing = false;
+}
 }
