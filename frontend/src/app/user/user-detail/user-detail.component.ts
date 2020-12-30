@@ -45,19 +45,19 @@ export class UserDetailComponent implements OnInit {
  }
 
 
- public setEditForm() {
-  const result = this.userService.getOneUser(this.editingIndex)
-console.log("user fetch result : ", result)
+ public async setEditForm() {
+  const user = await this.userService.getOneUser(this.editingIndex)
+console.log("user fetch result : ", user)
   this.userForm.patchValue({
-    id: this.user?.id,
-    fisrtName: this.user?.firstName,
-    lastName: this.user?.lastName,
-    email: this.user?.email,
+    id: user?.id,
+    fisrtName: user?.firstName,
+    lastName: user?.lastName,
+    email: user?.email,
   });
 }
 
 public onSubmit() {
-  const habit = this.userForm.value as User;
+  const userEditResult = this.userForm.value as User;
 
   if (this.editing) {
     // this.habits.splice(this.editingIndex, 1, habit);
@@ -66,7 +66,7 @@ public onSubmit() {
   }
   this.exitForm();
 
-  this.router.navigate(['/']);
+  this.router.navigate(['/users']);
 }
 exitForm() {
   this.userForm.reset();

@@ -7,16 +7,27 @@
     <mat-card-title>
       Details pour l'utilisateur
       <mat-card-subtitle>
+
         ID "{{user?.id}}"
       </mat-card-subtitle>
     </mat-card-title>
        <hr />
     <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
       <mat-card-content>
-    <mat-form-field appearance="fill">
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="lastName" placeHolder="Last Name"/>
-          </mat-form-field>
+       <mat-form-field >
+        <mat-label>ID</mat-label>
+        <input matInput formControlName="id" placeHolder="ID"/>
+      </mat-form-field>
+       <hr />
+        <mat-form-field appearance="fill">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="lastName" placeHolder="Last Name"/>
+        </mat-form-field>
+        <br />
+        <mat-form-field appearance="fill">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" placeHolder="First Name"/>
+        </mat-form-field>
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="primary" type="submit">Save</button>
