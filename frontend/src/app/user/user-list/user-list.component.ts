@@ -1,11 +1,13 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SelectionModel } from '@angular/cdk/collections';
 
-import { AfterViewInit, Component, ViewChild, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { User } from '../user.model';
 import { UserService } from '../user.service';
 
@@ -21,7 +23,10 @@ import { UserService } from '../user.service';
     ]),
   ],
 })
-export class UserListComponent implements OnInit, AfterViewInit{
+export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
+
+  private _isDead$ = new Subject();
+
   dataSource!: MatTableDataSource<User>;
   selection = new SelectionModel<User>(true, []);
   tableColumns  :  string[] = [ 'select','nickName', 'lastName', 'firstName', 'email', 'tools'];
@@ -44,20 +49,26 @@ export class UserListComponent implements OnInit, AfterViewInit{
     ) { }
 
   ngOnInit(): void {
-    this.userService.getAllUsers().subscribe((objectResult) => {
-      console.log('objectResult', objectResult);
-      const arrayResult = Object.values(objectResult)
-      console.log('arrayResult ', arrayResult)
-      this.users = arrayResult;
-      console.log('users ', this.users);
-      this.dataSource  =  new MatTableDataSource(arrayResult);
-      console.log('Datasource: ',this.dataSource);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+    this.userService.getAllUsers()
+      .pipe(takeUntil(this._isDead$))
+      .subscribe((objectResult) => {
+        console.log('objectResult', objectResult);
+        const arrayResult = Object.values(objectResult)
+        console.log('arrayResult ', arrayResult)
+        this.users = arrayResult;
+        console.log('users ', this.users);
+        this.dataSource  =  new MatTableDataSource(arrayResult);
+        console.log('Datasource: ',this.dataSource);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
       });
   }
 
-  ngAfterViewInit() {
+    ngOnDestroy(): void {
+      this._isDead$.next();
+    }
+
+    ngAfterViewInit() {
     // this.dataSource.paginator = this.paginator;
     // this.dataSource.sort = this.sort;
   }
