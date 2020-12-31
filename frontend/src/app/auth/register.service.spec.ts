@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NavButtonsService } from './nav-buttons.service';
+import { RegisterService } from './register.service';
 
-describe('NavButtonsService', () => {
-  let service: NavButtonsService;
+describe('RegisterService', () => {
+  let service: RegisterService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(NavButtonsService);
+    service = TestBed.inject(RegisterService);
   });
 
   it('should be created', () => {

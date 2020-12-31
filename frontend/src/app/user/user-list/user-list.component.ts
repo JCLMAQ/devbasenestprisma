@@ -6,8 +6,11 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
+import { AppState } from 'src/app/reducers';
+import { usersUpload } from '../user.actions';
 import { User } from '../user.model';
 import { UserService } from '../user.service';
 
@@ -24,6 +27,7 @@ import { UserService } from '../user.service';
   ],
 })
 export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
+
 
   private _isDead$ = new Subject();
 
@@ -46,11 +50,19 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   constructor(
     private userService: UserService,
     private router: Router,
+    private store: Store<AppState>
     ) { }
 
   ngOnInit(): void {
     this.userService.getAllUsers()
-      .pipe(takeUntil(this._isDead$))
+      .pipe(takeUntil(this._isDead$)) // To allow destroy of the subscription (ngOnDestroy)
+      .pipe(
+        tap( users => {
+          console.log(users);
+          this.store.dispatch(usersUpload({users: users}))
+
+        })
+      )
       .subscribe((objectResult) => {
         console.log('objectResult', objectResult);
         const arrayResult = Object.values(objectResult)

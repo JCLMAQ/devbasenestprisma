@@ -8,6 +8,8 @@ import { UserDetailComponent } from './user-detail/user-detail.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { StoreModule } from '@ngrx/store';
+import * as fromUser from './reducers';
 
 
 @NgModule({
@@ -18,7 +20,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     HttpClientModule,
     SharedModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    // StoreModule.forFeature(fromUser.userFeatureKey, fromUser.reducers, { metaReducers: fromUser.metaReducers })
+    StoreModule.forFeature(fromUser.userFeatureKey, fromUser.userReducer, { metaReducers: fromUser.metaReducers })
   ]
 })
 export class UserModule { }

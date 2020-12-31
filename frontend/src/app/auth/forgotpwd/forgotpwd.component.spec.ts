@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NavButtonsComponent } from './nav-buttons.component';
+import { ForgotpwdComponent } from './forgotpwd.component';
 
-describe('NavButtonsComponent', () => {
-  let component: NavButtonsComponent;
-  let fixture: ComponentFixture<NavButtonsComponent>;
+describe('ForgotpwdComponent', () => {
+  let component: ForgotpwdComponent;
+  let fixture: ComponentFixture<ForgotpwdComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NavButtonsComponent ]
+      declarations: [ ForgotpwdComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NavButtonsComponent);
+    fixture = TestBed.createComponent(ForgotpwdComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
