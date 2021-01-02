@@ -11,7 +11,7 @@ export class UserService {
   constructor(private httpClient: HttpClient) { }
   getAllUsers(): Observable<User[]>{
     const result = this.httpClient.get<User[]>('api/users/allusers');
-    console.log(result)
+    console.log("user service: all users result: ", result)
     return result
   }
 
