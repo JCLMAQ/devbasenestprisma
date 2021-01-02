@@ -1,39 +1,32 @@
-import {
-  ActionReducer,
-  ActionReducerMap,
-  createFeatureSelector,
-  createReducer,
-  createSelector,
-  MetaReducer,
-  on
-} from '@ngrx/store';
-import { environment } from 'src/environments/environment';
-import { UserActions } from '../user.actions-types';
-import { User } from '../user.model';
+// import { createEntityAdapter, EntityState } from '@ngrx/entity';
+// import {
+//   ActionReducer,
+//   ActionReducerMap,
+//   createFeatureSelector,
+//   createReducer,
+//   createSelector,
+//   MetaReducer,
+//   on
+// } from '@ngrx/store';
+// import { environment } from 'src/environments/environment';
+// import { UserActions } from '../user.actions-types';
+// import { User } from '../user.model';
 
 
-export const userFeatureKey = 'user';
+// export const userFeatureKey = 'users';
 
-export interface UserState {
-  users: User[]
-}
+// export interface UserState extends EntityState<User>{
+// }
 
-export const initialUserState: UserState = {
-   users:  []
-}
+// export const adapter = createEntityAdapter<User>();
 
-// export const reducers: ActionReducerMap<UserState> = {
+// export const initialUserState = adapter.getInitialState();
 
-// };
-
-export const userReducer = createReducer(
-  initialUserState,
-  on(UserActions.usersUpload, (state, action ) => {
-    return {
-      users: action.users
-    }
-  } )
-)
+// export const userReducer = createReducer(
+//   initialUserState,
+//   on(UserActions.allUsersLoaded,
+//     (state, action) => adapter.setAll(action.users, state) )
+// )
 
 
-export const metaReducers: MetaReducer<UserState>[] = !environment.production ? [] : [];
+// export const metaReducers: MetaReducer<UserState>[] = !environment.production ? [] : [];

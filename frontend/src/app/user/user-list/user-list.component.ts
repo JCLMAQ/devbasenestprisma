@@ -10,7 +10,7 @@ import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { AppState } from 'src/app/reducers';
-import { usersUpload } from '../user.actions';
+// import { usersUpload } from '../user.actions';
 import { User } from '../user.model';
 import { UserService } from '../user.service';
 
@@ -54,26 +54,26 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
     ) { }
 
   ngOnInit(): void {
-    this.userService.getAllUsers()
-      .pipe(takeUntil(this._isDead$)) // To allow destroy of the subscription (ngOnDestroy)
-      .pipe(
-        tap( users => {
-          console.log(users);
-          this.store.dispatch(usersUpload({users: users}))
+    // this.userService.getAllUsers()
+    //   // .pipe(takeUntil(this._isDead$)) // To allow destroy of the subscription (ngOnDestroy)
+    //   // .pipe(
+    //   //   tap( users => {
+    //   //     console.log(users);
+    //   //     this.store.dispatch(usersUpload({users: users}))
 
-        })
-      )
-      .subscribe((objectResult) => {
-        console.log('objectResult', objectResult);
-        const arrayResult = Object.values(objectResult)
-        console.log('arrayResult ', arrayResult)
-        this.users = arrayResult;
-        console.log('users ', this.users);
-        this.dataSource  =  new MatTableDataSource(arrayResult);
-        console.log('Datasource: ',this.dataSource);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
+    //   //   })
+    //   // )
+    //   .subscribe((objectResult) => {
+    //     console.log('objectResult', objectResult);
+    //     const arrayResult = Object.values(objectResult)
+    //     console.log('arrayResult ', arrayResult)
+    //     this.users = arrayResult;
+    //     console.log('users ', this.users);
+    //     this.dataSource  =  new MatTableDataSource(arrayResult);
+    //     console.log('Datasource: ',this.dataSource);
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sort = this.sort;
+    //   });
   }
 
     ngOnDestroy(): void {

@@ -13,6 +13,10 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { AuthModule } from './auth/auth.module';
 import { environment } from 'src/environments/environment';
+import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
+import { Effect, EffectsModule } from '@ngrx/effects';
+import { EntityDataModule } from '@ngrx/data';
+import { entityConfig } from './entity-metadata';
 
 @NgModule({
   declarations: [
@@ -34,9 +38,17 @@ import { environment } from 'src/environments/environment';
       runtimeChecks: {
         strictStateImmutability: true,
         strictActionImmutability: true,
+        strictActionSerializability: true,
+        strictStateSerializability:true
       },
     }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+    EffectsModule.forRoot([]),
+    StoreRouterConnectingModule.forRoot({
+      stateKey: 'router',
+      routerState: RouterState.Minimal
+    }),
+    EntityDataModule.forRoot(entityConfig)
 
   ],
   providers: [
