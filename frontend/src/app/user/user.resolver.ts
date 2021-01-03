@@ -15,7 +15,7 @@ export class UserResolver implements Resolve<any> {
   }
 
   resolve(route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<any> {
+          state: RouterStateSnapshot): Observable<any> {
 
       return this.store
         .pipe(
@@ -23,7 +23,6 @@ export class UserResolver implements Resolve<any> {
             if(!this.loading){
               this.store.dispatch(loadAllUsers());
             }
-
           }),
           first(),
           finalize(() => this.loading = false)

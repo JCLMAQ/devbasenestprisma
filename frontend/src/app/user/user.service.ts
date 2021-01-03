@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from './user.model';
+import makeIterable from "@lopatnov/make-iterable";
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class UserService {
   constructor(private httpClient: HttpClient) { }
   getAllUsers(): Observable<User[]>{
     const result = this.httpClient.get<User[]>('api/users/allusers');
+    // const result = makeIterable(this.httpClient.get<User[]>('api/users/allusers'));
     console.log("user service: all users result: ", result)
     return result
   }

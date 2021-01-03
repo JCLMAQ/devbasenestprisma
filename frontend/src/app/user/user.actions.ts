@@ -7,7 +7,7 @@ import { User } from "./user.model";
 // )
 
 export const loadAllUsers = createAction(
-  "[Users Resolver Load All Users"
+  "[Users Resolver] Load All Users"
 );
 
 export const allUsersLoaded = createAction(

@@ -13,7 +13,7 @@ const userRoutes: Routes = [
       resolve: {
         users: UserResolver
       }},
-  { path: '', component: UserComponent,
+  { path: '', component: UserListComponent,
       resolve: {
         users: UserResolver
       }},
