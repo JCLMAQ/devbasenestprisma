@@ -9,7 +9,7 @@ import { UserResolver } from './user.resolver';
 const userRoutes: Routes = [
   { path: 'userdetail/:id/view', component: UserDetailComponent },
   { path: 'userdetail', component: UserDetailComponent },
-  { path: 'usersbis', component: UserListComponent,
+  { path: 'users', component: UserListComponent,
       resolve: {
         users: UserResolver
       }},

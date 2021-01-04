@@ -32,12 +32,19 @@ export class UsersController {
     return users;
   }
 
+  // @Get('allusers')
+  // async getAllUsers(): Promise<User> {
+  //  // return this.usersbisService.findUsers({});
+  //  const result = await this.usersService.findUsers({include: { Profile: true, }} );
+  //  console.log("result include: ", result)
+  //  return result
+  // }
   @Get('allusers')
   async getAllUsers(): Promise<User> {
-   // return this.usersbisService.findUsers({});
-   const result = await this.usersService.findUsers({include: { Profile: true, }} );
-   console.log("result include: ", result)
-   return result
+    // return this.usersbisService.findUsers({});
+    const result = await this.usersService.findUsers({include: { Profile: true, }} );
+    console.log("result include: ", result)
+    return result
   }
 
   @Get('someusers')

@@ -6,14 +6,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { 
   User as UserModel,
   Prisma,
-  Role,
 } from '@prisma/client';
-import { domain } from 'process';
-import { UserBis, UserBisPersonalData } from './entities/userbis.entity';
+import { UserBis } from './entities/userbis.entity';
 
 @Controller('usersbis')
 export class UsersbisController {
-  constructor(private readonly usersbisService: UsersbisService) {}
+  constructor(
+    private readonly usersbisService: UsersbisService) {}
 
   @Get('allusers')
   async getAllUsers(): Promise<UserBis> {
