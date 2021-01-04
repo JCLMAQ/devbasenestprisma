@@ -5,8 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { 
   User as UserModel,
-  Prisma,
-  Role
+  Prisma
 } from '@prisma/client';
 import { domain } from 'process';
 import { UserPersonalData } from './entities/user.entity';

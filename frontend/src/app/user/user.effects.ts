@@ -17,8 +17,13 @@ export class UsersEffects {
         () => this.actions$
             .pipe(
                 ofType(UserActions.loadAllUsers),
-                concatMap(action =>
-                  { return this.userService.getAllUsers()}),
+                concatMap(_action =>
+                  {
+
+                    return this.userService.getAllUsers()
+                  }),
+                tap(console.log),
+                // map(result => JSON.stringify(result)),
                 tap(console.log),
                 map(users => allUsersLoaded({users})),
 

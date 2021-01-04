@@ -8,7 +8,8 @@ const mainRoutes: Routes = [
   { path: '',  redirectTo: '/home', pathMatch: 'full'},
   { path: 'home', component: HomeComponent },
   { path: 'about', loadChildren: () => import('./about/about.module').then(m => m.AboutModule) },
-  { path: 'users', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
+  // { path: 'users', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
+  { path: 'usersbis', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
   { path: '**', component: PageNotFoundComponent }
 ];
 

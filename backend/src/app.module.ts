@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { UsersbisModule } from './usersbis/usersbis.module';
 import { UtilitiesModule } from './utilities/utilities.module';
 import { AuthsModule } from './auths/auths.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -50,6 +51,7 @@ import { MulterModule } from '@nestjs/platform-express';
     }),
     PrismaModule,
     UsersModule,
+    UsersbisModule,
     UtilitiesModule,
     AuthsModule,
     EmaildomainsModule,

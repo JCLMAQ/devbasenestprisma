@@ -16,6 +16,7 @@ import { User } from '../user.model';
 export const userFeatureKey = 'users';
 
 export interface UserState extends EntityState<User>{
+  selectedUserId: string | null;
 }
 
 export const adapter = createEntityAdapter<User>();
