@@ -22,14 +22,16 @@ export class UsersbisService {
     where?: Prisma.UserBisWhereInput;
     orderBy?: Prisma.UserBisOrderByInput;
     select?: Prisma.UserBisSelect;
+    include?: Prisma.UserBisInclude;
   }): Promise<UserBis[]> {
-    const { skip, take, cursor, where, orderBy} = params;
+    const { skip, take, cursor, where, orderBy, select, include} = params;
     return this.prisma.userBis.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
+      include,
     });
   }
 

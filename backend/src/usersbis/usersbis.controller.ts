@@ -6,18 +6,21 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { 
   User as UserModel,
   Prisma,
-  Role
+  Role,
 } from '@prisma/client';
 import { domain } from 'process';
-import { UserBisPersonalData } from './entities/userbis.entity';
+import { UserBis, UserBisPersonalData } from './entities/userbis.entity';
 
 @Controller('usersbis')
 export class UsersbisController {
   constructor(private readonly usersbisService: UsersbisService) {}
 
   @Get('allusers')
-  async getAllUsers(): Promise<UserBisPersonalData[]> {
-    return this.usersbisService.findUsers({});
+  async getAllUsers(): Promise<UserBis> {
+    // return this.usersbisService.findUsers({});
+    const result = await this.usersbisService.findUsers({include: { Profile: true, }} );
+    console.log("result include: ", result)
+    return result
   }
 
 }

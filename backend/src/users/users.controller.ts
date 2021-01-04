@@ -5,14 +5,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { 
   User as UserModel,
-  Prisma
+  Prisma,
 } from '@prisma/client';
 import { domain } from 'process';
-import { UserPersonalData } from './entities/user.entity';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService) {}
 
    // Create a new user
   @Post('newUser')
@@ -32,8 +33,11 @@ export class UsersController {
   }
 
   @Get('allusers')
-  async getAllUsers(): Promise<UserPersonalData[]> {
-    return this.usersService.findUsers({});
+  async getAllUsers(): Promise<User> {
+   // return this.usersbisService.findUsers({});
+   const result = await this.usersService.findUsers({include: { Profile: true, }} );
+   console.log("result include: ", result)
+   return result
   }
 
   @Get('someusers')
