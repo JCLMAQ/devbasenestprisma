@@ -63,26 +63,6 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
 
   ngOnInit(): void {
     this.reload();
-    // this.userService.getAllUsers()
-      // .pipe(takeUntil(this._isDead$)) // To allow destroy of the subscription (ngOnDestroy)
-      // .pipe(
-      //   tap( users => {
-      //     console.log(users);
-      //     this.store.dispatch(usersUpload({users: users}))
-
-      //   })
-      // )
-  //     .subscribe((objectResult) => {
-  //       console.log('objectResult', objectResult);
-  //       const arrayResult = Object.values(objectResult)
-  //       console.log('arrayResult ', arrayResult)
-  //       this.users = arrayResult;
-  //       console.log('users ', this.users);
-  //       this.dataSource  =  new MatTableDataSource(arrayResult);
-  //       console.log('Datasource: ',this.dataSource);
-  //       this.dataSource.paginator = this.paginator;
-  //       this.dataSource.sort = this.sort;
-  //     });
   }
 
     ngOnDestroy(): void {
@@ -96,16 +76,12 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
 
   reload() {
     this.store.select(selectAllUsers).subscribe((objectResult) => {
-              console.log('objectResult', objectResult);
-              const arrayResult = Object.values(objectResult)
-              console.log('arrayResult ', arrayResult)
-              this.users = arrayResult;
-              console.log('users ', this.users);
-              this.dataSource  =  new MatTableDataSource(arrayResult);
-              console.log('Datasource: ',this.dataSource);
-              this.dataSource.paginator = this.paginator;
-              this.dataSource.sort = this.sort;
-            });
+        const arrayResult = Object.values(objectResult)
+        this.users = arrayResult;
+        this.dataSource  =  new MatTableDataSource(arrayResult);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
   }
 
   onNavigate() {

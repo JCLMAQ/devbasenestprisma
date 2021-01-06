@@ -26,9 +26,9 @@ import { UsersEffects } from './store/user.effects';
     FormsModule,
     ReactiveFormsModule,
     EffectsModule.forFeature([UsersEffects]),
-    // StoreModule.forFeature(fromUser.userFeatureKey, fromUser.userReducer, { metaReducers: fromUser.metaReducers })
+    StoreModule.forFeature(fromUser.userFeatureKey, fromUser.userReducer, { metaReducers: fromUser.metaReducers })
     // StoreModule.forFeature("users", userReducer),
-    StoreModule.forFeature(fromUser.userFeatureKey, fromUser.userReducer)
+    // StoreModule.forFeature(fromUser.userFeatureKey, fromUser.userReducer)
   ],
   exports: [],
   providers: [

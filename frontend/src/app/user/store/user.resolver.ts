@@ -35,19 +35,6 @@ export class UserResolver implements Resolve<any> {
           first(),
           finalize(() => this.loading = false)
         )
-
-      //   .pipe(
-      //     select(areUsersLoaded),
-      //     tap(coursesLoaded => {
-      //         if (!this.loading && !coursesLoaded) {
-      //             this.loading = true;
-      //             this.store.dispatch(loadAllUsers());
-      //         }
-      //     }),
-      //     filter(usersLoaded => usersLoaded),
-      //     first(),
-      //     finalize(() => this.loading = false)
-      // );
     }
 
 }
