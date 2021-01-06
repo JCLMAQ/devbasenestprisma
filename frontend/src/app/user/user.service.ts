@@ -12,10 +12,6 @@ export class UserService {
   constructor(private httpClient: HttpClient) { }
   getAllUsers(): Observable<User[]>{
     const result = this.httpClient.get<User[]>('api/users/allusers');
-    // const result = makeIterable(this.httpClient.get<User[]>('api/users/allusers'));
-    console.log("user service: all users result: ", result)
-    const result1 = JSON.stringify(result)
-    console.log("user service: all users result JSON strintify: ", result1)
     return result
   }
 

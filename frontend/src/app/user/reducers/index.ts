@@ -9,7 +9,7 @@ import {
   on
 } from '@ngrx/store';
 import { environment } from 'src/environments/environment';
-import { UserActions } from '../user.actions-types';
+import { UserActions } from '../store/user.actions-types';
 import { User } from '../user.model';
 
 

@@ -1,5 +1,6 @@
 import { createAction, createReducer, props } from "@ngrx/store";
-import { User } from "./user.model";
+import { User } from "../user.model";
+
 
 // export const usersUpload = createAction(
 //   "[USERS LIST] Users Upload",

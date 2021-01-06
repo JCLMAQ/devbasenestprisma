@@ -94,7 +94,6 @@ model Profile {
   orderProfile Int
   // implicit m:n
   User         User[]   @relation(references: [id])
-  Userbis        UserBis[]   @relation(references: [id])
   bio          String
   isDeleted    DateTime? // Null = not deleted
 }
@@ -257,23 +256,4 @@ model Emaildomain {
   updatedAt     DateTime @updatedAt
   domain        String  @unique
   allowed       Boolean
-}
-
-model UserBis {
-  id          String    @default(uuid()) @id
-  email       String    @unique
-  lastName    String?
-  firstName   String?
-  createdAt    DateTime @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
-  Role        Role      @default(USER)
-  nickName    String?
-  Gender      Gender?   @default(UNKNOWN)
-  social      Json?
-  language    String?   @default("fr")
-  isAdmin     Boolean? @default(false)
-  manager      UserBis?             @relation("ManagerbisTeams", fields: [managerId], references: [id]) // Self 1 to n
-  managerId    String?           @map("manager")   // Self 1 to n
-  Team         UserBis[]            @relation("ManagerbisTeams")
-  Profile     Profile[]  @relation(references: [id]) // implicit m:n 
 }

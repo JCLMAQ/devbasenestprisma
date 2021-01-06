@@ -3,8 +3,9 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { concatMap, map, tap } from "rxjs/operators";
 import { allUsersLoaded } from "./user.actions";
 import { UserActions } from "./user.actions-types";
-import { UserService } from "./user.service";
+import { UserService } from "../user.service";
 
+// Effects execute an action on relation with the backend.
 @Injectable()
 export class UsersEffects {
 
@@ -17,13 +18,8 @@ export class UsersEffects {
         () => this.actions$
             .pipe(
                 ofType(UserActions.loadAllUsers),
-                concatMap(_action =>
-                  {
-
-                    return this.userService.getAllUsers()
-                  }),
-                tap(console.log),
-                // map(result => JSON.stringify(result)),
+                concatMap(action =>
+                  { return this.userService.getAllUsers() }),
                 tap(console.log),
                 map(users => allUsersLoaded({users})),
 

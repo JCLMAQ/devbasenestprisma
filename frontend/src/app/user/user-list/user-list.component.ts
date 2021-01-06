@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SelectionModel } from '@angular/cdk/collections';
+import { ResourceLoader } from '@angular/compiler';
 
 import { AfterViewInit, Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -7,9 +8,11 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { AppState } from 'src/app/reducers';
+import { selectAll } from '../store/user.reducer';
+import { selectAllUsers } from '../store/user.selectors';
 // import { usersUpload } from '../user.actions';
 import { User } from '../user.model';
 import { UserService } from '../user.service';
@@ -34,8 +37,10 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   dataSource!: MatTableDataSource<User>;
   selection = new SelectionModel<User>(true, []);
   tableColumns  :  string[] = [ 'select','nickName', 'lastName', 'firstName', 'email', 'tools'];
+
   users?: User[];
 
+  users$?: Observable<User[]>;
   routeToDetail = 'users/userdetail';
 
   edit = false; // True : allow editiing (detail form)
@@ -48,14 +53,18 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
 
 
   constructor(
-    private userService: UserService,
+   // private userService: UserService,
     private router: Router,
     private store: Store<AppState>
     ) { }
 
+
+
+
   ngOnInit(): void {
-    this.userService.getAllUsers()
-      .pipe(takeUntil(this._isDead$)) // To allow destroy of the subscription (ngOnDestroy)
+    this.reload();
+    // this.userService.getAllUsers()
+      // .pipe(takeUntil(this._isDead$)) // To allow destroy of the subscription (ngOnDestroy)
       // .pipe(
       //   tap( users => {
       //     console.log(users);
@@ -63,17 +72,17 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
 
       //   })
       // )
-      .subscribe((objectResult) => {
-        console.log('objectResult', objectResult);
-        const arrayResult = Object.values(objectResult)
-        console.log('arrayResult ', arrayResult)
-        this.users = arrayResult;
-        console.log('users ', this.users);
-        this.dataSource  =  new MatTableDataSource(arrayResult);
-        console.log('Datasource: ',this.dataSource);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
+  //     .subscribe((objectResult) => {
+  //       console.log('objectResult', objectResult);
+  //       const arrayResult = Object.values(objectResult)
+  //       console.log('arrayResult ', arrayResult)
+  //       this.users = arrayResult;
+  //       console.log('users ', this.users);
+  //       this.dataSource  =  new MatTableDataSource(arrayResult);
+  //       console.log('Datasource: ',this.dataSource);
+  //       this.dataSource.paginator = this.paginator;
+  //       this.dataSource.sort = this.sort;
+  //     });
   }
 
     ngOnDestroy(): void {
@@ -85,6 +94,19 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
     // this.dataSource.sort = this.sort;
   }
 
+  reload() {
+    this.store.select(selectAllUsers).subscribe((objectResult) => {
+              console.log('objectResult', objectResult);
+              const arrayResult = Object.values(objectResult)
+              console.log('arrayResult ', arrayResult)
+              this.users = arrayResult;
+              console.log('users ', this.users);
+              this.dataSource  =  new MatTableDataSource(arrayResult);
+              console.log('Datasource: ',this.dataSource);
+              this.dataSource.paginator = this.paginator;
+              this.dataSource.sort = this.sort;
+            });
+  }
 
   onNavigate() {
 

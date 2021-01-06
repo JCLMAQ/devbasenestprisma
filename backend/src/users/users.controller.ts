@@ -42,8 +42,7 @@ export class UsersController {
   @Get('allusers')
   async getAllUsers(): Promise<User> {
     // return this.usersbisService.findUsers({});
-    const result = await this.usersService.findUsers({include: { Profile: true, }} );
-    console.log("result include: ", result)
+    const result = await this.usersService.findUsers({include: { manager: true, Team: true, Todo: true, Group: true, Comment: true, Profile: true, }} );
     return result
   }
 
