@@ -11,3 +11,8 @@ export const selectAllUsers = createSelector(
     selectUsersState,
     fromUsers.selectAll
 );
+
+export const areUsersLoaded = createSelector(
+  selectUsersState,
+  state => state.allUsersLoaded
+);

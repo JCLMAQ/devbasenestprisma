@@ -2,9 +2,11 @@ import { Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
-import { finalize, first, tap } from "rxjs/operators";
+import { filter, finalize, first, map, tap} from "rxjs/operators";
+import { select } from '@ngrx/store'
 import { AppState } from "../../reducers";
 import { loadAllUsers } from "./user.actions";
+import { areUsersLoaded } from "./user.selectors";
 
 
 // resolver link to the router to load data before the page list opens
@@ -21,14 +23,19 @@ export class UserResolver implements Resolve<any> {
 
       return this.store
         .pipe(
-          tap(() => {
-            if(!this.loading){
+          select(areUsersLoaded),
+          // select(areUsersLoaded),
+          tap((usersLoaded) => {
+            if(!this.loading && !usersLoaded){
+              this.loading = true;
               this.store.dispatch(loadAllUsers());
             }
           }),
+          // filter(usersLoaded => usersLoaded),
           first(),
           finalize(() => this.loading = false)
         )
+
       //   .pipe(
       //     select(areUsersLoaded),
       //     tap(coursesLoaded => {

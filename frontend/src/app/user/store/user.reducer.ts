@@ -16,7 +16,7 @@ import { User } from '../user.model';
 export const userFeatureKey = 'users';
 
 export interface UserState extends EntityState<User>{
-  allCoursesLoaded: boolean
+  allUsersLoaded: boolean
 }
 
 export const adapter = createEntityAdapter<User>();
