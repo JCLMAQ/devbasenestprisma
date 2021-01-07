@@ -41,6 +41,14 @@ export class PrismaService extends PrismaClient
 //     return valueToReturn
 // }
 
+  async objectToArray(objectToConvert){
+    let arr = [];  
+    Object.keys(objectToConvert).map(function(key){  
+        arr.push({[key]:objectToConvert[key]})  
+        return arr;  
+    });
+  }
+
 // Middelwares
   deletePasswordUser: Prisma.Middleware = async (params, next) => {
 // Work only for "findUnique"  ot for findMany
@@ -48,12 +56,13 @@ export class PrismaService extends PrismaClient
     if(params.model == "User") {
       if(result != null) {
         if((result.pwdHash != null) && (result.salt != null)) {
-          const { pwdHash, salt, isAdmin, ...rest } = result;
-          return rest;
+          let { pwdHash, salt, isAdmin, ...rest } = result;
+          return Object.values(rest);
         } else {
-          const { isAdmin, ...rest } = result;
-          return rest;
+          let { isAdmin, ...rest } = result;
+          return Object.values(rest);
         }
+
       }
     }
    return result
