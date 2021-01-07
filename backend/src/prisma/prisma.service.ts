@@ -41,13 +41,13 @@ export class PrismaService extends PrismaClient
 //     return valueToReturn
 // }
 
-async objectToArray(objectToConvert){
-  let arr = [];  
-  Object.keys(objectToConvert).map(function(key){  
-      arr.push({[key]:objectToConvert[key]})  
-      return arr;  
-  });
-}
+  async objectToArray(objectToConvert){
+    let arr = [];  
+    Object.keys(objectToConvert).map(function(key){  
+        arr.push({[key]:objectToConvert[key]})  
+        return arr;  
+    });
+  }
 
 // Middelwares
   deletePasswordUser: Prisma.Middleware = async (params, next) => {
