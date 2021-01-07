@@ -7,6 +7,9 @@
         "id": {
           "type": "string"
         },
+        "numSeq": {
+          "type": "integer"
+        },
         "email": {
           "type": "string"
         },
@@ -236,12 +239,6 @@
             "$ref": "#/definitions/User"
           }
         },
-        "Userbis": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/UserBis"
-          }
-        },
         "bio": {
           "type": "string"
         },
@@ -409,6 +406,9 @@
       "properties": {
         "id": {
           "type": "string"
+        },
+        "numSeq": {
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -656,103 +656,6 @@
           "type": "boolean"
         }
       }
-    },
-    "UserBis": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "firstName": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "Role": {
-          "type": "string",
-          "enum": [
-            "GUEST",
-            "USER",
-            "ADMIN",
-            "SUPERADMIN"
-          ]
-        },
-        "nickName": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "Gender": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "MALE",
-            "FEMELE",
-            "UNKNOWN"
-          ]
-        },
-        "social": {
-          "type": [
-            "object",
-            "null"
-          ]
-        },
-        "language": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "isAdmin": {
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "manager": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/UserBis"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "Team": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/UserBis"
-          }
-        },
-        "Profile": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Profile"
-          }
-        }
-      }
     }
   },
   "type": "object",
@@ -795,9 +698,6 @@
     },
     "emaildomain": {
       "$ref": "#/definitions/Emaildomain"
-    },
-    "userBis": {
-      "$ref": "#/definitions/UserBis"
     }
   }
 }

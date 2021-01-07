@@ -4,6 +4,7 @@
 
 Table User {
   id String [pk]
+  numSeq Int [increment, not null]
   email String [unique, not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -51,7 +52,6 @@ Table Profile {
   updatedAt DateTime [not null]
   orderProfile Int [not null]
   User User
-  Userbis UserBis
   bio String [not null]
   isDeleted DateTime
 }
@@ -103,6 +103,7 @@ Table UserTodoLink {
 
 Table File {
   id String [pk]
+  numSeq Int [increment, not null]
   name String [not null]
   storageName String [unique, not null]
   type String
@@ -179,25 +180,6 @@ Table Emaildomain {
   allowed Boolean [not null]
 }
 
-Table UserBis {
-  id String [pk]
-  email String [unique, not null]
-  lastName String
-  firstName String
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  Role Role [not null, default: 'USER']
-  nickName String
-  Gender Gender [default: 'UNKNOWN']
-  social Json
-  language String [default: 'fr']
-  isAdmin Boolean [default: false]
-  manager UserBis
-  managerId String
-  Team UserBis
-  Profile Profile
-}
-
 Table ProfileToUser {
   profileId String [ref: > Profile.id]
   userId String [ref: > User.id]
@@ -211,11 +193,6 @@ Table GroupToUser {
 Table TodoToUser {
   todoId String [ref: > Todo.id]
   userId String [ref: > User.id]
-}
-
-Table ProfileToUserBis {
-  userbisId String [ref: > UserBis.id]
-  profileId String [ref: > Profile.id]
 }
 
 Table GroupToTodo {
@@ -271,5 +248,3 @@ Ref: Post.authorId > User.id
 Ref: Comment.postId > Post.id
 
 Ref: Comment.authorId > User.id
-
-Ref: UserBis.managerId - UserBis.id
