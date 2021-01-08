@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { UserResolver } from './store/user.resolver';
 import { UserDetailComponent } from './user-detail/user-detail.component';
 import { UserListComponent } from './user-list/user-list.component';
 
@@ -9,14 +10,14 @@ import { UserComponent } from './user.component';
 const userRoutes: Routes = [
   { path: 'userdetail/:id/view', component: UserDetailComponent },
   { path: 'userdetail', component: UserDetailComponent },
-  // { path: 'users', component: UserListComponent,
-  //     resolve: {
-  //       users: UserResolver
-  //     }},
+  { path: 'users', component: UserListComponent,
+      resolve: {
+        users: UserResolver
+      }},
   { path: '', component: UserListComponent,
-      // resolve: {
-      //   users: UserResolver
-      // }},
+      resolve: {
+        users: UserResolver
+      }},
 
 
       // children: [
@@ -28,7 +29,7 @@ const userRoutes: Routes = [
       //   // },
 
       // ]
-  },
+  // },
 
 ];
 

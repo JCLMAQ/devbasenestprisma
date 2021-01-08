@@ -15,6 +15,21 @@ import * as fromUser from './store/user.reducer';
 // import { EffectsModule } from '@ngrx/effects';
 // import { UsersEffects } from './store/user.effects';
 
+import { EntityDataService, EntityDefinitionService, EntityMetadataMap } from '@ngrx/data';
+import { UserEntityService } from './store/user-entity.service';
+import { UserResolver } from './store/user.resolver';
+import { UserDataService } from './store/user-data.service';
+import { User } from './user.model';
+
+const entityMetadata: EntityMetadataMap = {
+  User: {
+
+  },
+};
+
+export const entityConfig = {
+  entityMetadata
+};
 
 @NgModule({
   declarations: [UserComponent, UserListComponent, UserDetailComponent],
@@ -34,6 +49,20 @@ import * as fromUser from './store/user.reducer';
   exports: [],
   providers: [
     // UserResolver,
+    UserEntityService,
+    UserResolver,
+    UserDataService
   ]
 })
-export class UserModule { }
+export class UserModule {
+
+  constructor(
+    private entityDefinitionService: EntityDefinitionService,
+    private entityDataService: EntityDataService,
+    private userDataService: UserDataService,
+  ) {
+    entityDefinitionService.registerMetadataMap(entityMetadata);
+    entityDataService.registerService('User', userDataService)
+
+  }
+}
