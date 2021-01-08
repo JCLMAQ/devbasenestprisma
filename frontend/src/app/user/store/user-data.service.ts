@@ -22,7 +22,7 @@ export class UserDataService extends DefaultDataService<User> {
 
 
     getAll(): Observable<User[]> {
-       return this.httpClient.get<User[]>('/api/users/allusers')
+      return this.httpClient.get<User[]>('/api/users/allusers')
     //    .pipe(
     //     map(res => res['payload'])
     // );
