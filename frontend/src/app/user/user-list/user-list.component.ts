@@ -11,8 +11,8 @@ import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { AppState } from 'src/app/reducers';
-import { selectAll } from '../store/user.reducer';
-import { selectAllUsers } from '../store/user.selectors';
+// import { selectAll } from '../store/user.reducer';
+// import { selectAllUsers } from '../store/user.selectors';
 // import { usersUpload } from '../user.actions';
 import { User } from '../user.model';
 import { UserService } from '../user.service';
@@ -75,13 +75,7 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   }
 
   reload() {
-    this.store.select(selectAllUsers).subscribe((objectResult) => {
-        const arrayResult = Object.values(objectResult)
-        this.users = arrayResult;
-        this.dataSource  =  new MatTableDataSource(arrayResult);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
+
   }
 
   onNavigate() {

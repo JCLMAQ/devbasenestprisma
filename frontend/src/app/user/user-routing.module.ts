@@ -4,7 +4,7 @@ import { UserDetailComponent } from './user-detail/user-detail.component';
 import { UserListComponent } from './user-list/user-list.component';
 
 import { UserComponent } from './user.component';
-import { UserResolver } from './store/user.resolver';
+// import { UserResolver } from './store/user.resolver';
 
 const userRoutes: Routes = [
   { path: 'userdetail/:id/view', component: UserDetailComponent },
@@ -14,9 +14,9 @@ const userRoutes: Routes = [
   //       users: UserResolver
   //     }},
   { path: '', component: UserListComponent,
-      resolve: {
-        users: UserResolver
-      }},
+      // resolve: {
+      //   users: UserResolver
+      // }},
 
 
       // children: [
@@ -28,7 +28,7 @@ const userRoutes: Routes = [
       //   // },
 
       // ]
-  // },
+  },
 
 ];
 
