@@ -11,11 +11,11 @@ import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { AppState } from 'src/app/reducers';
+import { UserEntityService } from '../store/user-entity.service';
 // import { selectAll } from '../store/user.reducer';
 // import { selectAllUsers } from '../store/user.selectors';
 // import { usersUpload } from '../user.actions';
 import { User } from '../user.model';
-import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-user-list',
@@ -55,7 +55,8 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   constructor(
    // private userService: UserService,
     private router: Router,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private userEntityService: UserEntityService,
     ) { }
 
 
@@ -75,7 +76,16 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   }
 
   reload() {
+    // const arrayResult = Object.values(this.userEntityService.entities$);
+    const arrayResult$ = this.userEntityService.entities$.pipe(
 
+    );
+      // this.users = arrayResult;
+       this.users = Object.values(arrayResult$);
+   console.log("array Result", this.users)
+      // this.dataSource  =  new MatTableDataSource(arrayResult);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
   }
 
   onNavigate() {
