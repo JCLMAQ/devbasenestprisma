@@ -71,15 +71,14 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
     }
 
     ngAfterViewInit() {
-    // this.dataSource.paginator = this.paginator;
-    // this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   reload() {
     this.userEntityService.entities$.subscribe((objectResult) => {
-      const arrayResult = Object.values(objectResult)
-      this.users = arrayResult;
-      this.dataSource  =  new MatTableDataSource(arrayResult);
+      this.users = Object.values(objectResult)
+      this.dataSource  =  new MatTableDataSource(this.users);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
