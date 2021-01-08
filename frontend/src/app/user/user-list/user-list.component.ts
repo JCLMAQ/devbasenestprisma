@@ -76,16 +76,13 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   }
 
   reload() {
-    // const arrayResult = Object.values(this.userEntityService.entities$);
-    const arrayResult$ = this.userEntityService.entities$.pipe(
-
-    );
-      // this.users = arrayResult;
-       this.users = Object.values(arrayResult$);
-   console.log("array Result", this.users)
-      // this.dataSource  =  new MatTableDataSource(arrayResult);
+    this.userEntityService.entities$.subscribe((objectResult) => {
+      const arrayResult = Object.values(objectResult)
+      this.users = arrayResult;
+      this.dataSource  =  new MatTableDataSource(arrayResult);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+    });
   }
 
   onNavigate() {
