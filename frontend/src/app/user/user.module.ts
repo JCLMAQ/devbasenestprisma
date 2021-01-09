@@ -8,18 +8,10 @@ import { UserDetailComponent } from './user-detail/user-detail.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { StoreModule } from '@ngrx/store';
-import * as fromUser from './store/user.reducer';
-// import * as fromUser from './reducers';
-// import { UserResolver } from './store/user.resolver';
-// import { EffectsModule } from '@ngrx/effects';
-// import { UsersEffects } from './store/user.effects';
-
 import { EntityDataService, EntityDefinitionService, EntityMetadataMap } from '@ngrx/data';
 import { UserEntityService } from './store/user-entity.service';
 import { UserResolver } from './store/user.resolver';
 import { UserDataService } from './store/user-data.service';
-import { User } from './user.model';
 
 const entityMetadata: EntityMetadataMap = {
   User: {
@@ -40,15 +32,9 @@ export const entityConfig = {
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
-    // EffectsModule.forFeature([UsersEffects]),
-    // StoreModule.forFeature(fromUser.userFeatureKey, fromUser.userReducer, { metaReducers: fromUser.metaReducers })
-    // StoreModule.forFeature("users", fromUser.userReducer),
-
-    StoreModule.forFeature(fromUser.userFeatureKey, fromUser.userReducer)
   ],
   exports: [],
   providers: [
-    // UserResolver,
     UserEntityService,
     UserResolver,
     UserDataService

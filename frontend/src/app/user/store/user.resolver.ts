@@ -14,11 +14,6 @@ export class UserResolver implements Resolve<boolean> {
 
     resolve(route: ActivatedRouteSnapshot,
             state: RouterStateSnapshot): Observable<boolean> {
-
-              // return this.usersEntityService.getAll()
-              // .pipe(
-              //   map( users => !!users)
-              // )
         return this.usersEntityService.loaded$
             .pipe(
                 tap(loaded => {

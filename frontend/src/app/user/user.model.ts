@@ -1,7 +1,8 @@
 export class User {
   id: string | undefined;
-  createdAt?: Date;
+  createdAt: Date | undefined;
   updatedAt: Date | undefined;
+  numSeq: number | undefined;
   email: string | undefined;
   Role: string | undefined;
   nickName: string | undefined;
