@@ -43,6 +43,7 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   users$?: Observable<User[]>;
   routeToDetail = 'users/userdetail';
 
+  mode: 'Edit' | 'View' | 'Update' | undefined ;
   edit = false; // True : allow editiing (detail form)
   view = true; // True : allow view detail (view page)
   master = false; // true : button is disable

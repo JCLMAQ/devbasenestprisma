@@ -58,9 +58,9 @@
       <button mat-icon-button [disabled]=owner (click)="virtualRemove(row)">
         <mat-icon>delete</mat-icon>
       </button>
-      <!-- <button mat-icon-button *ngIf="owner" (click)="virtualRemove(one)">
+      <button mat-icon-button *ngIf="owner" (click)="virtualRemove(row)">
           <mat-icon>delete</mat-icon>
-        </button> -->
+        </button>
       <button mat-icon-button [disabled]=master (click)="remove(row)">
           <mat-icon>delete_forever</mat-icon>
         </button>
