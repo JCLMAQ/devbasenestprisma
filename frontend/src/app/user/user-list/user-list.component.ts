@@ -90,8 +90,12 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   }
 
   // Goto the detail page for view only
-  navigate(id: String, index: String) {
-    this.router.navigate([this.routeToDetail, id, 'view']);
+  // navigate(id: String, index: String) {
+  //   this.router.navigate([this.routeToDetail, id, 'view']);
+  // }
+  navigate(user: User, index: String) {
+    console.log("route transfert" , user)
+    this.router.navigate([this.routeToDetail, user, 'view']);
   }
 
   navigateButton(id: String, toEdit: Boolean) {

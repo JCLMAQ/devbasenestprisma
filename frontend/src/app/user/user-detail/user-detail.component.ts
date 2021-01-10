@@ -6,6 +6,11 @@ import { User } from '../user.model';
 import { UserService } from '../user.service';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'
 import { identifierModuleUrl } from '@angular/compiler';
+import { UserEntityService } from '../store/user-entity.service';
+import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/reducers';
 
 @Component({
   selector: 'app-user-detail',
@@ -15,6 +20,7 @@ import { identifierModuleUrl } from '@angular/compiler';
 export class UserDetailComponent implements OnInit {
 
   public user?: User;
+  public user$?: Observable<User>
   public editingIndex!: string;
   public editing = false;
 
@@ -30,13 +36,15 @@ export class UserDetailComponent implements OnInit {
    private route: ActivatedRoute,
    private router: Router,
   //  private fb: FormBuilder,
-   private userService: UserService,
+   private userEntityService: UserEntityService,
+   private store:  Store<AppState>
  ) {}
 
  ngOnInit(): void {
 
-  const routeParam = this.route.snapshot.paramMap.get('id');
-
+  // const routeParam = this.route.snapshot.paramMap.get('id');
+  const routeParam = this.route.snapshot.paramMap.get('user');
+console.log("route param: " ,  routeParam)
     if (routeParam) {
       this.editingIndex = routeParam;
       this.editing = true;
@@ -46,14 +54,26 @@ export class UserDetailComponent implements OnInit {
  }
 
 
- public async setEditForm() {
-  const user: User = await this.userService.getOneUser(this.editingIndex)
-console.log("user fetch result : ", user.id)
+ getCurrentValue(id: string): Observable<User>{
+  return this.store.select(appState => appState.user)
+    .filter(Boolean);
+}
+
+ public setEditForm() {
+   console.log("this.EditingIndex: ", this.editingIndex)
+  // const user: User = await this.userEntityService.getOneUser(this.editingIndex)
+  const userbis = this.userEntityService.getByKey(this.editingIndex).toPromise();
+  console.log(" userbis", userbis)
+  // this.userEntityService.getByKey(this.editingIndex).subscribe(
+  //   (objectResult) => {
+  //     this.user = objectResult
+  //   });
+console.log("user fetch result : ", this.user)
   this.userForm.patchValue({
-    id: user?.id,
-    firstName: user?.firstName,
-    lastName: user?.lastName,
-    email: user?.email,
+    id: this.user?.id,
+    firstName: this.user?.firstName,
+    lastName: this.user?.lastName,
+    email: this.user?.email,
   });
 }
 
