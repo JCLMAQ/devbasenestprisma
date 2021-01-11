@@ -52,7 +52,7 @@
         <mat-icon>edit</mat-icon>
       </button>
       <!-- <button mat-icon-button routerLink="{{one.ID}}/view"> -->
-        <button mat-icon-button (click)="navigateButton(row, false)">
+        <button mat-icon-button (click)="navigateButton(row.id, false)">
         <mat-icon>remove_red_eye</mat-icon>
       </button>
       <button mat-icon-button [disabled]=owner (click)="virtualRemove(row)">

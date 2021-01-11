@@ -20,7 +20,7 @@ import { AppState } from 'src/app/reducers';
 export class UserDetailComponent implements OnInit {
 
   public user?: User;
-  public user$?: Observable<User>
+  public user$?: Observable<User>;
   public editingIndex!: string;
   public editing = false;
 
@@ -37,38 +37,32 @@ export class UserDetailComponent implements OnInit {
    private router: Router,
   //  private fb: FormBuilder,
    private userEntityService: UserEntityService,
-   private store:  Store<AppState>
- ) {}
+ ) {
+  // let user$:Observable<User> = this.setEditForm();
+  // this.user$ = this.setEditForm()
+ }
 
  ngOnInit(): void {
 
-  // const routeParam = this.route.snapshot.paramMap.get('id');
-  const routeParam = this.route.snapshot.paramMap.get('user');
-console.log("route param: " ,  routeParam)
+  const routeParam = this.route.snapshot.paramMap.get('id');
     if (routeParam) {
       this.editingIndex = routeParam;
       this.editing = true;
       this.setEditForm();
     }
-
  }
 
 
- getCurrentValue(id: string): Observable<User>{
-  return this.store.select(appState => appState.user)
-    .filter(Boolean);
-}
+//  getCurrentValue(id: string): Observable<User>{
+//   return this.store.select(appState => appState.user)
+//     .filter(Boolean);
+// }
 
- public setEditForm() {
-   console.log("this.EditingIndex: ", this.editingIndex)
-  // const user: User = await this.userEntityService.getOneUser(this.editingIndex)
-  const userbis = this.userEntityService.getByKey(this.editingIndex).toPromise();
-  console.log(" userbis", userbis)
-  // this.userEntityService.getByKey(this.editingIndex).subscribe(
-  //   (objectResult) => {
-  //     this.user = objectResult
-  //   });
-console.log("user fetch result : ", this.user)
+ public setEditForm(){
+  this.userEntityService.entities$
+    .pipe(
+      map((users :User[]) => users.find((user :User)=> user.id === this.editingIndex)))
+    .subscribe((result) => {this.user = result} );
   this.userForm.patchValue({
     id: this.user?.id,
     firstName: this.user?.firstName,
