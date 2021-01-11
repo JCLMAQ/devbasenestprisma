@@ -1,1 +1,23 @@
 <p>register works!</p>
+
+<mat-card class="register-card">
+	<mat-card-title>
+			Formulaire d'enregistrement
+	</mat-card-title>
+	<mat-card-content>
+
+	</mat-card-content>
+	<mat-card-actions>
+			<button class="button" mat-raised-button color="primary"
+              (click)="login()">
+				      Déjà enregistré ?
+			</button>
+      <button class="button" mat-raised-button color="primary"
+              (click)="register()">
+				      S'enregistrer
+			</button>
+			<button mat-button (click)="backHome()" >
+        <mat-icon>cancel_presentation</mat-icon>
+      </button>
+	</mat-card-actions>
+</mat-card>

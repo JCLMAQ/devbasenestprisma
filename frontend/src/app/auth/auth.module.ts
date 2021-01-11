@@ -13,26 +13,51 @@ import { RegisterService } from './register.service';
 import { ChangePwdService } from './changepwd.service';
 import { StoreModule } from '@ngrx/store';
 import * as fromAuth from './reducers';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../shared/shared.module';
+import { EntityDefinitionService, EntityDataService, EntityMetadataMap } from '@ngrx/data';
+import { UserDataService } from '../user/store/user-data.service';
 
+const entityMetadata: EntityMetadataMap = {
+  Auth: {
+ },
+};
 
+export const entityConfig = {
+  entityMetadata
+};
 @NgModule({
-  declarations: [LoginComponent, ChangepwdComponent, ForgotpwdComponent, RegisterComponent, ResetpwdComponent, ProfilComponent],
+  declarations: [
+    LoginComponent,
+    ChangepwdComponent,
+    ForgotpwdComponent,
+    RegisterComponent,
+    ResetpwdComponent,
+    ProfilComponent],
   imports: [
     CommonModule,
     AuthRoutingModule,
+    SharedModule,
+    FormsModule,
+    ReactiveFormsModule,
     StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.reducers)
+  ],
+  providers: [
+    AuthService,
+    RegisterService,
+    ChangePwdService
   ]
 })
 export class AuthModule {
-  static forRoot(): ModuleWithProviders<AuthModule> {
-    return {
-      ngModule: AuthModule,
-      providers: [
-        AuthService,
-        RegisterService,
-        ChangePwdService
-      ]
-    }
-    throw new Error('Method not implemented.');
+
+  constructor(
+    private entityDefinitionService: EntityDefinitionService,
+    private entityDataService: EntityDataService,
+    private userDataService: UserDataService,
+  ) {
+    entityDefinitionService.registerMetadataMap(entityMetadata);
+    entityDataService.registerService('Auth', userDataService)
+
   }
 }
+

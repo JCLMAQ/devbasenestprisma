@@ -9,7 +9,7 @@ import {
 import { environment } from '../../environments/environment';
 import { routerReducer } from '@ngrx/router-store';
 
-export const authFeatureKey = 'auth';
+// export const authFeatureKey = 'auth';
 
 export interface AppState {
 

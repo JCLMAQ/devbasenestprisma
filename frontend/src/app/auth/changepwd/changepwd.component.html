@@ -1,1 +1,39 @@
 <p>changepwd works!</p>
+<mat-card class="changepwd-page">
+
+  <mat-card-title>
+    Changement de mot de passe
+  </mat-card-title>
+
+  <mat-card-content>
+    <form  [formGroup]="form" class="changepwd-form">
+      <mat-form-field>
+        <input  matInput type="password" type="password"
+                placeholder="Votre mot de passe actuel"
+                formControlName="oldpassword">
+      </mat-form-field>
+      <mat-form-field>
+        <input  matInput type="password"
+                placeholder="Votre nouveau mot de passe"
+                formControlName="newpassword">
+        </mat-form-field>
+      <mat-form-field>
+        <input  matInput type="password"
+                placeholder=" Ré-encoder votre nouveau mot de passe"
+                name="verifypassword">
+      </mat-form-field>
+
+
+      <button mat-raised-button color="primary"
+              (click)="changePwd()" [disabled]="!form.invalid">
+              Valider le changement de mot de passe
+      </button>
+<br>
+      <button mat-button type="submit" (click)="backHome()" >
+        <mat-icon>cancel_presentation</mat-icon>
+      </button>
+
+    </form>
+  </mat-card-content>
+
+</mat-card>

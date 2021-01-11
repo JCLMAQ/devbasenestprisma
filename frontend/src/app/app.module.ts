@@ -31,7 +31,7 @@ import { entityConfig } from './entity-metadata';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    AuthModule.forRoot(),
+    AuthModule,
     // StoreModule.forRoot({}, {}),
     StoreModule.forRoot(reducers, {
       metaReducers,

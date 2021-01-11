@@ -1,0 +1,30 @@
+
+.register-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+}
+
+.register-container > * {
+  width: 400px;
+  margin: 0 auto;
+}
+
+.register-card {
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  margin:auto;
+  margin-top: 20px;
+  }
+
+ mat-card-actions {
+  text-align: center;
+}
+mat-card-title {
+  text-align: center;
+}
+
+.button {
+  background-color: #e1234e; /* Green */
+}

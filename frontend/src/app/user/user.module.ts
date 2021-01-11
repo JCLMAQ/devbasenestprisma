@@ -24,7 +24,10 @@ export const entityConfig = {
 };
 
 @NgModule({
-  declarations: [UserComponent, UserListComponent, UserDetailComponent],
+  declarations: [
+    UserComponent,
+    UserListComponent,
+    UserDetailComponent],
   imports: [
     CommonModule,
     UserRoutingModule,

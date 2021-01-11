@@ -3,7 +3,16 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 
 const authRoutes: Routes = [
- { path: '', component: LoginComponent}
+  { path: 'login', component: LoginComponent,
+      // resolve: {
+      //   auths: AuthResolver
+      // }
+    },
+  { path: '', component: LoginComponent,
+      // resolve: {
+      //   authss: AuthResolver
+      // }
+    },
 ];
 
 @NgModule({
