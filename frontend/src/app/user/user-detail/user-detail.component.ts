@@ -22,7 +22,8 @@ import { createHostListener } from '@angular/compiler/src/core';
 export class UserDetailComponent implements OnInit {
 
   public user?: User;
-  // public user$: Observable<User> ;
+  //  public user$: Observable<User> | null = null;
+ // = new Observable(Object(User));
   public editingIndex!: string;
   public editing = false;
 
@@ -39,7 +40,8 @@ export class UserDetailComponent implements OnInit {
    private router: Router,
   //  private fb: FormBuilder,
    private userEntityService: UserEntityService,
- ) {}
+ ) {
+ }
 
  ngOnInit(): void {
 
