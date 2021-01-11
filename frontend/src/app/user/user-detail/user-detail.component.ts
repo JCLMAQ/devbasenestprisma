@@ -7,7 +7,7 @@ import { UserService } from '../user.service';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'
 import { identifierModuleUrl } from '@angular/compiler';
 import { UserEntityService } from '../store/user-entity.service';
-import { Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/reducers';
@@ -22,8 +22,9 @@ import { createHostListener } from '@angular/compiler/src/core';
 export class UserDetailComponent implements OnInit {
 
   public user?: User;
-  //  public user$: Observable<User> | null = null;
+  public user$?: Observable<User>;
  // = new Observable(Object(User));
+//  public user$: Observable<User> = from([]);
   public editingIndex!: string;
   public editing = false;
 
