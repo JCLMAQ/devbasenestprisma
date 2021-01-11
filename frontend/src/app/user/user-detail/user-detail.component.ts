@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../user.model';
@@ -7,20 +7,22 @@ import { UserService } from '../user.service';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'
 import { identifierModuleUrl } from '@angular/compiler';
 import { UserEntityService } from '../store/user-entity.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/reducers';
+import { createHostListener } from '@angular/compiler/src/core';
 
 @Component({
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',
-  styleUrls: ['./user-detail.component.scss']
+  styleUrls: ['./user-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailComponent implements OnInit {
 
   public user?: User;
-  public user$?: Observable<User>;
+  // public user$: Observable<User> ;
   public editingIndex!: string;
   public editing = false;
 
@@ -37,10 +39,7 @@ export class UserDetailComponent implements OnInit {
    private router: Router,
   //  private fb: FormBuilder,
    private userEntityService: UserEntityService,
- ) {
-  // let user$:Observable<User> = this.setEditForm();
-  // this.user$ = this.setEditForm()
- }
+ ) {}
 
  ngOnInit(): void {
 
@@ -52,13 +51,11 @@ export class UserDetailComponent implements OnInit {
     }
  }
 
-
-//  getCurrentValue(id: string): Observable<User>{
-//   return this.store.select(appState => appState.user)
-//     .filter(Boolean);
-// }
-
  public setEditForm(){
+  // Fetch data from the store
+  // this.user$ = this.userEntityService.entities$.pipe(
+  //   map(users => users.find(user => user.id == this.editingIndex))
+  // )
   this.userEntityService.entities$
     .pipe(
       map((users :User[]) => users.find((user :User)=> user.id === this.editingIndex)))

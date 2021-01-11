@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { SelectionModel } from '@angular/cdk/collections';
 import { ResourceLoader } from '@angular/compiler';
 
-import { AfterViewInit, Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -28,6 +28,7 @@ import { User } from '../user.model';
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
 
