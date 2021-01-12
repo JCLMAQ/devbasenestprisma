@@ -17,6 +17,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { EntityDefinitionService, EntityDataService, EntityMetadataMap } from '@ngrx/data';
 import { UserDataService } from '../user/store/user-data.service';
+import { OnlyOneErrorPipe } from './pipes/only-one-error.pipe';
 
 const entityMetadata: EntityMetadataMap = {
   Auth: {
@@ -33,7 +34,9 @@ export const entityConfig = {
     ForgotpwdComponent,
     RegisterComponent,
     ResetpwdComponent,
-    ProfilComponent],
+    ProfilComponent,
+    OnlyOneErrorPipe
+  ],
   imports: [
     CommonModule,
     AuthRoutingModule,

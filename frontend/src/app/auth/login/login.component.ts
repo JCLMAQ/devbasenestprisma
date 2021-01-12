@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/reducers';
 import { AuthService } from '../auth.service';
+import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 
 @Component({
   selector: 'app-login',
@@ -11,25 +12,43 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
-  form: FormGroup;
+hidePassword = true;
+form = this.fb.group({
+    email: ['',{
+      validators: [ Validators.required, Validators.email, ],
+      updateOn: 'blur'
+      }
+    ],
+    password: ['', [
+      Validators.required,
+      Validators.minLength(8),
+      createPasswordStrengthValidator(),
+      ]
+    ]
+});
 
   constructor(
       private fb:FormBuilder,
       private authService: AuthService,
       private router:Router,
-      private store: Store<AppState>) {
+      private store: Store<AppState>
+      )
+      {
 
-      this.form = fb.group({
-          email: ['email@email.com', [Validators.required, Validators.email]],
-          password: ['email', [Validators.required]]
-      });
-
-  }
+      }
 
   ngOnInit(): void {
 
   }
+
+  get email() {
+    return this.form.controls['email'];
+}
+
+  get password() {
+    return this.form.controls['password'];
+}
+
  login() {
 
  }

@@ -22,9 +22,8 @@ import { createHostListener } from '@angular/compiler/src/core';
 export class UserDetailComponent implements OnInit {
 
   public user?: User;
-  public user$?: Observable<User>;
+  public users$: Observable<User[]>;
  // = new Observable(Object(User));
-//  public user$: Observable<User> = from([]);
   public editingIndex!: string;
   public editing = false;
 
@@ -42,6 +41,10 @@ export class UserDetailComponent implements OnInit {
   //  private fb: FormBuilder,
    private userEntityService: UserEntityService,
  ) {
+  //  this.user$ = this.userEntityService.entities$.pipe(
+    // map(users => users.find(user => user.id == this.editingIndex))
+  // )
+  this.users$ = this.userEntityService.entities$
  }
 
  ngOnInit(): void {
