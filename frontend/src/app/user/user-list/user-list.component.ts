@@ -45,8 +45,6 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   routeToDetail = 'users/userprofile';
 
   mode: 'Edit' | 'View' | 'Update' | undefined ;
-  edit = false; // True : allow editiing (detail form)
-  view = true; // True : allow view detail (view page)
   master = false; // true : button is disable
   owner = false; // true button is disable
 
@@ -68,13 +66,13 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
     this.reload();
   }
 
-    ngOnDestroy(): void {
-      this._isDead$.next();
-    }
+  ngOnDestroy(): void {
+    this._isDead$.next();
+  }
 
-    ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  ngAfterViewInit() {
+  this.dataSource.paginator = this.paginator;
+  this.dataSource.sort = this.sort;
   }
 
   reload() {
@@ -99,32 +97,26 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
     this.router.navigate([this.routeToDetail, user, 'view']);
   }
 
-  navigateButton(id: String, toEdit: Boolean) {
-    // toEdit: 'true' | 'false';
-    if (toEdit) {
-      this.router.navigate([this.routeToDetail, id, 'edit']);
-    } else {
-      this.router.navigate([this.routeToDetail, id, 'view']);
-    }
+  navigateButton(id: String, mode: string) {
+    // mode: 'view' | 'update' | 'create';
+      this.router.navigate([this.routeToDetail, id, mode]);
   }
 
   // Delete the selected item
-  async remove( item: String ) {
-
+  async remove( id: String ) {
+    // const user = this.userEntityService.delete(user.id = id)
   }
 
   virtualRemove(id: string) {
     const user = this.userEntityService.getByKey(id)
     .pipe(first()).subscribe(user => user.isDeleted = new Date());
-}
-
-// Pseudo delete (flag delete)
-  // async virtualRemove( item: String ) {
-  // }
+  }
+  // MatTable mgt
   // On click row action
   onRowClicked(row: Number) {
     console.log('Row clicked: ', row);
   }
+  // Filter the list
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -132,7 +124,6 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
       this.dataSource.paginator.firstPage();
     }
   }
-
   // Selection
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -140,14 +131,12 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
-
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
     this.isAllSelected() ?
         this.selection.clear() :
         this.dataSource.data.forEach(row => this.selection.select(row));
   }
-
   /** The label for the checkbox on the passed row */
   checkboxLabel(row: User): string {
     if (!row) {

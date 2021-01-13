@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
+import { number } from 'joi';
 import * as nodemailer from 'nodemailer';
 import { EmaildomainsService } from 'src/emaildomains/emaildomains.service';
 import { PrismaService } from 'src/prisma/prisma.service';

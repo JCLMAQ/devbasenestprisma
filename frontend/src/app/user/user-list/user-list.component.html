@@ -50,11 +50,11 @@
 
           <mat-cell *matCellDef="let row">
             <!-- <button mat-icon-button routerLink="{{one.ID}}"> -->
-                <button mat-icon-button (click)="navigateButton(row.id, true)">
+                <button mat-icon-button (click)="navigateButton(row.id, 'update')">
               <mat-icon>edit</mat-icon>
             </button>
             <!-- <button mat-icon-button routerLink="{{one.ID}}/view"> -->
-              <button mat-icon-button (click)="navigateButton(row.id, false)">
+              <button mat-icon-button (click)="navigateButton(row.id, 'view')">
               <mat-icon>remove_red_eye</mat-icon>
             </button>
             <button mat-icon-button  (click)="virtualRemove(row.id)">

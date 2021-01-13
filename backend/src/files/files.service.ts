@@ -32,7 +32,7 @@ export class FilesService {
       // Seach for the location
       const storagePath = process.env.FILES_STORAGE_DEST;
       const fullPath = storagePath+path.sep+fileName;
-      const isExist = await fse.exists(fullPath);
+      const isExist = await fse.stat(fullPath);
       if(!isExist){
         throw new HttpException(await this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
       }
@@ -53,7 +53,7 @@ export class FilesService {
         // Search for the location
         const storagePath = process.env.IMAGES_STORAGE_DEST;
         const fullPath = storagePath+path.sep+fileName;
-        const isExist = await fse.exists(fullPath);
+        const isExist = await fse.stat(fullPath);
         if(!isExist){
           throw new HttpException(await this.i18n.translate("files.FILE_EXIST_NO",{ lang: lang, }), 400);
         }
@@ -117,7 +117,7 @@ export class FilesService {
         const storagePath = process.env.IMAGES_STORAGE_DEST;
         const fullPathDest = storagePath+path.sep+size+path.sep+fileName;
 console.log("path to delete : ", fullPathDest)
-        const isExist = fse.exists(fullPathDest);
+        const isExist = fse.access(fullPathDest);
         if(isExist) {  // Then delete it
           fse.unlink(fullPathDest,(err) => {
             if (err) {
@@ -141,7 +141,7 @@ console.log("path to delete : ", fullPathDest)
       const testfolder = await this.verifyOrCreateOneFolder(`${storagePath}`, lang);
       console.log(testfolder)
       // verify first that the file does'not exist, if exist delete it
-      const isExist = await fse.exists(fullPath);
+      const isExist = await fse.stat(fullPath);
       if (isExist) { await fse.unlink(fullPath); };
       // Limit resizing to somme extensions
       if (['jpeg', 'jpg', 'png', 'tiff'].includes(fileSplit[1])) {

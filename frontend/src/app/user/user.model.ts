@@ -1,3 +1,4 @@
+
 export class User {
   id?: string
   createdAt?: Date
@@ -6,9 +7,11 @@ export class User {
   email?: string
   Role?: string
   nickName?: string
+  title?: string
   profiles?: Array<string>
   lastName?: string
   firstName?: string
+  address?: JSON
   Gender?: string
   manager?: string
   team?: Array<string>
@@ -25,8 +28,14 @@ export interface IUserRegister {
   confirmPassword: string;
   lastName?: string;
   firstName?: string;
+  title?: string;
+  role: Role;
 }
 
+export enum Role {
+  User = 'User',
+  Admin = 'Admin'
+}
 // export class User {
 //   id: string | undefined;
 //   createdAt: Date | undefined;

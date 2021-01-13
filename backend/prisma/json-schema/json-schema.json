@@ -33,6 +33,12 @@
             "null"
           ]
         },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "Role": {
           "type": "string",
           "enum": [
@@ -80,6 +86,12 @@
         "language": {
           "type": [
             "string",
+            "null"
+          ]
+        },
+        "address": {
+          "type": [
+            "object",
             "null"
           ]
         },

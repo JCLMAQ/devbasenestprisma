@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IUserRegister } from '../user.model';
+import { first, map } from 'rxjs/operators';
+import { UserEntityService } from '../store/user-entity.service';
+import { IUserRegister, Role, User } from '../user.model';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 
@@ -15,6 +17,8 @@ import { createPasswordStrengthValidator } from '../validators/password-strength
 export class UserProfileComponent implements OnInit {
   private errorMsg?: string;
 
+  public user?: User;
+
   form!: FormGroup;
   id!: string;
   isAddMode!: boolean;
@@ -22,27 +26,32 @@ export class UserProfileComponent implements OnInit {
   loading = false;
   submitted = false;
   hidePassword = true;
+  mode: 'create' | 'update' | 'view';
 
-  userToRegister: IUserRegister = {
-    email: '',
-    password: '',
-    confirmPassword: '',
-    lastName: '',
-    firstName: ''
-  };
+  // userToRegister: IUserRegister = {
+  //   email: '',
+  //   password: '',
+  //   confirmPassword: '',
+  //   lastName: '',
+  //   firstName: '',
+  //   title: '',
+  //   // role: typeof Role,
+  // };
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
+    private userEntityService: UserEntityService,
     // private alertService: AlertService,
   ) {
-
+    this.mode = 'view'
   }
 
   ngOnInit(){
     this.id = this.route.snapshot.params['id'];
     this.isAddMode = !this.id; // Only for User profil
+    this.mode = this.route.snapshot.params['mode'];
     // TODO verify isAdmin from the User logged
     this.isAdmin = false;
     // password not required in edit mode
@@ -52,6 +61,7 @@ export class UserProfileComponent implements OnInit {
     }
     const formOptions: AbstractControlOptions = { validators: MustMatch('password', 'confirmPassword') };
     this.form = this.fb.group({
+      title: ['', []],
       email: ['', {
         validators: [ Validators.required, Validators.email, ],
         updateOn: 'blur'
@@ -67,27 +77,31 @@ export class UserProfileComponent implements OnInit {
       acceptTerms: [false, Validators.requiredTrue]
     }, formOptions );
     if (!this.isAddMode) {
-      // Need to get data from the store
-      // this.userService.getById(this.id)
-      //     .pipe(first())
-      //     .subscribe(x => this.form.patchValue(x));
+      this.userEntityService.entities$
+          .pipe(
+            map((users :User[]) => users.find((user :User)=> user.id === this.id)))
+          .subscribe((result) => {this.user = result} );
+
+      this.form.patchValue({
+        id: this.user?.id,
+        title: this.user?.title,
+        firstName: this.user?.firstName,
+        lastName: this.user?.lastName,
+        email: this.user?.email,
+      });
   }
   }
 
-  get email() { return this.form.controls['email'];}
-  get password() {return this.form.controls['password'];}
-  get verifyPassword() {return this.form.controls['verifyPassword'];}
-  get lastName() {return this.form.controls['lastName'];}
-  get firstName() {return this.form.controls['firstName'];}
+  // get email() { return this.form.controls['email'];}
+  // get password() {return this.form.controls['password'];}
+  // get verifyPassword() {return this.form.controls['verifyPassword'];}
+  // get lastName() {return this.form.controls['lastName'];}
+  // get firstName() {return this.form.controls['firstName'];}
   // convenience getter for easy access to form fields
   get formField() { return this.form.controls; }
 
   onSubmit() {
     this.submitted = true;
-    // stop here if form is invalid
-    if (this.form.invalid) {
-        return;
-    }
     // display form values on success
     alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.form.value, null, 4));
     // reset alerts on submit
@@ -96,8 +110,9 @@ export class UserProfileComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
+    this.loading = false
+    // if ((this.mode == 'update') | (this.mode == 'create ')) {this.loading = true}
 
-    this.loading = true;
     if (this.isAddMode) {
         this.createUser();
     } else {

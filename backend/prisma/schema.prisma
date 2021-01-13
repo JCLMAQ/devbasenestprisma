@@ -32,6 +32,7 @@ model User {
   updatedAt   DateTime  @default(now()) @updatedAt
   lastName    String?
   firstName   String?
+  title       String?
   Role        Role      @default(USER)
   nickName    String?
   Gender      Gender?
@@ -39,7 +40,7 @@ model User {
   salt        String?
   social      Json?
   language    String?    @default("en")
-
+  address     Json?
   // Management of the state of the account
   isValidated  DateTime? // Null = non validated
   isSuspended  DateTime? // Null = not suspended

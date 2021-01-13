@@ -10,6 +10,7 @@ Table User {
   updatedAt DateTime [default: `now()`, not null]
   lastName String
   firstName String
+  title String
   Role Role [not null, default: 'USER']
   nickName String
   Gender Gender
@@ -17,6 +18,7 @@ Table User {
   salt String
   social Json
   language String [default: 'en']
+  address Json
   isValidated DateTime
   isSuspended DateTime
   isDeleted DateTime
