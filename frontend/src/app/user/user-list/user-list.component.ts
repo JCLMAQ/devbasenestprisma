@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { first, takeUntil, tap } from 'rxjs/operators';
 import { AppState } from 'src/app/reducers';
 import { UserEntityService } from '../store/user-entity.service';
 // import { selectAll } from '../store/user.reducer';
@@ -42,7 +42,7 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   users?: User[];
 
   users$?: Observable<User[]>;
-  routeToDetail = 'users/userdetail';
+  routeToDetail = 'users/userprofile';
 
   mode: 'Edit' | 'View' | 'Update' | undefined ;
   edit = false; // True : allow editiing (detail form)
@@ -113,10 +113,14 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
 
   }
 
-// Pseudo delete (flag delete)
-  async virtualRemove( item: String ) {
+  virtualRemove(id: string) {
+    const user = this.userEntityService.getByKey(id)
+    .pipe(first()).subscribe(user => user.isDeleted = new Date());
+}
 
-  }
+// Pseudo delete (flag delete)
+  // async virtualRemove( item: String ) {
+  // }
   // On click row action
   onRowClicked(row: Number) {
     console.log('Row clicked: ', row);

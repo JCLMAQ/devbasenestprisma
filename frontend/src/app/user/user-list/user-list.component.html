@@ -57,10 +57,10 @@
               <button mat-icon-button (click)="navigateButton(row.id, false)">
               <mat-icon>remove_red_eye</mat-icon>
             </button>
-            <button mat-icon-button [disabled]=owner (click)="virtualRemove(row)">
+            <button mat-icon-button  (click)="virtualRemove(row.id)">
               <mat-icon>delete</mat-icon>
             </button>
-            <button mat-icon-button *ngIf="owner" (click)="virtualRemove(row)">
+            <button mat-icon-button *ngIf="owner" [disabled]=owner (click)="virtualRemove(row)">
                 <mat-icon>delete</mat-icon>
               </button>
             <button mat-icon-button [disabled]=master (click)="remove(row)">

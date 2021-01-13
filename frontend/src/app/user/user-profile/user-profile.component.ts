@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { IUserRegister } from '../auth.model';
-import { RegisterService } from '../register.service';
+import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { IUserRegister } from '../user.model';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 
+
+
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  selector: 'app-user-profile',
+  templateUrl: './user-profile.component.html',
+  styleUrls: ['./user-profile.component.scss']
 })
-export class RegisterComponent implements OnInit {
+export class UserProfileComponent implements OnInit {
   private errorMsg?: string;
 
   form!: FormGroup;
@@ -32,7 +33,6 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private registerService: RegisterService,
     private router: Router,
     private route: ActivatedRoute,
     // private alertService: AlertService,
@@ -138,5 +138,4 @@ export class RegisterComponent implements OnInit {
   cancelRegister() {
     this.router.navigate(['home'])
   }
-
 }

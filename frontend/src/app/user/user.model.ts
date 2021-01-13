@@ -18,6 +18,15 @@ export class User {
   todos?: Array<string>
   isDeleted?: Date
 }
+
+export interface IUserRegister {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  lastName?: string;
+  firstName?: string;
+}
+
 // export class User {
 //   id: string | undefined;
 //   createdAt: Date | undefined;

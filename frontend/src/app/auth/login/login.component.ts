@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/reducers';
 import { AuthService } from '../auth.service';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 
@@ -13,7 +11,7 @@ import { createPasswordStrengthValidator } from '../validators/password-strength
 })
 export class LoginComponent implements OnInit {
 hidePassword = true;
-form = this.fb.group({
+loginForm = this.fb.group({
     email: ['',{
       validators: [ Validators.required, Validators.email, ],
       updateOn: 'blur'
@@ -31,7 +29,6 @@ form = this.fb.group({
       private fb:FormBuilder,
       private authService: AuthService,
       private router:Router,
-      private store: Store<AppState>
       )
       {
 
@@ -42,11 +39,11 @@ form = this.fb.group({
   }
 
   get email() {
-    return this.form.controls['email'];
+    return this.loginForm.controls['email'];
 }
 
   get password() {
-    return this.form.controls['password'];
+    return this.loginForm.controls['password'];
 }
 
  login() {

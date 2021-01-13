@@ -8,7 +8,6 @@ import { ChangepwdComponent } from './changepwd/changepwd.component';
 import { ForgotpwdComponent } from './forgotpwd/forgotpwd.component';
 import { RegisterComponent } from './register/register.component';
 import { ResetpwdComponent } from './resetpwd/resetpwd.component';
-import { ProfilComponent } from './profil/profil.component';
 import { RegisterService } from './register.service';
 import { ChangePwdService } from './changepwd.service';
 import { StoreModule } from '@ngrx/store';
@@ -17,7 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { EntityDefinitionService, EntityDataService, EntityMetadataMap } from '@ngrx/data';
 import { UserDataService } from '../user/store/user-data.service';
-import { OnlyOneErrorPipe } from './pipes/only-one-error.pipe';
+import { OnlyOneErrorPipe } from '../pipes/only-one-error.pipe';
 
 const entityMetadata: EntityMetadataMap = {
   Auth: {
@@ -34,7 +33,6 @@ export const entityConfig = {
     ForgotpwdComponent,
     RegisterComponent,
     ResetpwdComponent,
-    ProfilComponent,
     OnlyOneErrorPipe
   ],
   imports: [

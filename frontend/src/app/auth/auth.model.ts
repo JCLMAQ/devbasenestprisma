@@ -1,12 +1,13 @@
-export interface IUserSignup {
-  lastName?: string;
-  firstName?: string;
+export interface IUserRegister {
   email: string;
   password: string;
-  verifyPassword: string;
+  confirmPassword: string;
+  lastName?: string;
+  firstName?: string;
 }
 
 export interface ICurrentUser {
   email: string;
-  fullName?: string;
+  lastName?: string;
+  firstName?: string;
 }

@@ -12,6 +12,7 @@ import { EntityDataService, EntityDefinitionService, EntityMetadataMap } from '@
 import { UserEntityService } from './store/user-entity.service';
 import { UserResolver } from './store/user.resolver';
 import { UserDataService } from './store/user-data.service';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 const entityMetadata: EntityMetadataMap = {
   User: {
@@ -27,7 +28,9 @@ export const entityConfig = {
   declarations: [
     UserComponent,
     UserListComponent,
-    UserDetailComponent],
+    UserDetailComponent,
+    UserProfileComponent,
+  ],
   imports: [
     CommonModule,
     UserRoutingModule,
