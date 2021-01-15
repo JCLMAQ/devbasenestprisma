@@ -11,10 +11,11 @@ import { UserComponent } from './user.component';
 const userRoutes: Routes = [
 
   { path: 'userprofile/:id/:mode', component: UserProfileComponent },
+  // { path: 'userprofile/:id/view', component: UserProfileComponent },
   // { path: 'userprofile/:id/edit', component: UserProfileComponent },
-  { path: 'userdetail/:id/view', component: UserDetailComponent },
-  { path: 'userdetail/:id/edit', component: UserDetailComponent },
-  { path: 'userdetail', component: UserDetailComponent },
+  { path: 'userdetail/:id/:mode', component: UserDetailComponent },
+  // { path: 'userdetail/:id/edit', component: UserDetailComponent },
+  // { path: 'userdetail', component: UserDetailComponent },
   { path: 'users', component: UserListComponent,
       resolve: {
         users: UserResolver

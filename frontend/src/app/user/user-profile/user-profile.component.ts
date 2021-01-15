@@ -54,34 +54,32 @@ export class UserProfileComponent implements OnInit {
     this.mode = this.route.snapshot.params['mode'];
     // TODO verify isAdmin from the User logged
     this.isAdmin = false;
-    // password not required in edit mode
+    // password not required in update mode
     const passwordValidators = [Validators.minLength(8)];
     if (this.isAddMode) {
         passwordValidators.push(Validators.required);
     }
     const formOptions: AbstractControlOptions = { validators: MustMatch('password', 'confirmPassword') };
-    this.form = this.fb.group({
+
+    const formControls = {
       title: ['', []],
       email: ['', {
-        validators: [ Validators.required, Validators.email, ],
-        updateOn: 'blur'
-        }],
-      password: ['', [Validators.minLength(8), this.isAddMode ? Validators.required : Validators.nullValidator,  createPasswordStrengthValidator(),]],
-      confirmPassword: ['', this.isAddMode ? Validators.required : Validators.nullValidator],
-      // title: ['', Validators.required],
+            validators: [ Validators.required, Validators.email, ],
+            updateOn: 'blur'
+            }],
       lastName: ['', ],
       firstName: ['', ],
       // validates date format yyyy-mm-dd : dob = date of birth
       // dob: ['', [Validators.required, Validators.pattern(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)]],
-      role: ['USER', this.isAdmin ? Validators.required : Validators.nullValidator],
-      acceptTerms: [false, Validators.requiredTrue]
-    }, formOptions );
-    if (!this.isAddMode) {
+    };
+
+    if (this.mode == 'update' || 'view') {
+      this.form = this.fb.group(formControls);
+      // this.form.patchValue({...data.course});
       this.userEntityService.entities$
           .pipe(
             map((users :User[]) => users.find((user :User)=> user.id === this.id)))
           .subscribe((result) => {this.user = result} );
-
       this.form.patchValue({
         id: this.user?.id,
         title: this.user?.title,
@@ -89,15 +87,17 @@ export class UserProfileComponent implements OnInit {
         lastName: this.user?.lastName,
         email: this.user?.email,
       });
-  }
-  }
+    } else if (this.mode == 'create' || this.isAddMode ) {
+      this.form = this.fb.group({
+          ...formControls,
+          password: ['', [Validators.minLength(8), this.isAddMode ? Validators.required : Validators.nullValidator,  createPasswordStrengthValidator(),]],
+          confirmPassword: ['', this.isAddMode ? Validators.required : Validators.nullValidator],
+          role: ['USER', this.isAdmin ? Validators.required : Validators.nullValidator],
+          acceptTerms: [false, Validators.requiredTrue]
+      });
+    }
+  } // end of ngOnInit
 
-  // get email() { return this.form.controls['email'];}
-  // get password() {return this.form.controls['password'];}
-  // get verifyPassword() {return this.form.controls['verifyPassword'];}
-  // get lastName() {return this.form.controls['lastName'];}
-  // get firstName() {return this.form.controls['firstName'];}
-  // convenience getter for easy access to form fields
   get formField() { return this.form.controls; }
 
   onSubmit() {
@@ -114,16 +114,33 @@ export class UserProfileComponent implements OnInit {
     // if ((this.mode == 'update') | (this.mode == 'create ')) {this.loading = true}
 
     if (this.isAddMode) {
-        this.createUser();
+        this.create();
     } else {
-        this.updateUser();
+        this.save();
     }
   }
 
-  private createUser() {}
+  add() {}
 
-  private updateUser() {}
+  create() {}
 
+  save() {}
+
+  cancel() {}
+
+  delete() {}
+
+  reset() {}
+
+  virtualRemove() {}
+
+  next() {}
+
+  last() {}
+
+  first() {}
+
+  previous() {}
 
   async register() {
     // try {

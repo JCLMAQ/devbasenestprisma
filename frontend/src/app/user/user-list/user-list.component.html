@@ -44,10 +44,8 @@
           <mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{row?.email}} </mat-cell>
         </ng-container>
-
         <ng-container matColumnDef="tools">
           <mat-header-cell *matHeaderCellDef> Tools </mat-header-cell>
-
           <mat-cell *matCellDef="let row">
             <!-- <button mat-icon-button routerLink="{{one.ID}}"> -->
                 <button mat-icon-button (click)="navigateButton(row.id, 'update')">
@@ -68,8 +66,6 @@
               </button>
           </mat-cell>
         </ng-container>
-
-
         <mat-header-row *matHeaderRowDef="tableColumns; sticky: true"></mat-header-row>
         <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
 
@@ -81,5 +77,10 @@
       </mat-table>
       <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
     </mat-card-content>
+    <mat-card-footer>
+      <button mat-icon-button (click)="addOneUser()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </mat-card-footer>
   </mat-card>
 </div>

@@ -51,16 +51,12 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-
   constructor(
    // private userService: UserService,
     private router: Router,
     private store: Store<AppState>,
     private userEntityService: UserEntityService,
     ) { }
-
-
-
 
   ngOnInit(): void {
     this.reload();
@@ -102,6 +98,9 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
       this.router.navigate([this.routeToDetail, id, mode]);
   }
 
+  addOneUser() {
+    this.router.navigate([this.routeToDetail, '', 'create']);
+  }
   // Delete the selected item
   async remove( id: String ) {
     // const user = this.userEntityService.delete(user.id = id)
