@@ -6,6 +6,7 @@ import { UserEntityService } from '../store/user-entity.service';
 import { IUserRegister, Role, User } from '../user.model';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
+import { userEmailValidator, userNickNameValidator } from '../validators/user-async.validator';
 
 
 
@@ -22,11 +23,12 @@ export class UserProfileComponent implements OnInit {
   form!: FormGroup;
   id!: string;
   isAddMode!: boolean;
-  isAdmin!: boolean;
+  isAdmin!: boolean; // Needed to be sure that the user has an Id
   loading = false;
   submitted = false;
   hidePassword = true;
   mode: 'create' | 'update' | 'view';
+  formControls = {};
 
   // userToRegister: IUserRegister = {
   //   email: '',
@@ -52,6 +54,8 @@ export class UserProfileComponent implements OnInit {
     this.id = this.route.snapshot.params['id'];
     this.isAddMode = !this.id; // Only for User profil
     this.mode = this.route.snapshot.params['mode'];
+    // if(this.mode == 'view' ) { this.form.disable()}
+  console.log("mode: ", this.mode);
     // TODO verify isAdmin from the User logged
     this.isAdmin = false;
     // password not required in update mode
@@ -61,21 +65,27 @@ export class UserProfileComponent implements OnInit {
     }
     const formOptions: AbstractControlOptions = { validators: MustMatch('password', 'confirmPassword') };
 
-    const formControls = {
+    this.formControls = {
       title: ['', []],
       email: ['', {
             validators: [ Validators.required, Validators.email, ],
+            asyncValidators: [userEmailValidator(this.userEntityService)],
+            updateOn: 'blur'
+            }],
+      nickName: ['', {
+            validators: [Validators.required, Validators.maxLength(10), Validators.minLength(3)],
+            asyncValidators: [userNickNameValidator(this.userEntityService)],
             updateOn: 'blur'
             }],
       lastName: ['', ],
       firstName: ['', ],
       // validates date format yyyy-mm-dd : dob = date of birth
-      // dob: ['', [Validators.required, Validators.pattern(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)]],
+      dob: ['', []],
     };
 
     if (this.mode == 'update' || 'view') {
-      this.form = this.fb.group(formControls);
-      // this.form.patchValue({...data.course});
+      this.form = this.fb.group(this.formControls);
+      //   this.form.patchValue({...data.course});
       this.userEntityService.entities$
           .pipe(
             map((users :User[]) => users.find((user :User)=> user.id === this.id)))
@@ -83,13 +93,14 @@ export class UserProfileComponent implements OnInit {
       this.form.patchValue({
         id: this.user?.id,
         title: this.user?.title,
+        nickName: this.user?.nickName,
         firstName: this.user?.firstName,
         lastName: this.user?.lastName,
         email: this.user?.email,
       });
     } else if (this.mode == 'create' || this.isAddMode ) {
       this.form = this.fb.group({
-          ...formControls,
+          ...this.formControls,
           password: ['', [Validators.minLength(8), this.isAddMode ? Validators.required : Validators.nullValidator,  createPasswordStrengthValidator(),]],
           confirmPassword: ['', this.isAddMode ? Validators.required : Validators.nullValidator],
           role: ['USER', this.isAdmin ? Validators.required : Validators.nullValidator],
@@ -120,6 +131,32 @@ export class UserProfileComponent implements OnInit {
     }
   }
 
+  reload(id: string | undefined) {
+    this.userEntityService.entities$
+    .pipe(
+      map((users :User[]) => users.find((user :User)=> user.id === this.id)))
+    .subscribe((result) => {this.user = result} );
+    if (this.mode == 'update' || 'view') {
+    //   this.form.patchValue({...data.course})
+      this.form.patchValue({
+        id: this.user?.id,
+        title: this.user?.title,
+        nickName: this.user?.nickName,
+        firstName: this.user?.firstName,
+        lastName: this.user?.lastName,
+        email: this.user?.email,
+      });
+    } else if (this.mode == 'create' || this.isAddMode ) {
+      this.form = this.fb.group({
+          ...this.formControls,
+          password: ['', [Validators.minLength(8), this.isAddMode ? Validators.required : Validators.nullValidator,  createPasswordStrengthValidator(),]],
+          confirmPassword: ['', this.isAddMode ? Validators.required : Validators.nullValidator],
+          role: ['USER', this.isAdmin ? Validators.required : Validators.nullValidator],
+          acceptTerms: [false, Validators.requiredTrue]
+      });
+    }
+  }
+
   add() {}
 
   create() {}
@@ -128,7 +165,7 @@ export class UserProfileComponent implements OnInit {
 
   cancel() {}
 
-  delete() {}
+  remove() {}
 
   reset() {}
 

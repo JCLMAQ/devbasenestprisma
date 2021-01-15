@@ -26,3 +26,13 @@
   left: 0;
   right: 0;
 }
+
+.spinner-container {
+    height: 360px;
+    width: 390px;
+    position: fixed;
+}
+
+.spinner-container mat-spinner {
+    margin: 130px auto 0 auto;
+}

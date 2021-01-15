@@ -20,7 +20,7 @@ export function userEmailValidator(userService: UserEntityService):AsyncValidato
 
 
 // Async validators for the nickName (verify that the nickName is not already used)
-export function userNickNamelValidator(userService: UserEntityService):AsyncValidatorFn  {
+export function userNickNameValidator(userService: UserEntityService):AsyncValidatorFn  {
   return (control: AbstractControl) => {
       return userService.entities$
           .pipe(
@@ -28,7 +28,7 @@ export function userNickNamelValidator(userService: UserEntityService):AsyncVali
                   const user= users.find(
                       user => user.nickName?.toLowerCase()
                           == control.value.toLowerCase() );
-                  return user ? {nickNameExists:true} : null; // null =  the email does-not exist
+                  return user ? {nickNameExists:true} : null; // null =  the nickName does-not exist
               })
           )
 
