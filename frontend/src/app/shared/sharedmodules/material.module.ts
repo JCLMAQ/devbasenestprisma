@@ -30,7 +30,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 
 // avec le découpage en modules, BrowserAnimationsModule ne peut apparaitre qu'une seule fois = dans le app.module
 // import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -74,6 +74,7 @@ const MODULES = [
   MatSlideToggleModule,
   MatNativeDateModule,
   DragDropModule,
+
   //    BrowserAnimationsModule
 ];
 
@@ -81,5 +82,6 @@ const MODULES = [
   imports: MODULES,
   exports: MODULES,
   declarations: [],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }]
 })
 export class MaterialModule { }
