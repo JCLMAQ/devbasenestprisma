@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@angular/forms';
+import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 import { Router, ActivatedRoute } from '@angular/router';
 import { first, map } from 'rxjs/operators';
 import { UserEntityService } from '../store/user-entity.service';
@@ -98,6 +99,7 @@ export class UserProfileComponent implements OnInit {
         lastName: this.user?.lastName,
         email: this.user?.email,
       });
+      if(this.mode == 'view' ) { this.form.disable}
     } else if (this.mode == 'create' || this.isAddMode ) {
       this.form = this.fb.group({
           ...this.formControls,
