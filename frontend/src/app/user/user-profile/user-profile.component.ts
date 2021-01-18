@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@angular/forms';
+import { DateAdapter } from '@angular/material/core';
 import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 import { Router, ActivatedRoute } from '@angular/router';
 import { first, map } from 'rxjs/operators';
@@ -31,6 +32,9 @@ export class UserProfileComponent implements OnInit {
   mode: 'create' | 'update' | 'view';
   formControls = {};
 
+  frenchLocale() {
+    this.dateAdapter.setLocale('fr-FR');
+  }
   // userToRegister: IUserRegister = {
   //   email: '',
   //   password: '',
@@ -46,6 +50,7 @@ export class UserProfileComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private userEntityService: UserEntityService,
+    private dateAdapter: DateAdapter<any>
     // private alertService: AlertService,
   ) {
     this.mode = 'view'
@@ -98,8 +103,9 @@ export class UserProfileComponent implements OnInit {
         firstName: this.user?.firstName,
         lastName: this.user?.lastName,
         email: this.user?.email,
+        dob: this.user?.dob
       });
-      if(this.mode == 'view' ) { this.form.disable}
+      if(this.mode == 'view' ) { this.form.disable()}
     } else if (this.mode == 'create' || this.isAddMode ) {
       this.form = this.fb.group({
           ...this.formControls,
@@ -109,9 +115,20 @@ export class UserProfileComponent implements OnInit {
           acceptTerms: [false, Validators.requiredTrue]
       });
     }
+
+    // this.form.valueChanges
+    // .subscribe(val => {
+    //     const dobDate = val.dob;
+    //     val.dob = dobDate.toDateString();
+    // });
+
   } // end of ngOnInit
 
-  get formField() { return this.form.controls; }
+  get formField() {
+
+    return this.form.controls; }
+  // get dob(): Date{
+  //   return this.formControls[dob].toDateString()
 
   onSubmit() {
     this.submitted = true;
@@ -124,12 +141,10 @@ export class UserProfileComponent implements OnInit {
       return;
     }
     this.loading = false
-    // if ((this.mode == 'update') | (this.mode == 'create ')) {this.loading = true}
-
-    if (this.isAddMode) {
-        this.create();
-    } else {
+    if (this.mode == 'update') {
         this.save();
+    } else {
+        this.create();
     }
   }
 
@@ -147,6 +162,7 @@ export class UserProfileComponent implements OnInit {
         firstName: this.user?.firstName,
         lastName: this.user?.lastName,
         email: this.user?.email,
+        dob: this.user?.dob
       });
     } else if (this.mode == 'create' || this.isAddMode ) {
       this.form = this.fb.group({
@@ -159,11 +175,44 @@ export class UserProfileComponent implements OnInit {
     }
   }
 
+
+  save() {
+    const val = this.form.value;
+    const dobIn = val.dob?.toISOString();
+    console.log("dobIn: ", dobIn)
+    // const user: User = {
+    //     ...this.user,
+    //     ...this.form.value,
+    // };
+    const user: User = {
+      id: this.user?.id,
+      title: val?.title,
+      firstName: val?.firstName,
+      lastName: val?.lastName,
+      email: val.email,
+      nickName: val?.nickName,
+      dob: dobIn
+    }
+
+    console.log("User updated: ", user)
+    console.log("dob ", this.user?.dob)
+    if (this.mode == 'update') {
+        this.userEntityService.update(user);
+    } else if (this.mode == 'create') {
+
+        this.userEntityService.add(user)
+            .subscribe(
+                // newUser => {
+                //     console.log('New Usere', newUser);
+                // }
+            );
+
+    }
+    this.router.navigate(['users']);
+}
   add() {}
 
   create() {}
-
-  save() {}
 
   cancel() {}
 

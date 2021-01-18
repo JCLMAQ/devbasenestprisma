@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../user.model';
-import { UserService } from '../user.service';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'
 import { identifierModuleUrl } from '@angular/compiler';
 import { UserEntityService } from '../store/user-entity.service';

@@ -19,6 +19,7 @@ export class User {
   posts?: Array<string>
   comments?: Array<string>
   todos?: Array<string>
+  dob?: Date
   isDeleted?: Date
 }
 

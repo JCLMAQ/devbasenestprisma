@@ -46,8 +46,7 @@
       </mat-form-field>
        <mat-form-field appearance="standard">
         <mat-label>Your First Name</mat-label>
-        <input matInput placeholder="Your First Namel" formControlName="firstName">
-          <!-- <mat-icon matSuffix>email</mat-icon> -->
+        <input matInput placeholder="Your First Name" formControlName="firstName">
           <mat-hint>Hint</mat-hint>
       </mat-form-field>
       <mat-form-field>
@@ -55,8 +54,7 @@
         <input matInput [matDatepicker]="dobDatePicker"
                 formControlName="dob"
                 placeholder="Date of Birth">
-        <mat-datepicker-toggle matSuffix
-                [for]="dobDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker-toggle matSuffix [for]="dobDatePicker"></mat-datepicker-toggle>
         <mat-datepicker #dobDatePicker></mat-datepicker>
     </mat-form-field>
   </mat-card-content>
@@ -95,9 +93,10 @@
     <button mat-icon-button matTooltip="Back to list" [routerLink]="['/users']">
       <mat-icon>exit_to_app</mat-icon>
     </button>
+    <!-- <button (click)="onSubmit()" mat-raised-button color="primary">Save</button> -->
   </mat-card-actions>
   <mat-card-footer class="form-val">
-   {{form.value | json}}
+     {{form.value | json}}
   </mat-card-footer>
 </mat-card>
 </div>

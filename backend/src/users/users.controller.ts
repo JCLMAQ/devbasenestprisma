@@ -10,14 +10,14 @@ import {
 import { domain } from 'process';
 import { User } from './entities/user.entity';
 
-@Controller('users')
+@Controller()
 export class UsersController {
   constructor(
     private readonly usersService: UsersService) {}
 
    // Create a new user
-  @Post('newUser')
-  async createOneUser( @Body() userData: Prisma.UserCreateInput ): Promise<UserModel> {
+  @Post('user')
+  async createOneUser( @Body() userData: Prisma.UserCreateInput ): Promise<User> {
     // const { name, email } = userData;
     return this.usersService.createUser(
       userData
@@ -25,7 +25,7 @@ export class UsersController {
   }
 
   @Get('allusersbis')
-  async getAllUsersbis(): Promise<UserModel[]> {
+  async getAllUsersbis(): Promise<User[]> {
     const users = this.usersService.findUsers({ select: { lastName: true}
     });
 
@@ -39,15 +39,16 @@ export class UsersController {
   //  console.log("result include: ", result)
   //  return result
   // }
-  @Get('allusers')
+  @Get('users')
   async getAllUsers(): Promise<User> {
     // return this.usersbisService.findUsers({});
-    const result = await this.usersService.findUsers({include: { manager: true, Team: true, Todo: true, Group: true, Comment: true, Profile: true, }} );
+    // const result = await this.usersService.findUsers({include: { manager: true, Team: true, Todo: true, Group: true, Comment: true, Profile: true, }} );
+    const result = await this.usersService.findUsers({});
     return result
   }
 
   @Get('someusers')
-  async getSomeUsers( @Body() findParams: Prisma.FindManyUserArgs ): Promise<UserModel[]> {
+  async getSomeUsers( @Body() findParams: Prisma.FindManyUserArgs ): Promise<User[]> {
     const show = {
     id: true,
     createdAt: true,
@@ -86,17 +87,18 @@ export class UsersController {
   }
 
     // Get one user by id
-    @Get('oneuser/:id')
-    async getUserById(@Param('id') id: string): Promise<UserModel> {
+    @Get('user/:id')
+    async getUserById(@Param('id') id: string): Promise<User> {
       return this.usersService.findUniqueUser({ id: String(id) });
     }
 
   // Update one user
-  @Put('updateoneuser/:id')
+  @Put('user/:id')
   async updateUser(
     @Param('id') id: string,
     // @Body() postData: { title: string; content?: string; authorEmail: string }): Promise<PostModel> {
-    @Body() userData: Prisma.UserUpdateInput): Promise<UserModel> {
+    @Body() userData: Prisma.UserUpdateInput): Promise<User> {
+      console.log("Date dob: ", userData.dob);
     return this.usersService.updateOneUser({
       where: { id: String(id) },
       data:  userData ,
@@ -107,7 +109,7 @@ export class UsersController {
   @Get('filtered-users/:searchString')
   async getFilteredUsers(
     @Param('searchString') searchString: string,
-  ): Promise<UserModel[]> {
+  ): Promise<User[]> {
     return this.usersService.findUsers({
       where: {
         OR: [
@@ -129,7 +131,7 @@ export class UsersController {
   // TODO ! Cascading delete for Post
   // TODO ! ADD : ADMIN privilège needed
   @Delete('deleteoneuser/:id')
-  async deleteUser(@Param('id') id: string): Promise<UserModel> {
+  async deleteUser(@Param('id') id: string): Promise<User> {
     return this.usersService.deleteOneUser({ id: String(id) });
   }
 }

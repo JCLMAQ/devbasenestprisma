@@ -17,4 +17,5 @@ export interface UserData {
   comments: Array<string> | undefined;
   todos: Array<string> | undefined;
   isDeleted: Date | undefined;
+  dob: Date | undefined;
 }

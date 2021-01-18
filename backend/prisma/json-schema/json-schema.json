@@ -89,6 +89,13 @@
             "null"
           ]
         },
+        "dob": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
         "address": {
           "type": [
             "object",

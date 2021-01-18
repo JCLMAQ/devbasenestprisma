@@ -21,12 +21,12 @@ export class UserDataService extends DefaultDataService<User> {
       }
 
 
-    getAll(): Observable<User[]> {
-      const result =  this.httpClient.get<User[]>('/api/users/allusers')
-       .pipe(
-        map(res => res)
-    );
-    console.log("result back", result)
-return result
-    }
+//     getAll(): Observable<User[]> {
+//       const result =  this.httpClient.get<User[]>('/api/users/allusers')
+//        .pipe(
+//         map(res => res)
+//     );
+//     console.log("result back", result)
+// return result
+    // }
 }

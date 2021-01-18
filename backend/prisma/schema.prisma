@@ -40,6 +40,7 @@ model User {
   salt        String?
   social      Json?
   language    String?    @default("en")
+  dob         DateTime?
   address     Json?
   // Management of the state of the account
   isValidated  DateTime? // Null = non validated

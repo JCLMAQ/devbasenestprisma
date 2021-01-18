@@ -30,7 +30,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { AppDateAdapter, APP_DATE_FORMATS, MY_FORMAT } from '../utilities/format-datepickers';
 
 // avec le découpage en modules, BrowserAnimationsModule ne peut apparaitre qu'une seule fois = dans le app.module
 // import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -82,6 +83,12 @@ const MODULES = [
   imports: MODULES,
   exports: MODULES,
   declarations: [],
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }]
+  providers: [
+    // { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+  //   { provide: MAT_DATE_FORMATS, useValue: MY_FORMAT },
+  //  { provide: DateAdapter, useClass: AppDateAdapter },
+    // { provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS },
+  ]
 })
 export class MaterialModule { }
