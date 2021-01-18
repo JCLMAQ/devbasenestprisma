@@ -4,35 +4,49 @@
     <button mat-icon-button (click)="sidenav.toggle()">
         <mat-icon>menu</mat-icon>
     </button>
+
      <a class="navbar-brand" align="right">
       {{'Sitetitle' | translate }}
     </a>
-    <!-- <span class="form-inline">
-      <select class="form-control" #selectedLang (change)="switchLang(selectedLang.value)">
-        <option *ngFor="let language of translate.getLangs()" [value]="language"
-          [selected]="language === translate.currentLang">
-          {{ language }}
-        </option>
-      </select>
-    </span>
+    <span class="app-toolbar-filler"></span>
+    <mat-form-field appearance="outline" class="mat-select-lang">
+      <mat-select [ngModel]="language" #langselect (selectionChange)="translate.use(langselect.value)">
+        <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
+          {{ lang.toUpperCase() }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-<mat-form-field appearance="standard" >
-  <mat-select [(ngModel)]="selectedLang.value" (ngModelChange)="switchLang(selectedLang.value)">
-    <mat-option *ngFor="let language of translate.getLangs()" [value]="language=== translate.currentLang">
-      {{language}}
-    </mat-option>
-  </mat-select>
-</mat-form-field> -->
+    <button class="menu-button" mat-icon-button [matMenuTriggerFor]="submenu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
 
-<mat-form-field appearance="standard">
-  <mat-label>{{'HEADER.CHOOSE' | translate}}</mat-label>
-  <mat-select #langselect (selectionChange)="translate.use(langselect.value)">
-    <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
-      {{ lang }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
-
+    <mat-menu #submenu="matMenu">
+      <button mat-menu-item (click)="navigate('picto')">
+        <mat-icon>picture_in_picture</mat-icon>
+        <span>Picto</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="navigate('carousselpicture')">
+          <mat-icon>camera</mat-icon>
+          <span>Carrousel</span>
+        </button>
+        <mat-divider></mat-divider>
+      <button mat-menu-item (click)="navigate('picture')">
+          <mat-icon>camera_alt</mat-icon>
+          <span>Images</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="navigate('user')">
+            <mat-icon>supervised_user_circle</mat-icon>
+            <span>Utilisateurs</span>
+          </button>
+          <mat-divider></mat-divider>
+        <button mat-menu-item (click)="navigate('choice')">
+          <mat-icon>tune</mat-icon>
+          <span>Choix</span>
+        </button>
+    </mat-menu>
 
   </mat-toolbar>
 

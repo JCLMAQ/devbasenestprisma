@@ -14,17 +14,14 @@ import { TranslateService } from '@ngx-translate/core';
 export class AppComponent {
   title = 'frontend';
   loading = true;
-
+  language = 'en';
   constructor(
     private router: Router,
     private store: Store<AppState>,
     public translate: TranslateService ) {
-      // translate.addLangs(['en', 'fr']);
-      // translate.setDefaultLang('en');
-      // translate.use('en');
-      translate.setDefaultLang('English');
-      translate.use('English');
-      translate.addLangs(['English','Francais']);
+      translate.setDefaultLang('en');
+      translate.use('en');
+      translate.addLangs(['en','fr']);
   }
 
   ngOnInit(){
@@ -51,5 +48,9 @@ export class AppComponent {
   switchLang(lang: string) {
     this.translate.use(lang);
   }
+
+ navigate(linkTo: string) {
+
+ }
 
 }
