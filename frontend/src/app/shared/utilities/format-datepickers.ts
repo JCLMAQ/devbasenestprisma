@@ -1,5 +1,6 @@
 // import { NativeDateAdapter } from ‘@angular/material’;
 
+import { Injectable } from "@angular/core";
 import { MatDateFormats, NativeDateAdapter } from "@angular/material/core";
 
 export const MY_FORMAT: MatDateFormats = {
@@ -15,6 +16,7 @@ export const MY_FORMAT: MatDateFormats = {
 };
 
 // import { MatDateFormats } from ‘@angular/material/core’;
+@Injectable()
 export class AppDateAdapter extends NativeDateAdapter {
   format(date: Date, displayFormat: Object): string {
     if (displayFormat === 'input') {

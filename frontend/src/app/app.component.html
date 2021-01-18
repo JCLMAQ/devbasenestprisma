@@ -4,7 +4,36 @@
     <button mat-icon-button (click)="sidenav.toggle()">
         <mat-icon>menu</mat-icon>
     </button>
-    Header - Title
+     <a class="navbar-brand" align="right">
+      {{'Sitetitle' | translate }}
+    </a>
+    <!-- <span class="form-inline">
+      <select class="form-control" #selectedLang (change)="switchLang(selectedLang.value)">
+        <option *ngFor="let language of translate.getLangs()" [value]="language"
+          [selected]="language === translate.currentLang">
+          {{ language }}
+        </option>
+      </select>
+    </span>
+
+<mat-form-field appearance="standard" >
+  <mat-select [(ngModel)]="selectedLang.value" (ngModelChange)="switchLang(selectedLang.value)">
+    <mat-option *ngFor="let language of translate.getLangs()" [value]="language=== translate.currentLang">
+      {{language}}
+    </mat-option>
+  </mat-select>
+</mat-form-field> -->
+
+<mat-form-field appearance="standard">
+  <mat-label>{{'HEADER.CHOOSE' | translate}}</mat-label>
+  <mat-select #langselect (selectionChange)="translate.use(langselect.value)">
+    <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
+      {{ lang }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+
   </mat-toolbar>
 
   <mat-sidenav-container class="sidenav-container">

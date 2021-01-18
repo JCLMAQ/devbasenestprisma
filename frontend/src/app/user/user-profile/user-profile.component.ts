@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
-import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 import { Router, ActivatedRoute } from '@angular/router';
 import { first, map } from 'rxjs/operators';
 import { UserEntityService } from '../store/user-entity.service';
@@ -9,8 +8,6 @@ import { IUserRegister, Role, User } from '../user.model';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 import { userEmailValidator, userNickNameValidator } from '../validators/user-async.validator';
-
-
 
 @Component({
   selector: 'app-user-profile',
@@ -32,25 +29,12 @@ export class UserProfileComponent implements OnInit {
   mode: 'create' | 'update' | 'view';
   formControls = {};
 
-  frenchLocale() {
-    this.dateAdapter.setLocale('fr-FR');
-  }
-  // userToRegister: IUserRegister = {
-  //   email: '',
-  //   password: '',
-  //   confirmPassword: '',
-  //   lastName: '',
-  //   firstName: '',
-  //   title: '',
-  //   // role: typeof Role,
-  // };
-
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private userEntityService: UserEntityService,
-    private dateAdapter: DateAdapter<any>
+    private dateAdapter: DateAdapter<Date>,
     // private alertService: AlertService,
   ) {
     this.mode = 'view'

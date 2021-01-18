@@ -1,6 +1,8 @@
 
 import {DatePipe} from '@angular/common';
+import { Injectable } from '@angular/core';
 import { NativeDateAdapter } from '@angular/material/core';
+
 
 export interface DateDisplay {
   year: string;
@@ -21,6 +23,7 @@ display: {
   }
 };
 
+@Injectable()
 export class CustomDatePickerAdapter extends NativeDateAdapter {
   parse(value: string | number): Date | null {
     if ((typeof value === 'string') && (value.indexOf('.') > -1)) {
@@ -34,7 +37,7 @@ export class CustomDatePickerAdapter extends NativeDateAdapter {
     return isNaN(timestamp) ? null : new Date(timestamp);
   }
 
-  format(date: Date, display: string | DateDisplay): string {
+  format(date: Date, display: string | DateDisplay): any {
     if (display === 'customInput') {
       return new DatePipe(this.locale).transform(date, 'shortDate');
     } else {

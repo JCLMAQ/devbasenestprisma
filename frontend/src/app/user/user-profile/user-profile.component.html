@@ -53,7 +53,7 @@
         <mat-label>Date of Birth</mat-label>
         <input matInput [matDatepicker]="dobDatePicker"
                 formControlName="dob"
-                placeholder="Date of Birth">
+                placeholder="Date of birth">
         <mat-datepicker-toggle matSuffix [for]="dobDatePicker"></mat-datepicker-toggle>
         <mat-datepicker #dobDatePicker></mat-datepicker>
     </mat-form-field>
@@ -96,7 +96,7 @@
     <!-- <button (click)="onSubmit()" mat-raised-button color="primary">Save</button> -->
   </mat-card-actions>
   <mat-card-footer class="form-val">
-     {{form.value | json}}
+    {{form.value | json}}
   </mat-card-footer>
 </mat-card>
 </div>
