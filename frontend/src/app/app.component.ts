@@ -15,7 +15,7 @@ import { User } from './user/user.model';
 export class AppComponent {
   title = 'frontend';
   loading = true;
-  language = 'en';
+  language = 'en'; // default
 
   // currentUser: any = { nickName: "JCM"};
   currentUser: any = undefined;
@@ -56,8 +56,14 @@ export class AppComponent {
 
   login() {}
   logout() {}
-  yourprofil() {}
-  changepwd() {}
+
+  yourprofil() {
+    this.router.navigate(['yourprofil']);
+  }
+
+  changepwd() {
+    this.router.navigate(['changepwd']);
+  }
 
   navigate(route: string) {
     this.router.navigate([`/${route}`]);
