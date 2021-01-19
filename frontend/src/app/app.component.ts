@@ -5,6 +5,7 @@ import {distinctUntilChanged, map} from 'rxjs/operators';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
 import { AppState } from './reducers';
 import { TranslateService } from '@ngx-translate/core';
+import { User } from './user/user.model';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,10 @@ export class AppComponent {
   title = 'frontend';
   loading = true;
   language = 'en';
+
+  // currentUser: any = { nickName: "JCM"};
+  currentUser: any = undefined;
+
   constructor(
     private router: Router,
     private store: Store<AppState>,
@@ -49,8 +54,13 @@ export class AppComponent {
     this.translate.use(lang);
   }
 
- navigate(linkTo: string) {
+  login() {}
+  logout() {}
+  yourprofil() {}
+  changepwd() {}
 
- }
+  navigate(route: string) {
+    this.router.navigate([`/${route}`]);
+  }
 
 }
