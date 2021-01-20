@@ -46,9 +46,24 @@ loginForm = this.fb.group({
     return this.loginForm.controls['password'];
 }
 
- login() {
+  login() {
 
  }
 
- cancelLogin() {}
+  cancelLogin() {
+
+  }
+
+  register() {
+    this.router.navigate(['register']);
+  }
+
+  backhome() {
+    this.router.navigate(['home']);
+  }
+
+  forget() {
+    this.router.navigate(['forgotpwd']);
+  }
+
 }

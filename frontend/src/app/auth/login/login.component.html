@@ -43,10 +43,22 @@
             </div>
 
         </ng-container>
+        <div class="forgot-container">
+          <div>
+            <a href="forgotpwd" (click)="forget()">Forgot password?</a>
+          </div>
+        </div>
         <button mat-raised-button color="primary"
                 (click)="login()"
                 [disabled]="!loginForm.valid">
             Login
+        </button>
+        <button class="button" mat-raised-button color="primary" type="submit" (click)="register()">
+          Enregistrement
+        </button>
+        <br>
+        <button mat-button type="submit" (click)="backhome()">
+          <mat-icon>cancel_presentation</mat-icon>
         </button>
       </form>
     </mat-card-content>

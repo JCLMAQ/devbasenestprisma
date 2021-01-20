@@ -19,11 +19,16 @@ import { EntityDataModule } from '@ngrx/data';
 import { entityConfig } from './entity-metadata';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ThemeComponent } from './shared/theme/theme.component';
+import { ThemeService } from './shared/theme/theme.service';
+import { StyleManagerService } from './shared/theme/style-manager.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    ThemeComponent
   ],
   imports: [
     BrowserModule,
@@ -57,12 +62,15 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
       stateKey: 'router',
       routerState: RouterState.Minimal
     }),
-    EntityDataModule.forRoot(entityConfig)
+    EntityDataModule.forRoot(entityConfig),
 
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
+    ThemeService,
+    StyleManagerService
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })
 export class AppModule{}

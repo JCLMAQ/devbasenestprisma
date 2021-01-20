@@ -1,139 +1,155 @@
-
-<ng-container class="main-container" fullscreen>
-  <mat-toolbar color="primary" class="main-header">
-    <button mat-icon-button (click)="sidenav.toggle()">
-        <mat-icon>menu</mat-icon>
-    </button>
-
-     <a class="navbar-brand">
-      {{'Sitetitle' | translate }}
-    </a>
-    <span class="app-toolbar-filler"></span>
-
-    <button mat-icon-button class="menu-button" *ngIf="currentUser" (click)="logout()" >
-      <mat-icon>lock_open</mat-icon>
-    </button>
-      <span *ngIf="currentUser" (click)= "logout()">
-      logged as {{currentUser?.nicklName}}
-      </span>
-
-    <button *ngIf="!currentUser" class="menu-button" mat-icon-button routerLink="login" >
-      <mat-icon>lock</mat-icon>
-    </button>
-
-    <button *ngIf="currentUser" class="menu-button" mat-icon-button [matMenuTriggerFor]="submenusetting">
-      <mat-icon>settings</mat-icon>
-    </button>
-    <mat-menu #submenusetting>
-      <button class="menu-button" mat-menu-item *ngIf="!currentUser" routerLink="login">
-        <!-- <mat-icon style="margin-right: 10px; font-size: 1.5em;">file_upload</mat-icon> -->
-        <span style="margin-right: 10px; font-size: 1.5em;">
-          <i class="fas fa-sign-in-alt"></i>
-        </span>
-        <span>Login</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item *ngIf="currentUser" (click)="logout()">
-        <span style="margin-right: 10px; font-size: 1.5em;">
-            <i class="fas fa-sign-out-alt"></i>
-          </span>
-        <span>Logout</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item *ngIf="currentUser" (click)="changepwd()">
-        <mat-icon style="margin-right: 10px;">vpn_key</mat-icon>
-        <!-- <mat-icon style="margin-right: 10px; color:blue;">vpn_key</mat-icon> -->
-        <span>Changement de mot de passe</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item *ngIf="currentUser" (click)="yourprofil()">
-          <span style="margin-right: 10px; font-size: 1.5em;">
-              <i class="fas fa-id-card"></i>
-            </span>
-        <span>Votre profil</span>
-      </button>
-    </mat-menu>
-
-    <mat-form-field appearance="standard" hideRequiredMarker=false  floatLabel="never" class="mat-select-lang">
-      <mat-select [ngModel]="language" #langselect (selectionChange)="translate.use(langselect.value)">
-        <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
-          {{ lang.toUpperCase() }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <button class="menu-button" mat-icon-button [matMenuTriggerFor]="submenu">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-
-    <mat-menu #submenu="matMenu">
-      <button mat-menu-item (click)="navigate('picto')">
-        <mat-icon>picture_in_picture</mat-icon>
-        <span>Picto</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="navigate('carousselpicture')">
-          <mat-icon>camera</mat-icon>
-          <span>Carrousel</span>
-        </button>
-        <mat-divider></mat-divider>
-      <button mat-menu-item (click)="navigate('picture')">
-          <mat-icon>camera_alt</mat-icon>
-          <span>Images</span>
-        </button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="navigate('users')">
-            <mat-icon>supervised_user_circle</mat-icon>
-            <span>Utilisateurs</span>
+<div [ngClass]="{'dark-theme': isThemeDark | async}">
+  <div class="mat-app-background">
+    <ng-container class="main-container" fullscreen>
+      <mat-toolbar color="primary" class="main-header">
+        <mat-toolbar-row>
+          <button mat-icon-button (click)="sidenav.toggle()">
+              <mat-icon>menu</mat-icon>
           </button>
-          <mat-divider></mat-divider>
-        <button mat-menu-item (click)="navigate('choice')">
-          <mat-icon>tune</mat-icon>
-          <span>Choix</span>
-        </button>
-    </mat-menu>
 
-  </mat-toolbar>
+          <a class="navbar-brand">
+            {{'Sitetitle' | translate }}
+          </a>
+          <span class="app-toolbar-filler"></span>
 
-  <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #sidenav mode="side" opened class="sidenav">
-      <mat-nav-list (click)="sidenav.close()">
-        <a mat-list-item routerLink="/">
-            <mat-icon>home</mat-icon>
-            <span>Home</span>
-        </a>
+          <!-- <mat-slide-toggle
+            [checked]="isThemeDark | async"
+            (change)="toggleDarkTheme($event.checked)">
+            Dark theme</mat-slide-toggle> -->
 
-        <a mat-list-item routerLink="/users">
-            <mat-icon>people</mat-icon>
-            <span>Users</span>
-        </a>
+          <button mat-icon-button class="menu-button" *ngIf="currentUser" (click)="logout()" >
+            <mat-icon>lock_open</mat-icon>
+          </button>
+            <span *ngIf="currentUser" (click)= "logout()">
+            logged as {{currentUser?.nicklName}}
+            </span>
 
-        <a mat-list-item routerLink="/about">
-            <mat-icon>question_answer</mat-icon>
-            <span>About</span>
-        </a>
-        <a mat-list-item routerLink="/register">
-            <mat-icon>person_add</mat-icon>
-            <span>Register</span>
-        </a>
+          <button *ngIf="!currentUser" class="menu-button" mat-icon-button routerLink="login" >
+            <mat-icon>lock</mat-icon>
+          </button>
 
-        <a mat-list-item routerLink="/login">
-            <mat-icon>account_circle</mat-icon>
-            <span>Login</span>
-        </a>
-        </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content class="main-content">
-      <div class="spinner-container" *ngIf="loading">
-        <mat-spinner></mat-spinner>
-      </div>
-        <router-outlet></router-outlet>
-    </mat-sidenav-content>
-  </mat-sidenav-container >
-  <mat-toolbar class="main-footer">Footer</mat-toolbar>
+          <button *ngIf="currentUser" class="menu-button" mat-icon-button [matMenuTriggerFor]="submenusetting">
+            <mat-icon>settings</mat-icon>
+          </button>
+          <mat-menu #submenusetting>
+            <button class="menu-button" mat-menu-item *ngIf="!currentUser" routerLink="login">
+              <!-- <mat-icon style="margin-right: 10px; font-size: 1.5em;">file_upload</mat-icon> -->
+              <span style="margin-right: 10px; font-size: 1.5em;">
+                <i class="fas fa-sign-in-alt"></i>
+              </span>
+              <span>Login</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item *ngIf="currentUser" (click)="logout()">
+              <span style="margin-right: 10px; font-size: 1.5em;">
+                  <i class="fas fa-sign-out-alt"></i>
+                </span>
+              <span>Logout</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item *ngIf="currentUser" (click)="changepwd()">
+              <mat-icon style="margin-right: 10px;">vpn_key</mat-icon>
+              <!-- <mat-icon style="margin-right: 10px; color:blue;">vpn_key</mat-icon> -->
+              <span>Changement de mot de passe</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item *ngIf="currentUser" (click)="yourprofil()">
+                <span style="margin-right: 10px; font-size: 1.5em;">
+                    <i class="fas fa-id-card"></i>
+                  </span>
+              <span>Votre profil</span>
+            </button>
+          </mat-menu>
+
+          <mat-form-field appearance="standard" hideRequiredMarker=false  floatLabel="never" class="mat-select-lang">
+            <mat-select [ngModel]="language" #langselect (selectionChange)="translate.use(langselect.value)">
+              <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
+                {{ lang.toUpperCase() }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <app-theme>
+           [options]="options$ | async"
+           (themeChange)="themeChangeHandler($event)">>
+          </app-theme>
+
+          <button class="menu-button" mat-icon-button [matMenuTriggerFor]="submenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+
+          <mat-menu #submenu="matMenu">
+            <button mat-menu-item (click)="navigate('picto')">
+              <mat-icon>picture_in_picture</mat-icon>
+              <span>Picto</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="navigate('carousselpicture')">
+                <mat-icon>camera</mat-icon>
+                <span>Carrousel</span>
+              </button>
+              <mat-divider></mat-divider>
+            <button mat-menu-item (click)="navigate('picture')">
+                <mat-icon>camera_alt</mat-icon>
+                <span>Images</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="navigate('users')">
+                  <mat-icon>supervised_user_circle</mat-icon>
+                  <span>Utilisateurs</span>
+                </button>
+                <mat-divider></mat-divider>
+              <button mat-menu-item (click)="navigate('choice')">
+                <mat-icon>tune</mat-icon>
+                <span>Choix</span>
+              </button>
+          </mat-menu>
+        </mat-toolbar-row>
+      </mat-toolbar>
+
+      <mat-sidenav-container class="sidenav-container">
+        <mat-sidenav #sidenav mode="side" opened class="sidenav">
+          <mat-nav-list (click)="sidenav.close()">
+            <a mat-list-item routerLink="/">
+                <mat-icon>home</mat-icon>
+                <span>Home</span>
+            </a>
+
+            <a mat-list-item routerLink="/users">
+                <mat-icon>people</mat-icon>
+                <span>Users</span>
+            </a>
+
+            <a mat-list-item routerLink="/about">
+                <mat-icon>question_answer</mat-icon>
+                <span>About</span>
+            </a>
+            <a mat-list-item routerLink="/register">
+                <mat-icon>person_add</mat-icon>
+                <span>Register</span>
+            </a>
+
+            <a mat-list-item routerLink="/login">
+                <mat-icon>account_circle</mat-icon>
+                <span>Login</span>
+            </a>
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content class="main-content">
+          <div class="spinner-container" *ngIf="loading">
+            <mat-spinner></mat-spinner>
+          </div>
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+      </mat-sidenav-container >
+      <mat-toolbar class="main-footer">Footer
+
+      </mat-toolbar>
 
 
 
-</ng-container>
+    </ng-container>
+  </div>
+</div>
 
 
