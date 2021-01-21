@@ -14,13 +14,11 @@ import { createPasswordStrengthValidator } from '../validators/password-strength
 export class RegisterComponent implements OnInit {
   private errorMsg?: string;
 
-  form!: FormGroup;
-  id!: string;
-  isAddMode!: boolean;
-  isAdmin!: boolean;
+  registerForm!: FormGroup;
   loading = false;
   submitted = false;
   hidePassword = true;
+  hideConfirmPassword = true;
 
   userToRegister: IUserRegister = {
     email: '',
@@ -41,74 +39,48 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit(){
-    this.id = this.route.snapshot.params['id'];
-    this.isAddMode = !this.id; // Only for User profil
-    // TODO verify isAdmin from the User logged
-    this.isAdmin = false;
-    // password not required in edit mode
-    const passwordValidators = [Validators.minLength(8)];
-    if (this.isAddMode) {
-        passwordValidators.push(Validators.required);
-    }
+
     const formOptions: AbstractControlOptions = { validators: MustMatch('password', 'confirmPassword') };
-    this.form = this.fb.group({
+
+    this.registerForm = this.fb.group({
       email: ['', {
         validators: [ Validators.required, Validators.email, ],
         updateOn: 'blur'
         }],
-      password: ['', [Validators.minLength(8), this.isAddMode ? Validators.required : Validators.nullValidator,  createPasswordStrengthValidator(),]],
-      confirmPassword: ['', this.isAddMode ? Validators.required : Validators.nullValidator],
-      // title: ['', Validators.required],
+      password: ['', [ Validators.minLength(8), Validators.required, createPasswordStrengthValidator()]],
+      confirmPassword: ['', Validators.required],
+      nickName: ['', ],
       lastName: ['', ],
       firstName: ['', ],
-      // validates date format yyyy-mm-dd : dob = date of birth
-      // dob: ['', [Validators.required, Validators.pattern(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)]],
-      role: ['USER', this.isAdmin ? Validators.required : Validators.nullValidator],
       acceptTerms: [false, Validators.requiredTrue]
     }, formOptions );
-    if (!this.isAddMode) {
-      // Need to get data from the store
-      // this.userService.getById(this.id)
-      //     .pipe(first())
-      //     .subscribe(x => this.form.patchValue(x));
-  }
+
   }
 
-  get email() { return this.form.controls['email'];}
-  get password() {return this.form.controls['password'];}
-  get verifyPassword() {return this.form.controls['verifyPassword'];}
-  get lastName() {return this.form.controls['lastName'];}
-  get firstName() {return this.form.controls['firstName'];}
+  get email() { return this.registerForm.controls['email'];}
+  get password() {return this.registerForm.controls['password'];}
+  get confirmPassword() {return this.registerForm.controls['confirmPassword'];}
+  get lastName() {return this.registerForm.controls['lastName'];}
+  get firstName() {return this.registerForm.controls['firstName'];}
   // convenience getter for easy access to form fields
-  get formField() { return this.form.controls; }
+  get formField() { return this.registerForm.controls; }
 
   onSubmit() {
     this.submitted = true;
     // stop here if form is invalid
-    if (this.form.invalid) {
+    if (this.registerForm.invalid) {
         return;
     }
     // display form values on success
-    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.form.value, null, 4));
+    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value, null, 4));
     // reset alerts on submit
     // this.alertService.clear();
     // stop here if form is invalid
-    if (this.form.invalid) {
-      return;
-    }
 
     this.loading = true;
-    if (this.isAddMode) {
-        this.createUser();
-    } else {
-        this.updateUser();
-    }
+
+    this.register();
   }
-
-  private createUser() {}
-
-  private updateUser() {}
-
 
   async register() {
     // try {
@@ -119,12 +91,12 @@ export class RegisterComponent implements OnInit {
     // } catch (e) {
     //   alert('Désolé, une erreur a eu lieu empéchant votre enregistrement');
     // }
-    this.router.navigate(['login']);
+    this.login();
   }
 
   onReset() {
     this.submitted = false;
-    this.form.reset();
+    this.registerForm.reset();
   }
 
   login() {
