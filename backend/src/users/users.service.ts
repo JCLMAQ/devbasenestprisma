@@ -21,11 +21,10 @@ export class UsersService {
     });
   }
 
-  async findSomeUsers(params: Prisma.FindManyUserArgs
+  async findSomeUsers(params: Prisma.UserFindManyArgs
   ): Promise<any> {
     const { select, include ,skip, take, cursor, where, orderBy } = params;
     return this.prisma.user.findMany({
-      select,
       include,
       where,
       orderBy,

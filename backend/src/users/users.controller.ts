@@ -48,7 +48,7 @@ export class UsersController {
   }
 
   @Get('someusers')
-  async getSomeUsers( @Body() findParams: Prisma.FindManyUserArgs ): Promise<User[]> {
+  async getSomeUsers( @Body() findParams: Prisma.UserFindManyArgs ): Promise<User[]> {
     const show = {
     id: true,
     createdAt: true,
