@@ -55,15 +55,6 @@
               <span>Votre profil</span>
             </button>
           </mat-menu>
-<!--
-          <mat-form-field appearance="standard" hideRequiredMarker=false  floatLabel="never" class="mat-select-lang">
-            <mat-select [ngModel]="language" #langselect (selectionChange)="translate.use(langselect.value)">
-              <mat-option *ngFor="let lang of translate.getLangs()" [value]="lang">
-                {{ lang.toUpperCase() }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field> -->
-
           <button
             mat-icon-button
             [matMenuTriggerFor]="menulanguage"
