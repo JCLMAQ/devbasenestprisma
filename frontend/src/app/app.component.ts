@@ -5,9 +5,6 @@ import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Route
 import { AppState } from './reducers';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from './shared/theme/theme.service';
-import options from "./shared/theme/options.json";
-import { Option } from './shared/theme/option.model'
-import { StyleManagerService } from './shared/theme/style-manager.service';
 
 @Component({
   selector: 'app-root',
@@ -22,20 +19,14 @@ export class AppComponent implements OnInit{
   // currentUser: any = { nickName: "JCM"};
   currentUser: any = undefined;
 
-  // Theme management
-  // options$: Observable<Array<Option>> = this.themeService.getThemeOptions();
-
   private readonly stylesBasePath = `node_modules/@angular/material/prebuilt-themes/`;
- // DarkThem Management
-  // isThemeDark = new BehaviorSubject<boolean>(false);
+  // DarkThem Management
   isThemeDark: Observable<boolean>;
-  // isThemeDark: Observable<boolean> = new Observable()
 
   constructor(
     private router: Router,
     private store: Store<AppState>,
     public translate: TranslateService,
-    private readonly styleManager: StyleManagerService,
     private themeService: ThemeService ) {
       translate.setDefaultLang('en');
       translate.use('en');
@@ -62,7 +53,6 @@ export class AppComponent implements OnInit{
           }
       }
     });
-    // this.themeService.setTheme("deeppurple-amber");
 
     this.isThemeDark = this.themeService.isThemeDark;
   }
@@ -85,10 +75,6 @@ export class AppComponent implements OnInit{
   navigate(route: string) {
     this.router.navigate([`/${route}`]);
   }
-
-  // themeChangeHandler(themeToSet: string) {
-  //   this.themeService.setTheme(themeToSet);
-  // }
 
   toggleDarkTheme(checked: boolean) {
     this.themeService.setDarkTheme(checked);

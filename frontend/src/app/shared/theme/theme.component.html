@@ -11,10 +11,4 @@
             (change)="toggleDarkTheme($event.checked)">
             Dark theme
   </mat-checkbox>
-	<button
-    *ngFor="let option of options"
-    mat-menu-item
-    (click)="changeTheme(option.value)">
-    <span>{{ option.label }}</span>
-  </button>
 </mat-menu>

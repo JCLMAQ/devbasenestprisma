@@ -22,7 +22,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ThemeComponent } from './shared/theme/theme.component';
 import { ThemeService } from './shared/theme/theme.service';
-import { StyleManagerService } from './shared/theme/style-manager.service';
+
 
 @NgModule({
   declarations: [
@@ -68,7 +68,6 @@ import { StyleManagerService } from './shared/theme/style-manager.service';
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
     ThemeService,
-    StyleManagerService
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
