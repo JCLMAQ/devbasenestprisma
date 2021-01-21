@@ -7,8 +7,8 @@
 
 <mat-menu #menupalette="matMenu">
   <mat-checkbox
-            [checked]="isThemeDark | async"
-            (change)="toggleDarkTheme($event.checked)">
-            Dark theme
+    [(ngModel)]="isDarkTheme"
+    (change)="toggleDarkTheme($event.checked)">
+  Dark Mode
   </mat-checkbox>
 </mat-menu>

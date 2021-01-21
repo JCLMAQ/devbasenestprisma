@@ -10,18 +10,20 @@ import { BehaviorSubject, Observable, of as observableOf} from 'rxjs';
 })
 export class ThemeComponent implements OnInit {
 
-  isThemeDark: Observable<boolean> | undefined;
+  isDarkTheme!: boolean;
 
   constructor(
     private themeService: ThemeService
   ) {}
 
   ngOnInit() {
-    this.isThemeDark = this.themeService.isThemeDark;
+    this.themeService.getDarkThemeState().subscribe((value) => {
+      this.isDarkTheme = value;
+    })
   }
 
   toggleDarkTheme(checked: boolean) {
-    this.themeService.setDarkTheme(checked);
+    this.themeService.setDarkThemeState(checked);
   }
 
 }

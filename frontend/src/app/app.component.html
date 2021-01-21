@@ -1,4 +1,4 @@
-<div [ngClass]="{'dark-theme': isThemeDark | async }">
+<div [ngClass]="{'dark-theme': isDarkTheme }">
   <div class="mat-app-background">
     <ng-container class="main-container" fullscreen>
       <mat-toolbar color="primary" class="main-header">
@@ -11,11 +11,6 @@
             {{'Sitetitle' | translate }}
           </a>
           <span class="app-toolbar-filler"></span>
-
-          <!-- <mat-slide-toggle
-            [checked]="isThemeDark | async"
-            (change)="toggleDarkTheme($event.checked)">
-            Dark theme</mat-slide-toggle> -->
 
           <button mat-icon-button class="menu-button" *ngIf="currentUser" (click)="logout()" >
             <mat-icon>lock_open</mat-icon>

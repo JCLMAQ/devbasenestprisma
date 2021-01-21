@@ -21,7 +21,7 @@ export class AppComponent implements OnInit{
 
   private readonly stylesBasePath = `node_modules/@angular/material/prebuilt-themes/`;
   // DarkThem Management
-  isThemeDark: Observable<boolean>;
+  isDarkTheme: boolean = true;
 
   constructor(
     private router: Router,
@@ -31,7 +31,6 @@ export class AppComponent implements OnInit{
       translate.setDefaultLang('en');
       translate.use('en');
       translate.addLangs(['en','fr']);
-      this.isThemeDark = of(false);
   }
 
   ngOnInit(){
@@ -53,8 +52,9 @@ export class AppComponent implements OnInit{
           }
       }
     });
-
-    this.isThemeDark = this.themeService.isThemeDark;
+    this.themeService.getDarkThemeState().subscribe((value) => {
+      this.isDarkTheme = value;
+    })
   }
 
   switchLang(lang: string) {
@@ -77,7 +77,7 @@ export class AppComponent implements OnInit{
   }
 
   toggleDarkTheme(checked: boolean) {
-    this.themeService.setDarkTheme(checked);
+    this.themeService.setDarkThemeState(checked);
   }
 
 }
