@@ -23,7 +23,7 @@ export class AppComponent implements OnInit{
   currentUser: any = undefined;
 
   // Theme management
-  options$: Observable<Array<Option>> = this.themeService.getThemeOptions();
+  // options$: Observable<Array<Option>> = this.themeService.getThemeOptions();
 
   private readonly stylesBasePath = `node_modules/@angular/material/prebuilt-themes/`;
  // DarkThem Management
@@ -62,7 +62,7 @@ export class AppComponent implements OnInit{
           }
       }
     });
-    this.themeService.setTheme("deeppurple-amber");
+    // this.themeService.setTheme("deeppurple-amber");
 
     this.isThemeDark = this.themeService.isThemeDark;
   }
@@ -86,9 +86,9 @@ export class AppComponent implements OnInit{
     this.router.navigate([`/${route}`]);
   }
 
-  themeChangeHandler(themeToSet: string) {
-    this.themeService.setTheme(themeToSet);
-  }
+  // themeChangeHandler(themeToSet: string) {
+  //   this.themeService.setTheme(themeToSet);
+  // }
 
   toggleDarkTheme(checked: boolean) {
     this.themeService.setDarkTheme(checked);

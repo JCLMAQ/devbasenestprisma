@@ -16,18 +16,18 @@ export class ThemeService {
   }
 
   // Thme menu switch
-  getThemeOptions(): Observable<Array<Option>> {
-    // const getTheme = this.http.get<Array<Option>>("./options.json");
-    // console.log(getTheme)
-    return this.http.get<Array<Option>>("./options.json");
-  }
+  // getThemeOptions(): Observable<Array<Option>> {
+  //   const getTheme = this.http.get<Array<Option>>("./options.json");
+  //   console.log(getTheme)
+  //   return this.http.get<Array<Option>>("./options.json");
+  // }
 
-  setTheme(themeToSet: string) {
-    // this.styleManager.setStyle(
-    //   "theme",
-    //   `node_modules/@angular/material/prebuilt-themes/${themeToSet}.scss`
-    // );
-  }
+  // setTheme(themeToSet: string) {
+  //   this.styleManager.setStyle(
+  //     "theme",
+  //     `node_modules/@angular/material/prebuilt-themes/${themeToSet}.scss`
+  //   );
+  // }
 
   // darkMode switch
   private _themeDark: Subject<boolean> = new Subject<boolean>();
