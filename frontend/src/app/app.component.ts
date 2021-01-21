@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
+import { BehaviorSubject, Observable, of as observableOf, of } from 'rxjs';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
 import { AppState } from './reducers';
 import { TranslateService } from '@ngx-translate/core';
@@ -28,7 +28,8 @@ export class AppComponent implements OnInit{
   private readonly stylesBasePath = `node_modules/@angular/material/prebuilt-themes/`;
  // DarkThem Management
   // isThemeDark = new BehaviorSubject<boolean>(false);
-  isThemeDark: Observable<boolean> = new Observable()
+  isThemeDark: Observable<boolean>;
+  // isThemeDark: Observable<boolean> = new Observable()
 
   constructor(
     private router: Router,
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit{
       translate.setDefaultLang('en');
       translate.use('en');
       translate.addLangs(['en','fr']);
+      this.isThemeDark = of(false);
   }
 
   ngOnInit(){

@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 
 import { Option } from "./option.model";
-import { Observable, Subject } from "rxjs";
+import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 
 import { StyleManagerService } from "./style-manager.service";
 
@@ -11,7 +11,9 @@ export class ThemeService {
   constructor(
     private http: HttpClient,
     private styleManager: StyleManagerService
-  ) {}
+  ) {
+
+  }
 
   // Thme menu switch
   getThemeOptions(): Observable<Array<Option>> {
@@ -30,7 +32,6 @@ export class ThemeService {
   // darkMode switch
   private _themeDark: Subject<boolean> = new Subject<boolean>();
   isThemeDark = this._themeDark.asObservable();
-  // isThemeDark = this._themeDark;
 
   setDarkTheme(isThemeDark: boolean) {
     this._themeDark.next(isThemeDark);

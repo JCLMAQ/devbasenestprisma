@@ -11,8 +11,7 @@ import { BehaviorSubject, Observable, of as observableOf} from 'rxjs';
 })
 export class ThemeComponent implements OnInit {
 
-  // isThemeDark = new BehaviorSubject<boolean>(false);
-  isThemeDark: Observable<boolean> = new Observable();
+  isThemeDark: Observable<boolean> | undefined;
 
   constructor(
     private themeService: ThemeService
