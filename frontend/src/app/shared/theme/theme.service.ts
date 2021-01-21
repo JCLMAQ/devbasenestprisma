@@ -30,9 +30,11 @@ export class ThemeService {
   // darkMode switch
   private _themeDark: Subject<boolean> = new Subject<boolean>();
   isThemeDark = this._themeDark.asObservable();
+  // isThemeDark = this._themeDark;
 
   setDarkTheme(isThemeDark: boolean) {
     this._themeDark.next(isThemeDark);
   }
+
 }
 

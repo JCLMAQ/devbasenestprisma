@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ThemeService } from './theme.service';
 import { Option } from './option.model'
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of as observableOf} from 'rxjs';
 
 @Component({
   selector: 'app-theme',
@@ -11,16 +11,16 @@ import { Observable } from 'rxjs';
 })
 export class ThemeComponent implements OnInit {
 
+  // isThemeDark = new BehaviorSubject<boolean>(false);
+  isThemeDark: Observable<boolean> = new Observable();
 
   constructor(
     private themeService: ThemeService
   ) {}
 
   ngOnInit() {
-
+    this.isThemeDark = this.themeService.isThemeDark;
   }
-
-  isThemeDark!: Observable<boolean>
 
   @Input() options!: Array<Option>;
   @Output() themeChange: EventEmitter<string> = new EventEmitter<string>();
