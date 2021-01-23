@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/reducers';
 import { AuthService } from '../auth.service';
+import { MustMatch } from '../validators/mustMatch.validator';
+import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 
 @Component({
   selector: 'app-changepwd',
@@ -19,12 +21,16 @@ export class ChangepwdComponent implements OnInit {
       private auth: AuthService,
       private router:Router,
       private store: Store<AppState>) {
-
+      const formOptions: AbstractControlOptions = { validators: MustMatch('newPassword', 'cverifyPassword') };
       this.changepwdForm = fb.group({
-          oldpassword: ['', [Validators.required]],
-          newpassword: ['', [Validators.required]],
-          verifypassword: ['', [Validators.required]]
-      });
+          oldPassword: ['', [Validators.required]],
+          newPassword: ['', [
+            Validators.required,
+            Validators.minLength(8),
+            createPasswordStrengthValidator(),
+            ]],
+          verifyPassword: ['', [Validators.required]]
+      }, formOptions);
 
   }
 
@@ -32,16 +38,16 @@ export class ChangepwdComponent implements OnInit {
 
   }
 
-  get oldpassword() {
-    return this.changepwdForm.get('oldpassword');
+  get oldPassword() {
+    return this.changepwdForm.get('oldPassword');
   }
 
-  get newpassword() {
-    return this.changepwdForm.get('newpassword');
+  get newPassword() {
+    return this.changepwdForm.get('newPassword');
   }
 
-  get verifypassword() {
-    return this.changepwdForm.get('verifypassword');
+  get verifyPassword() {
+    return this.changepwdForm.get('verifyPassword');
   }
 
   changePwd() {}

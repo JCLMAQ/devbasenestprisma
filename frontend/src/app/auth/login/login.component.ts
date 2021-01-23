@@ -10,6 +10,7 @@ import { createPasswordStrengthValidator } from '../validators/password-strength
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+
 hidePassword = true;
 loginForm = this.fb.group({
     email: ['',{

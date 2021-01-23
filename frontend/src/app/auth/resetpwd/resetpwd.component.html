@@ -15,7 +15,7 @@
           </button>
         </mat-form-field>
         <ng-container
-            *ngIf="password.errors | onlyOneError:['minlength','passwordStrength'] as error">
+            *ngIf="newPassword.errors | onlyOneError:['minlength','passwordStrength'] as error">
             <div class="field-message" *ngIf="error.minlength">
                 Your password must have minimum {{error.minlength.requiredLength}} chars,
                 but it only has {{error.minlength.actualLength}}.
@@ -28,7 +28,7 @@
           <mat-form-field appearance="standard">
             <mat-label>Confirm your password</mat-label>
             <input matInput [type]="hideConfirmPassword ? 'confirmNewPassword' : 'text'" placeholder="Confirm Password" formControlName="confirmNewPassword">
-            <mat-error *ngIf="password.errors?.required">The password is mandatory.</mat-error>
+            <mat-error *ngIf="confirmNewPassword.errors?.required">The password is mandatory.</mat-error>
             <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirmPassword">
               <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
@@ -41,7 +41,7 @@
                 type="submit"
                 (click)="resetPwd()"
                 [disabled]="!resetpwdForm.valid">
-            Login
+            Reset Your Password
       </button>
       <button class="login-button" mat-button (click)="backhome()">
         <mat-icon>cancel_presentation</mat-icon>

@@ -8,7 +8,7 @@
       <mat-form-field>
         <input  matInput type="password"
                 placeholder="Votre mot de passe actuel"
-                formControlName="oldpassword">
+                formControlName="oldPassword">
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
          </button>
@@ -16,7 +16,7 @@
       <mat-form-field>
         <input  matInput type="password"
                 placeholder="Votre nouveau mot de passe"
-                formControlName="newpassword">
+                formControlName="newPassword">
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
          </button>
@@ -24,7 +24,7 @@
       <mat-form-field>
         <input  matInput type="password"
                 placeholder="Ré-encoder votre nouveau mot de passe"
-                name="verifypassword">
+                formControlName="verifyPassword">
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
          </button>
@@ -44,3 +44,9 @@
   </mat-card-actions>
 
 </mat-card>
+<div>
+{{changepwdForm.value | json}}
+</div>
+<div>
+{{changepwdForm.valid | json}}
+</div>
