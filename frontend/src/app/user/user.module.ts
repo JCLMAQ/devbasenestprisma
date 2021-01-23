@@ -12,6 +12,7 @@ import { UserEntityService } from './store/user-entity.service';
 import { UserResolver } from './store/user.resolver';
 import { UserDataService } from './store/user-data.service';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ReactiveComponentModule } from '@ngrx/component';
 
 const entityMetadata: EntityMetadataMap = {
   User: {
@@ -36,6 +37,7 @@ export const entityConfig = {
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
+    ReactiveComponentModule
   ],
   exports: [],
   providers: [

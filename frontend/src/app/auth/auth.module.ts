@@ -17,6 +17,7 @@ import { SharedModule } from '../shared/shared.module';
 import { EntityDefinitionService, EntityDataService, EntityMetadataMap } from '@ngrx/data';
 import { UserDataService } from '../user/store/user-data.service';
 import { OnlyOneErrorPipe } from '../pipes/only-one-error.pipe';
+import { ReactiveComponentModule } from '@ngrx/component';
 
 const entityMetadata: EntityMetadataMap = {
   Auth: {
@@ -41,7 +42,8 @@ export const entityConfig = {
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
-    StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.reducers)
+    StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.reducers),
+    ReactiveComponentModule
   ],
   providers: [
     AuthService,
