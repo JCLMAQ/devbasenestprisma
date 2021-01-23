@@ -12,26 +12,41 @@ import { AuthService } from '../auth.service';
 })
 export class ChangepwdComponent implements OnInit {
 
-  form: FormGroup;
-
+  changepwdForm: FormGroup;
+  hidePassword = true;
   constructor(
       private fb:FormBuilder,
       private auth: AuthService,
       private router:Router,
       private store: Store<AppState>) {
 
-      this.form = fb.group({
-          oldpassword: ['oldpwd', [Validators.required]],
-          newpassword: ['newpwd', [Validators.required]],
-          verifypassword: ['verifpwd', [Validators.required]]
+      this.changepwdForm = fb.group({
+          oldpassword: ['', [Validators.required]],
+          newpassword: ['', [Validators.required]],
+          verifypassword: ['', [Validators.required]]
       });
 
   }
 
   ngOnInit(): void {
+
+  }
+
+  get oldpassword() {
+    return this.changepwdForm.get('oldpassword');
+  }
+
+  get newpassword() {
+    return this.changepwdForm.get('newpassword');
+  }
+
+  get verifypassword() {
+    return this.changepwdForm.get('verifypassword');
   }
 
   changePwd() {}
 
-  backHome() {}
+  backhome() {
+    this.router.navigate(['home']);
+  }
 }

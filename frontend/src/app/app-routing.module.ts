@@ -1,6 +1,8 @@
 import { NgModule, OnInit } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
+import { ChangepwdComponent } from './auth/changepwd/changepwd.component';
+import { ForgotpwdComponent } from './auth/forgotpwd/forgotpwd.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { HomeComponent } from './home/home.component';
@@ -11,6 +13,8 @@ const mainRoutes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'forgotpwd', component: ForgotpwdComponent },
+  { path: 'changepwd', component: ChangepwdComponent },
   { path: 'about', loadChildren: () => import('./about/about.module').then(m => m.AboutModule) },
   // { path: 'users', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
   { path: 'users', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },

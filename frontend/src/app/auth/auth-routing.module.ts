@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { ForgotpwdComponent } from './forgotpwd/forgotpwd.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 
@@ -14,11 +15,16 @@ const authRoutes: Routes = [
       //   auths: AuthResolver
       // }
     },
-  { path: '', component: LoginComponent,
+    { path: 'forgotpwd', component: ForgotpwdComponent,
       // resolve: {
       //   auths: AuthResolver
       // }
     },
+    { path: '', component: LoginComponent,
+        // resolve: {
+        //   auths: AuthResolver
+        // }
+      },
 ];
 
 @NgModule({

@@ -10,15 +10,15 @@ import { AuthService } from '../auth.service';
 })
 export class ForgotpwdComponent implements OnInit {
 
-  form: FormGroup;
+  forgotPwdForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {
-    this.form = this.fb.group({
-      email: ['email@email.com', [
+    this.forgotPwdForm = this.fb.group({
+      email: ['Your email', [
         Validators.required,
         Validators.email
       ]]
@@ -30,7 +30,7 @@ export class ForgotpwdComponent implements OnInit {
   }
 
   get email() {
-    return this.form.get('email');
+    return this.forgotPwdForm.get('email');
   }
 
   async sendforget() {
@@ -38,4 +38,9 @@ export class ForgotpwdComponent implements OnInit {
     // alert(res.message);
     // this.router.navigate(['portal']);
   }
+
+  backhome() {
+    this.router.navigate(['home']);
+  }
+
 }
