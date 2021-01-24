@@ -5,22 +5,36 @@
   </mat-card-title>
   <mat-card-content>
     <form  [formGroup]="changepwdForm" class="changepwd-form">
-      <mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Enter your actual password</mat-label>
         <input  matInput type="password"
                 placeholder="Votre mot de passe actuel"
                 formControlName="oldPassword">
+        <mat-error *ngIf="oldPassword?.errors?.required">Password is mandatory.</mat-error>
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-         </button>
+        </button>
       </mat-form-field>
-      <mat-form-field>
-        <input  matInput type="password"
+      <mat-form-field appearance="standard">
+        <mat-label>Enter your new password</mat-label>
+        <input  matInput type="hidePassword ? 'password' : 'text'"
                 placeholder="Votre nouveau mot de passe"
                 formControlName="newPassword">
+        <mat-error *ngIf="newPassword?.errors?.required">Password is mandatory.</mat-error>
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-         </button>
+        </button>
         </mat-form-field>
+        <ng-container
+            *ngIf="newPassword?.errors | onlyOneError:['minlength','passwordStrength'] as error">
+            <div class="field-message" *ngIf="error.minlength">
+                Your password must have minimum {{error.minlength.requiredLength}} chars,
+                but it only has {{error.minlength.actualLength}}.
+            </div>
+            <div class="field-message" *ngIf="error.passwordStrength">
+                Your password must have lower case, upper case and numeric characters.
+            </div>
+        </ng-container>
       <mat-form-field>
         <input  matInput type="password"
                 placeholder="Ré-encoder votre nouveau mot de passe"

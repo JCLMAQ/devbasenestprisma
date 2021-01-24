@@ -14,23 +14,35 @@ import { createPasswordStrengthValidator } from '../validators/password-strength
 })
 export class ChangepwdComponent implements OnInit {
 
-  changepwdForm: FormGroup;
+  // changepwdForm: FormGroup;
   hidePassword = true;
-  constructor(
-      private fb:FormBuilder,
-      private auth: AuthService,
-      private router:Router,
-      private store: Store<AppState>) {
-      const formOptions: AbstractControlOptions = { validators: [ MustMatch('newPassword', 'verifyPassword'), MustNotMatch('oldPassword', 'newPassword') ]};
-      this.changepwdForm = fb.group({
-          oldPassword: ['', [Validators.required]],
+
+  formOptions: AbstractControlOptions = { validators: [ MustMatch('newPassword', 'verifyPassword'), MustNotMatch('oldPassword', 'newPassword') ]};
+  changepwdForm = this.fb.group({
+          oldPassword: ['', [Validators.required],],
           newPassword: ['', [
             Validators.required,
             Validators.minLength(8),
             createPasswordStrengthValidator(),
             ]],
           verifyPassword: ['', [Validators.required]]
-      }, formOptions);
+      }, this.formOptions);
+
+  constructor(
+      private fb:FormBuilder,
+      private auth: AuthService,
+      private router:Router,
+      private store: Store<AppState>) {
+      // const formOptions: AbstractControlOptions = { validators: [ MustMatch('newPassword', 'verifyPassword'), MustNotMatch('oldPassword', 'newPassword') ]};
+      // this.changepwdForm = fb.group({
+      //     oldPassword: ['', [Validators.required]],
+      //     newPassword: ['', [
+      //       Validators.required,
+      //       Validators.minLength(8),
+      //       createPasswordStrengthValidator(),
+      //       ]],
+      //     verifyPassword: ['', [Validators.required]]
+      // }, formOptions);
 
   }
 
