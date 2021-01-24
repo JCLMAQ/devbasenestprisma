@@ -7,8 +7,9 @@
     <form  [formGroup]="changepwdForm" class="changepwd-form">
       <mat-form-field appearance="standard">
         <mat-label>Enter your actual password</mat-label>
-        <input  matInput type="password"
+        <input  matInput [type]="hidePassword ? 'password' : 'text'"
                 placeholder="Votre mot de passe actuel"
+                autocomplete="of"
                 formControlName="oldPassword">
         <mat-error *ngIf="oldPassword?.errors?.required">Password is mandatory.</mat-error>
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
@@ -17,12 +18,13 @@
       </mat-form-field>
       <mat-form-field appearance="standard">
         <mat-label>Enter your new password</mat-label>
-        <input  matInput type="hidePassword ? 'password' : 'text'"
+        <input  matInput [type]="hidePassword2 ? 'password' : 'text'"
                 placeholder="Votre nouveau mot de passe"
+                autocomplete="of"
                 formControlName="newPassword">
         <mat-error *ngIf="newPassword?.errors?.required">Password is mandatory.</mat-error>
-        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
-          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        <button mat-icon-button matSuffix (click)="hidePassword2 = !hidePassword2" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword2">
+            <mat-icon>{{hidePassword2 ? 'visibility_off' : 'visibility'}}</mat-icon>
         </button>
         </mat-form-field>
         <ng-container
@@ -35,12 +37,13 @@
                 Your password must have lower case, upper case and numeric characters.
             </div>
         </ng-container>
-      <mat-form-field>
-        <input  matInput type="password"
+      <mat-form-field appearance="standard">
+        <input  matInput [type]="hidePassword3 ? 'password' : 'text'"
                 placeholder="Ré-encoder votre nouveau mot de passe"
+                autocomplete="of"
                 formControlName="verifyPassword">
-        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
-          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        <button mat-icon-button matSuffix (click)="hidePassword3 = !hidePassword3" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword3">
+          <mat-icon>{{hidePassword3 ? 'visibility_off' : 'visibility'}}</mat-icon>
          </button>
       </mat-form-field>
     </form>
@@ -55,6 +58,9 @@
     <button mat-button type="submit" (click)="backhome()" >
       <mat-icon>cancel_presentation</mat-icon>
     </button>
+     <!-- <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button> -->
   </mat-card-actions>
 
 </mat-card>

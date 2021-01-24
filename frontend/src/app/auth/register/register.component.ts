@@ -41,7 +41,7 @@ export class RegisterComponent implements OnInit {
   ngOnInit(){
 
     const formOptions: AbstractControlOptions = { validators: MustMatch('password', 'confirmPassword') };
-
+// TODO Verify that the email doens not already exist !!!
     this.registerForm = this.fb.group({
       email: ['', {
         validators: [ Validators.required, Validators.email, ],

@@ -16,33 +16,40 @@ export class ChangepwdComponent implements OnInit {
 
   // changepwdForm: FormGroup;
   hidePassword = true;
+  hidePassword2 = true;
+  hidePassword3 = true;
 
-  formOptions: AbstractControlOptions = { validators: [ MustMatch('newPassword', 'verifyPassword'), MustNotMatch('oldPassword', 'newPassword') ]};
-  changepwdForm = this.fb.group({
-          oldPassword: ['', [Validators.required],],
-          newPassword: ['', [
-            Validators.required,
-            Validators.minLength(8),
-            createPasswordStrengthValidator(),
-            ]],
-          verifyPassword: ['', [Validators.required]]
-      }, this.formOptions);
+  changepwdForm!: FormGroup;
+  // formOptions: AbstractControlOptions = { validators: [ MustMatch('newPassword', 'verifyPassword'), MustNotMatch('oldPassword', 'newPassword') ]};
+  // changepwdForm = this.fb.group({
+  //         oldPassword: ['', [
+  //           Validators.required,
+  //           Validators.minLength(8),]],
+  //         newPassword: ['', [
+  //           Validators.required,
+  //           Validators.minLength(8),
+  //           createPasswordStrengthValidator(),
+  //           ]],
+  //         verifyPassword: ['', [Validators.required]]
+  //     }, this.formOptions);
 
   constructor(
       private fb:FormBuilder,
       private auth: AuthService,
       private router:Router,
       private store: Store<AppState>) {
-      // const formOptions: AbstractControlOptions = { validators: [ MustMatch('newPassword', 'verifyPassword'), MustNotMatch('oldPassword', 'newPassword') ]};
-      // this.changepwdForm = fb.group({
-      //     oldPassword: ['', [Validators.required]],
-      //     newPassword: ['', [
-      //       Validators.required,
-      //       Validators.minLength(8),
-      //       createPasswordStrengthValidator(),
-      //       ]],
-      //     verifyPassword: ['', [Validators.required]]
-      // }, formOptions);
+      const formOptions: AbstractControlOptions = { validators: [ MustMatch('newPassword', 'verifyPassword'), MustNotMatch('oldPassword', 'newPassword') ]};
+      this.changepwdForm = fb.group({
+          oldPassword: ['', [
+          Validators.required,
+          Validators.minLength(8),]],
+          newPassword: ['', [
+            Validators.required,
+            Validators.minLength(8),
+            createPasswordStrengthValidator(),
+            ]],
+          verifyPassword: ['', [Validators.required]]
+      }, formOptions);
 
   }
 

@@ -9,6 +9,7 @@
           <mat-label>Enter your email</mat-label>
             <input matInput type="email"
                     placeholder="Email"
+                    autocomplete="on"
                     formControlName="email">
             <mat-error *ngIf="email.errors?.required">The email is mandatory.</mat-error>
             <mat-error *ngIf="email.errors?.minlength">
@@ -21,13 +22,10 @@
           <mat-label>Enter your password</mat-label>
           <input  matInput [type]="hidePassword ? 'password' : 'text'"
                   placeholder="Password"
+                  autocomplete="on"
                   formControlName="password">
           <mat-error *ngIf="password.errors?.required">The password is mandatory.</mat-error>
-          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
-            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-          </button>
-        </mat-form-field>
-        <ng-container
+          <mat-error
             *ngIf="password.errors | onlyOneError:['minlength','passwordStrength'] as error">
             <div class="field-message" *ngIf="error.minlength">
                 Your password must have minimum {{error.minlength.requiredLength}} chars,
@@ -36,8 +34,12 @@
             <div class="field-message" *ngIf="error.passwordStrength">
                 Your password must have lower case, upper case and numeric characters.
             </div>
+          </mat-error>
+          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
 
-        </ng-container>
         <div class="forgot-container">
           <div>
             <a href="forgotpwd" (click)="forget()">Forgot password?</a>
