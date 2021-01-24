@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/reducers';
 import { AuthService } from '../auth.service';
-import { MustMatch } from '../validators/mustMatch.validator';
+import { MustMatch, MustNotMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 
 @Component({
@@ -21,7 +21,7 @@ export class ChangepwdComponent implements OnInit {
       private auth: AuthService,
       private router:Router,
       private store: Store<AppState>) {
-      const formOptions: AbstractControlOptions = { validators: MustMatch('newPassword', 'cverifyPassword') };
+      const formOptions: AbstractControlOptions = { validators: [ MustMatch('newPassword', 'verifyPassword'), MustNotMatch('oldPassword', 'newPassword') ]};
       this.changepwdForm = fb.group({
           oldPassword: ['', [Validators.required]],
           newPassword: ['', [
