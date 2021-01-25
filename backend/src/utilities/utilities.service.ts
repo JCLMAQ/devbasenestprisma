@@ -23,16 +23,12 @@ export class UtilitiesService {
         // Search for config parameter in the DB, and if not found use the one in the .env config file
          // Return "" if no value found
         const configItem = await this.prisma.configParam.findUnique({where: { name: configItemName },})
-console.log("configItem Name : ", configItemName)
-console.log("configItem : ", configItem)
         let valueToReturn = null;
         if(!configItem) {
             valueToReturn = this.configService.get<string>(configItemName);
-console.log("value to return from .env: ", valueToReturn)
         } else {
             configItem?.value === null ? valueToReturn = this.configService.get<string>(configItemName) : valueToReturn = configItem?.value
         }        
-console.log("value to return final: ", valueToReturn)
         // If nothing found the value will be : ""
         return valueToReturn
     }
@@ -44,19 +40,13 @@ console.log("value to return final: ", valueToReturn)
         let valueToReturn = null;
         let configItem = null;
         const valueFromEnvFile = this.configService.get<string>(configItemName);
-console.log("Value from env file: ", valueFromEnvFile);
         if(valueFromEnvFile == "") {
             configItem = await this.prisma.configParam.findUnique({where: { name: configItemName },});
             configItem?.value == null ? valueToReturn = "" : valueToReturn = configItem?.value 
         } else {
             valueToReturn = valueFromEnvFile;
         }
-
-        
-console.log("configItem Name : ", configItemName)
-console.log("configItem : ", configItem)
         valueFromEnvFile === null ? valueToReturn = configItem?.value : valueToReturn = valueFromEnvFile
-console.log("value to return : ", valueToReturn)
         return valueToReturn
     }
 

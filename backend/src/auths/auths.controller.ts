@@ -118,6 +118,7 @@ export class AuthsController {
     @UseGuards(LocalAuthGuard)
     @Post('auth/loginwithpwd')
     async loginWithPwd(@Body() userCredential: AuthDto, @I18nLang() lang: string): Promise<any> {
+        console.log("Login with pwd (credential 1): ", userCredential)
         return this.authsService.loginWithPwd(userCredential.email, userCredential.password, lang);
     }
 

@@ -36,20 +36,15 @@ export class AuthsService {
     // const lang = "en";
     // const emailValidation = await this.emailValidationProcess(username, lang);
     const user = await this.usersService.getOneUserByEmail(username);
-    console.log("Validate user:", user, username, plainTextPassword)
-    console.log("configservice pwdless: ",this.configService.get('PWDLESS_LOGIN_ENABLE'))
     if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0 && user !== null) {
-      console.log("thisway", this.verifyPassword(user, plainTextPassword))
       if (this.verifyPassword(user, plainTextPassword)) {
         const { pwdHash, salt, ...result } = user;
-        console.log("result verify pwd:", result)
         return result;
       } else {
         return null;
       }
     } else {
       const { ...result } = user;
-      console.log("result verify pwd:", result)
         return result;
     }
   }
@@ -104,9 +99,6 @@ export class AuthsService {
     let expirationTime: string;
     forPwdLess ? expirationTime = "EMAIL_TOKEN_EXPIRATION" : expirationTime = "FORGOT_TOKEN_EXPIRATION"
     let tokenExpirationTime = await this.utilitiesService.searchConfigParam( expirationTime );
-
-console.log("token expiration time : ", tokenExpirationTime)
-
     const milliSecondToAdd = MilliSecond(tokenExpirationTime);
     const currentDate = new Date();
     const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
@@ -121,16 +113,14 @@ console.log("token expiration time : ", tokenExpirationTime)
     }
   }
 
+
   // Generate the expiration time of the JWT token
   async jwtTokenExpiration() {
     const delayToAdd = await this.utilitiesService.searchConfigParam( "JWT_VALIDITY_DURATION" );
-    console.log("delay to add: ", delayToAdd)
     // const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION")
     let milliSecondToAdd = MilliSecond(delayToAdd);  
-    console.log("millisecond to add: ", milliSecondToAdd)  
     const currentDate = new Date();
     const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ milliSecondToAdd);
-    console.log(" expiration date: ", jwtTokenExpirationDate)
     return jwtTokenExpirationDate
   }
 
@@ -448,9 +438,15 @@ console.log("token expiration time : ", tokenExpirationTime)
     }
     // Buildup the payload for the access token
     const payload = { username: userFound.email, sub: userFound.id, role: userFound.Role };
+    // Full Name replacement
+    let fullName: string = userFound.firstName + " " + userFound.lastName
+    ;
+    if((userFound.firstName == "") || (userFound.lastName == "")) {
+      ( userFound.nickName == "") ? fullName = userFound.email : fullName = userFound.nickName
+    }
     return {
       access_token: this.jwtService.sign(payload),
-      fullName: userFound.firstName +" "+ userFound.lastName,
+      fullName: fullName,
       roles: userFound.Role
     };
   }
@@ -496,11 +492,7 @@ console.log("token expiration time : ", tokenExpirationTime)
   }
 
   verifyPassword(user, plainTextPassword: string) {
-    console.log("user: ", user)
-    console.log("user salt: ", user.salt)
     const pwdHash = AuthsService.hashPassword(plainTextPassword, user.salt);
-    console.log("pwdHash: ", pwdHash)
-    console.log("user pwdHash: ", user.pwdHash)
     const isOK = (pwdHash == user.pwdHash);
     console.log("Password OK : ", isOK )
     return isOK
@@ -511,26 +503,13 @@ console.log("token expiration time : ", tokenExpirationTime)
 */
 
   async createForgotToken(email: string, userId: string, lang:string ): Promise<any> {
-
-console.log('email of create forgot password', email);
-console.log('email of create forgot password: userId', userId);
-
     const forgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userId }, type: { equals:TokenType.FORGOT },}});
-
-console.log("Found forgot email token: ", forgotPwd)
-
     let isForgotPwdTokenDelayOver = true;
     // forgotPwd token exist, need to verify if it is stiil within validity delay
     if(forgotPwd){
       isForgotPwdTokenDelayOver = (forgotPwd.expiration < new Date());
-
-console.log("Delay over : ", isForgotPwdTokenDelayOver)
-
     }
     const newForgotPwdDelayTime = await this.emailTokenExpiration(false);
-
-console.log("Forgot pw delay: ", newForgotPwdDelayTime)
-
     const emailToken = await this.generateEmailToken()
     const createOrUpdateToken = await this.mgtAPIToken(userId, "FORGOT", emailToken , false )
 
@@ -539,42 +518,26 @@ console.log("Forgot pw delay: ", newForgotPwdDelayTime)
     const newForgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userId }, type: { equals:TokenType.FORGOT },}});
 
     if (newForgotPwd) {
-
-console.log("return forgotpwd 01", newForgotPwd)
-
       return newForgotPwd
     } else {
-console.log("return forgotpwd 02", newForgotPwd)
       throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
     }
   }
 
   // Sending forgot password email with the link
   async sendEmailForgotPwd(emailForgotPwd: string, lang: string): Promise<boolean> {
-
-console.log('email of forgot password', emailForgotPwd);
     // Verify the email is an email and is from an accepted domain
     const emailValidation = await this.emailValidationProcess(emailForgotPwd, lang);
     // Verify if the user exist
     const userExist = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
-
-console.log("User found 01: ", userExist)
-
     if (!userExist) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400);
-
-console.log("User found 02.isDeleted: ", userExist?.isDeleted)
-
     // Need to manage soft deleted user
     if(userExist?.isDeleted != null) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400);
 
     // Create the forgot  password token
     const tokenForgotPwd = await this.createForgotToken(emailForgotPwd, userExist.id, lang);
-
-console.log('reset token', tokenForgotPwd)
- 
     // If the token has been created, send the email
-    if (tokenForgotPwd && tokenForgotPwd.emailToken) {
-      
+    if (tokenForgotPwd && tokenForgotPwd.emailToken) {    
       // Config data for the email to send with the token
       const emailSender = await this.utilitiesService.searchConfigParam( "EMAIL_NOREPLY" );
       // const emailSender = this.configService.get("EMAIL_NOREPLY");
@@ -591,12 +554,8 @@ console.log('reset token', tokenForgotPwd)
 
       // Send the email with the link
       const sendMail = await this.utilitiesService.sendEmailToken(emailData);
-
-console.log("send email ?:", sendMail)
-
       if (!sendMail) throw new HttpException(await this.i18n.translate("auths.EMAIL_TOKEN_CRASH",{ lang: lang, }), 400);
       return sendMail
-
     } else throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
   }
 
@@ -610,9 +569,6 @@ console.log("send email ?:", sendMail)
     // Verify the token still valid (time delay)
     const isForgotPwdTokenDelayOver = (forgotPwdModel.expiration < new Date());
     if (isForgotPwdTokenDelayOver || !forgotPwdModel.valid ) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
-
-console.log("forgotpwdModel return verification is OK: ", forgotPwdModel);
-
     // Need to unvalid the token (token only one use)
     await this.prismaService.token.update({
       where: {
@@ -637,7 +593,6 @@ console.log("forgotpwdModel return verification is OK: ", forgotPwdModel);
         pwdHash,
       }
     })
-console.log("Updated user: ", result)
     return result
   }
   

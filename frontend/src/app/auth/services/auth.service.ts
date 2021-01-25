@@ -20,18 +20,18 @@ export class AuthService {
     this.authToken = localStorage.authJwtToken || '';
   }
 
-  async login(username: string, password: string): Promise<boolean> {
+  async login(email: string, password: string): Promise<boolean> {
     let isOK = false;
     try {
       // const { authJwtToken, user } = await this.httpClient.post<ILoginResponse>('api/auth/login/', { username, password }).toPromise();
-      const { access_token, nickName } = await this.httpClient.post<ILoginResponse>('api/auths/auth/loginwithpwd', { username, password }).toPromise();
+      const { access_token, nickName } = await this.httpClient.post<ILoginResponse>('api/auths/auth/loginwithpwd', { email, password }).toPromise();
       localStorage.authJwtToken = access_token;
       // isOK = (!!authJwtToken);
       isOK = (!!access_token);
       if (isOK) {
         // this.refreshUser();
         this.currentUser.next({
-          email: username,
+          email: email,
           nickName,
         });
       }
@@ -40,6 +40,7 @@ export class AuthService {
     }
     return isOK;
   }
+
 
   async logout(): Promise<boolean> {
     let isOK = false;
