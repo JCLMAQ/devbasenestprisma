@@ -4,6 +4,10 @@ export interface IUserRegister {
   confirmPassword: string;
   lastName?: string;
   firstName?: string;
+  nickName?: string;
+  title?: string;
+  gender?: string;
+  role?: string;
 }
 
 export interface ICurrentUser {
@@ -11,3 +15,21 @@ export interface ICurrentUser {
   lastName?: string;
   firstName?: string;
 }
+
+export interface ILoginResponse {
+  // authJwtToken: string;
+  // user: User;
+  access_token: string;
+  nickName:string;
+}
+
+export interface ICurrentUser {
+  email: string;
+  nickName?: string;
+}
+
+export interface IForgotEmail {
+  message: string;
+  success: boolean;
+}
+

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../services/auth.service';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 
 @Component({
@@ -11,50 +11,69 @@ import { createPasswordStrengthValidator } from '../validators/password-strength
 })
 export class LoginComponent implements OnInit {
 
-hidePassword = true;
+  hidePassword = true;
+  loading = false;
+  submitted = false;
+  loginForm!: FormGroup
 
-loginForm = this.fb.group({
-    email: ['',{
-      validators: [ Validators.required, Validators.email, ],
-      updateOn: 'blur'
-      }
-    ],
-    password: ['', [
-      Validators.required,
-      Validators.minLength(8),
-      createPasswordStrengthValidator(),
-      ]
-    ]
-});
 
   constructor(
       private fb:FormBuilder,
       private authService: AuthService,
       private router:Router,
-      )
-      {
-
-      }
+      ) {}
 
   ngOnInit(): void {
-
+    this.loginForm = this.fb.group({
+      email: ['',{
+        validators: [ Validators.required, Validators.email, ],
+        updateOn: 'blur'
+        }
+      ],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        createPasswordStrengthValidator(),
+        ]
+      ]
+    });
   }
 
-  get email() {
-    return this.loginForm.controls['email'];
-}
+  get email() {return this.loginForm.controls['email'];}
+  get password() {return this.loginForm.controls['password'];}
 
-  get password() {
-    return this.loginForm.controls['password'];
-}
 
-  login() {
+  onSubmit() {
+    this.submitted = true;
+    // stop here if form is invalid
+    if (this.loginForm.invalid) {
+        return;
+    }
+    // display form values on success
+    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.loginForm.value, null, 4));
+    // reset alerts on submit
+    // this.alertService.clear();
+    // stop here if form is invalid
 
- }
+    this.loading = true;
 
-  cancelLogin() {
-
+    this.login();
   }
+
+  async login() {
+    const { email, password } = this.loginForm.value;
+    console.log("login: ", email, password )
+    const isOK = await this.authService.login(email, password);
+    if (isOK) {
+      this.router.navigate(['/']);
+    } else {
+      alert('Email ou mot de passe invalide');
+    }
+  }
+
+  // cancelLogin() {
+
+  // }
 
   register() {
     this.router.navigate(['register']);

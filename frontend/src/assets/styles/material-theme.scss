@@ -3,8 +3,8 @@
 @include mat-core();
 
 $primary: mat-palette($mat-red);
-$accent: mat-palette($mat-yellow, A200, A100, A400);
-$warn: mat-palette($mat-orange);
+$accent: mat-palette($mat-orange, A200, A100, A400);
+$warn: mat-palette($mat-red);
 $theme: mat-light-theme($primary, $accent, $warn);
 
 @include angular-material-theme($theme);

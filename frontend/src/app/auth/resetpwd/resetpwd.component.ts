@@ -3,7 +3,7 @@ import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@ang
 import { Router } from '@angular/router';
 import { AppState } from '@app/reducers';
 import { Store } from '@ngrx/store';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../services/auth.service';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 

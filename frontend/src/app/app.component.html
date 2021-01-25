@@ -69,8 +69,8 @@
           </mat-menu>
 
           <app-theme>
-           [options]="options$ | async"
-           (themeChange)="themeChangeHandler($event)">>
+            [options]="options$ | async"
+            (themeChange)="themeChangeHandler($event)">>
           </app-theme>
 
           <button class="menu-button" mat-icon-button [matMenuTriggerFor]="submenu">

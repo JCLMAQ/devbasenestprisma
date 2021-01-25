@@ -2,13 +2,12 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AuthRoutingModule } from './auth-routing.module';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { LoginComponent } from './login/login.component';
 import { ChangepwdComponent } from './changepwd/changepwd.component';
 import { ForgotpwdComponent } from './forgotpwd/forgotpwd.component';
 import { RegisterComponent } from './register/register.component';
 import { ResetpwdComponent } from './resetpwd/resetpwd.component';
-import { RegisterService } from './register.service';
 import { ChangePwdService } from './changepwd.service';
 import { StoreModule } from '@ngrx/store';
 import * as fromAuth from './reducers';
@@ -18,6 +17,7 @@ import { EntityDefinitionService, EntityDataService, EntityMetadataMap } from '@
 import { UserDataService } from '../user/store/user-data.service';
 import { OnlyOneErrorPipe } from '../pipes/only-one-error.pipe';
 import { ReactiveComponentModule } from '@ngrx/component';
+import { RegisterService } from './services/register.service';
 
 const entityMetadata: EntityMetadataMap = {
   Auth: {

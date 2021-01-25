@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IUserRegister } from '../auth.model';
-import { RegisterService } from '../register.service';
+import { RegisterService } from '../services/register.service';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 
@@ -25,7 +25,11 @@ export class RegisterComponent implements OnInit {
     password: '',
     confirmPassword: '',
     lastName: '',
-    firstName: ''
+    firstName: '',
+    nickName: '',
+    gender: '',
+    role: '',
+    title: '',
   };
 
   constructor(
@@ -34,9 +38,7 @@ export class RegisterComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     // private alertService: AlertService,
-  ) {
-
-  }
+  ) {}
 
   ngOnInit(){
 
@@ -52,6 +54,9 @@ export class RegisterComponent implements OnInit {
       nickName: ['', ],
       lastName: ['', ],
       firstName: ['', ],
+      gender: ['', ],
+      role: ['', ],
+      title: ['', ],
       acceptTerms: [false, Validators.requiredTrue]
     }, formOptions );
 
@@ -62,6 +67,11 @@ export class RegisterComponent implements OnInit {
   get confirmPassword() {return this.registerForm.controls['confirmPassword'];}
   get lastName() {return this.registerForm.controls['lastName'];}
   get firstName() {return this.registerForm.controls['firstName'];}
+  get title() {return this.registerForm.controls['title'];}
+  get role() {return this.registerForm.controls['role'];}
+  get gender() {return this.registerForm.controls['gender'];}
+  get acceptTerms() {return this.registerForm.controls['acceptTerms'];}
+
   // convenience getter for easy access to form fields
   get formField() { return this.registerForm.controls; }
 
@@ -83,14 +93,16 @@ export class RegisterComponent implements OnInit {
   }
 
   async register() {
-    // try {
-    //   const res = await this.registerService.register(userToRegister);
-    //   if(res && res.errorMessage){
-    //     alert(res.errorMessage);
-    //   }
-    // } catch (e) {
-    //   alert('Désolé, une erreur a eu lieu empéchant votre enregistrement');
-    // }
+    // this.userToRegister = this.registerForm.value
+    try {
+      // const res = await this.registerService.register(this.userToRegister);
+      const res = await this.registerService.register(this.registerForm.value);
+      if(res && res.errorMessage){
+        alert(res.errorMessage);
+      }
+    } catch (e) {
+      alert('Désolé, une erreur a eu lieu empéchant votre enregistrement');
+    }
     this.login();
   }
 

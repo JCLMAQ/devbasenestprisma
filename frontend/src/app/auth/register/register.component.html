@@ -41,28 +41,20 @@
               <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
           </mat-form-field>
-          <!-- <ng-container
-              *ngIf="password.errors | onlyOneError:['minlength','passwordStrength'] as error">
-              <div class="field-message" *ngIf="error.minlength">
-                  Your password must have minimum {{error.minlength.requiredLength}} chars,
-                  but it only has {{error.minlength.actualLength}}.
-              </div>
-              <div class="field-message" *ngIf="error.passwordStrength">
-                  Your password must have lower case, upper case and numeric characters.
-              </div>
-          </ng-container> -->
           <mat-form-field appearance="standard">
             <mat-label>Confirm your password</mat-label>
             <input matInput [type]="hideConfirmPassword ? 'password' : 'text'"
                   placeholder="Confirm Password"
                   autocomplete="of"
                   formControlName="confirmPassword">
-            <mat-error *ngIf="password.errors?.required">The password is mandatory.</mat-error>
+            <mat-error *ngIf="confirmPassword.errors?.required">Confirmation of password is mandatory.</mat-error>
             <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirmPassword">
             <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
           </mat-form-field>
-
+          <mat-checkbox type="checkbox" formControlName="acceptTerms" id="acceptTerms" appearance="standard">
+            <label for="acceptTerms" class="form-check-label">Accept Terms & Conditions</label>
+          </mat-checkbox>
         </form>
     </mat-card-content>
     <mat-card-actions>
@@ -71,6 +63,7 @@
                 Déjà enregistré ?
         </button>
         <button class="button" mat-raised-button color="primary" matTooltip="S'enregistrer."
+                type="submit"
                 [disabled]="!registerForm.valid"
                 (click)="register()">
                 S'enregistrer

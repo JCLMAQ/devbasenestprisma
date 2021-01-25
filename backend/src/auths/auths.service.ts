@@ -10,7 +10,8 @@ import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import MilliSecond from 'ms';
+// import MilliSecond from 'ms';
+import * as MilliSecond from 'ms'
 import { AcceptLanguageResolver, I18nContext, I18nRequestScopeService, I18nService } from 'nestjs-i18n';
 
 
@@ -35,15 +36,20 @@ export class AuthsService {
     // const lang = "en";
     // const emailValidation = await this.emailValidationProcess(username, lang);
     const user = await this.usersService.getOneUserByEmail(username);
+    console.log("Validate user:", user, username, plainTextPassword)
+    console.log("configservice pwdless: ",this.configService.get('PWDLESS_LOGIN_ENABLE'))
     if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0 && user !== null) {
+      console.log("thisway", this.verifyPassword(user, plainTextPassword))
       if (this.verifyPassword(user, plainTextPassword)) {
         const { pwdHash, salt, ...result } = user;
+        console.log("result verify pwd:", result)
         return result;
       } else {
         return null;
       }
     } else {
       const { ...result } = user;
+      console.log("result verify pwd:", result)
         return result;
     }
   }
@@ -118,10 +124,13 @@ console.log("token expiration time : ", tokenExpirationTime)
   // Generate the expiration time of the JWT token
   async jwtTokenExpiration() {
     const delayToAdd = await this.utilitiesService.searchConfigParam( "JWT_VALIDITY_DURATION" );
+    console.log("delay to add: ", delayToAdd)
     // const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION")
-    let milliSecondToAdd = MilliSecond(delayToAdd);    
+    let milliSecondToAdd = MilliSecond(delayToAdd);  
+    console.log("millisecond to add: ", milliSecondToAdd)  
     const currentDate = new Date();
     const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ milliSecondToAdd);
+    console.log(" expiration date: ", jwtTokenExpirationDate)
     return jwtTokenExpirationDate
   }
 
@@ -426,6 +435,7 @@ console.log("token expiration time : ", tokenExpirationTime)
   const emailValidation = await this.emailValidationProcess(email, lang);
     // Verify that the user exist
     let userFound = await this.usersService.findUniqueUser({email});
+    console.log("User found :", userFound)
     if(!userFound) {
       // need to register first
       throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
@@ -486,8 +496,13 @@ console.log("token expiration time : ", tokenExpirationTime)
   }
 
   verifyPassword(user, plainTextPassword: string) {
+    console.log("user: ", user)
+    console.log("user salt: ", user.salt)
     const pwdHash = AuthsService.hashPassword(plainTextPassword, user.salt);
+    console.log("pwdHash: ", pwdHash)
+    console.log("user pwdHash: ", user.pwdHash)
     const isOK = (pwdHash == user.pwdHash);
+    console.log("Password OK : ", isOK )
     return isOK
   }
 
