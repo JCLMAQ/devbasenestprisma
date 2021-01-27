@@ -30,11 +30,11 @@ export class AuthService {
     //  get user data from backend with authToken
     if (this.authToken) {
       const decodedJwt: IJwt = jwt_decode(this.authToken);
-      console.log("decodedJWT: ", decodedJwt);
+      // console.log("decodedJWT: ", decodedJwt);
       const emailToCheck = decodedJwt.username;
 
       const { fullName } = await this.httpClient.post<ICurrentUser>('api/auths/checkCredential/', { emailToCheck }).toPromise();
-      console.log("fullName from fetch user: ", fullName);
+      // console.log("fullName from fetch user: ", fullName);
       if (!fullName) {
         this.currentUser$.next(null);
       } else {
@@ -70,8 +70,7 @@ export class AuthService {
       console.log("Retour login: ", isOK, email, fullName)
       if (isOK) {
         this.fetchUser();
-        debugger;
-       const test =  this.currentUser$.next({
+        const test =  this.currentUser$.next({
           username: email,
           fullName: fullName,
         });
@@ -88,7 +87,7 @@ export class AuthService {
     let isOK = false;
     // Send the logout to the backend
     try {
-      const { user, authJwtToken } = await this.httpClient.post<any>('api/auth/logout', '').toPromise();
+      const { user, authJwtToken } = await this.httpClient.post<any>('api/auths/auth/logoutwithpwd', '').toPromise();
       isOK = (!authJwtToken) && (!user)
       if (isOK) { this.currentUser$.next(null) }
     } catch (e) {

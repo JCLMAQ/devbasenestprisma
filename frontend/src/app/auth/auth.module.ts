@@ -8,9 +8,9 @@ import { ChangepwdComponent } from './changepwd/changepwd.component';
 import { ForgotpwdComponent } from './forgotpwd/forgotpwd.component';
 import { RegisterComponent } from './register/register.component';
 import { ResetpwdComponent } from './resetpwd/resetpwd.component';
-import { ChangePwdService } from './changepwd.service';
+import { ChangePwdService } from './services/changepwd.service';
 import { StoreModule } from '@ngrx/store';
-import * as fromAuth from './reducers';
+import * as fromAuth from './store/reducers';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { EntityDefinitionService, EntityDataService, EntityMetadataMap } from '@ngrx/data';
@@ -18,6 +18,7 @@ import { UserDataService } from '../user/store/user-data.service';
 import { OnlyOneErrorPipe } from '../pipes/only-one-error.pipe';
 import { ReactiveComponentModule } from '@ngrx/component';
 import { RegisterService } from './services/register.service';
+import { YourprofilComponent } from './yourprofil/yourprofil.component';
 
 const entityMetadata: EntityMetadataMap = {
   Auth: {
@@ -34,6 +35,7 @@ export const entityConfig = {
     ForgotpwdComponent,
     RegisterComponent,
     ResetpwdComponent,
+    YourprofilComponent,
     OnlyOneErrorPipe
   ],
   imports: [
@@ -42,8 +44,16 @@ export const entityConfig = {
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
-    StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.reducers),
+    StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.authReducer),
     ReactiveComponentModule
+  ],
+  entryComponents: [
+    LoginComponent,
+    RegisterComponent,
+    ChangepwdComponent,
+    ForgotpwdComponent,
+    ResetpwdComponent,
+    YourprofilComponent
   ],
   providers: [
     AuthService,
@@ -53,6 +63,16 @@ export const entityConfig = {
 })
 export class AuthModule {
 
+  static forRoot(): ModuleWithProviders<AuthModule> {
+    return {
+      ngModule: AuthModule,
+      providers: [
+        AuthService,
+        RegisterService,
+        ChangePwdService
+      ]
+    }
+  }
   constructor(
     private entityDefinitionService: EntityDefinitionService,
     private entityDataService: EntityDataService,

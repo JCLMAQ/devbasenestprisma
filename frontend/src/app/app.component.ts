@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, of as observableOf, of, Subject } from 'rxjs';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
 import { AppState } from './reducers';
@@ -8,6 +8,8 @@ import { ThemeService } from './shared/theme/theme.service';
 import { ICurrentUser } from './auth/auth.model';
 import { AuthService } from './auth/services/auth.service';
 import { takeUntil, tap } from 'rxjs/operators';
+import { login, logout } from './auth/store/auth.actions';
+import { isLoggedIn, isLoggedOut } from './auth/store/auth.selectors';
 
 @Component({
   selector: 'app-root',
@@ -15,15 +17,18 @@ import { takeUntil, tap } from 'rxjs/operators';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit{
-  title = 'frontend';
-  loading = true;
+  title = 'devbasenestprisma frontend';
+  loading : boolean = true;
   language = 'en'; // default
 
   // currentUser: any = { nickName: "JCM"};
   currentUser!: ICurrentUser | null;
   private unsubscribe$: Subject<void> = new Subject<void>();
 
-  private readonly stylesBasePath = `node_modules/@angular/material/prebuilt-themes/`;
+  isLoggedIn$: Observable<boolean> | undefined;
+  isLoggedOut$: Observable<boolean> | undefined;
+
+  // private readonly stylesBasePath = `node_modules/@angular/material/prebuilt-themes/`;
   // DarkThem Management
   isDarkTheme: boolean = true;
 
@@ -32,7 +37,8 @@ export class AppComponent implements OnInit{
     private store: Store<AppState>,
     public translate: TranslateService,
     private themeService: ThemeService,
-    public authService: AuthService ) {
+    public authService: AuthService
+    ) {
       translate.setDefaultLang('en');
       translate.use('en');
       translate.addLangs(['en','fr']);
@@ -58,6 +64,15 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(){
+    this.isLoggedIn$ = this.store
+    .pipe(
+     select(isLoggedIn)
+    );
+  this.isLoggedOut$ = this.store
+    .pipe(
+      select(isLoggedOut)
+    );
+
   // mat-spinner control base on navigation events
     this.router.events.subscribe(event => {
       switch (true) {
@@ -86,7 +101,13 @@ export class AppComponent implements OnInit{
   }
 
   login() {}
-  logout() {}
+
+  async logout() {
+    localStorage.removeItem('authJwtToken');
+    this.store.dispatch(logout());
+    await this.authService.logout();
+    this.router.navigate(['home']);
+  }
 
   yourprofil() {
     this.router.navigate(['yourprofil']);
@@ -102,6 +123,11 @@ export class AppComponent implements OnInit{
 
   toggleDarkTheme(checked: boolean) {
     this.themeService.setDarkThemeState(checked);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
 }

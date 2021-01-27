@@ -139,7 +139,10 @@ export class UsersService {
   async userStillExist(userEmail) {
     const user = await this.getOneUserByEmail(userEmail);
     // Verify the user is not soft deleted !!!
-    if(!user || user.isDeleted != null){
+    if( !user) {
+      return null;
+    }
+    if(user?.isDeleted != null){ // a date exist witch mean that the user is soft deleted
       return null // Soft deleted or user does not exist
     }
     const { pwdHash, salt, ...result } = user;

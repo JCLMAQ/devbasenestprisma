@@ -36,6 +36,7 @@ export class AuthsService {
     // const lang = "en";
     // const emailValidation = await this.emailValidationProcess(username, lang);
     const user = await this.usersService.getOneUserByEmail(username);
+    // console.log("validateUser auths service: user found ", user)
     if(this.configService.get('PWDLESS_LOGIN_ENABLE') == 0 && user !== null) {
       if (this.verifyPassword(user, plainTextPassword)) {
         const { pwdHash, salt, ...result } = user;
@@ -53,6 +54,9 @@ export class AuthsService {
     // Search for the user token and reinit for the email send token - for PwdLess login
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(userEmail);
+    if(!userNotDeleted) {
+      throw new HttpException(await this.i18n.translate("users.USER_NOT_FOUND",{ lang: lang, }), 400)
+    }
     if(userNotDeleted.isDeleted != null) {
       throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
     }
@@ -425,7 +429,7 @@ export class AuthsService {
   const emailValidation = await this.emailValidationProcess(email, lang);
     // Verify that the user exist
     let userFound = await this.usersService.findUniqueUser({email});
-    console.log("User found :", userFound)
+    // console.log("User found :", userFound)
     if(!userFound) {
       // need to register first
       throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
@@ -494,7 +498,7 @@ export class AuthsService {
   verifyPassword(user, plainTextPassword: string) {
     const pwdHash = AuthsService.hashPassword(plainTextPassword, user.salt);
     const isOK = (pwdHash == user.pwdHash);
-    console.log("Password OK : ", isOK )
+    // console.log("Password OK : ", isOK )
     return isOK
   }
 
