@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
 
-    console.log("payload: ", payload)
+    // console.log("payload: ", payload)
 
     const user = await this.usersService.userStillExist(payload.username);
     if (!user || user.isDeleted != null) {
@@ -47,7 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         }
       }
     }
-    console.log("return Jwt-styrategy: ", payload.sub, payload.username, user.Role)
+    // console.log("return Jwt-styrategy: ", payload.sub, payload.username, user.Role)
     return { userId: payload.sub, username: payload.username, role: user.Role };
   }
 }

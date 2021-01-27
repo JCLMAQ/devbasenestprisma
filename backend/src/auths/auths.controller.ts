@@ -28,7 +28,7 @@ export class AuthsController {
     @Get('profile')
     async getProfile(@Request() req) {
         // Rturn the loged user
-    console.log('Authcontroler (localstrategy): Profile return:', req.user);       
+    // console.log('Authcontroler (localstrategy): Profile return:', req.user);       
         return req.user;
     }
 
@@ -84,7 +84,7 @@ export class AuthsController {
     async authentication(@Body() userCredential: AuthDto, @I18nLang() lang: string) {
         // userCredential has to content the email and the emailToken (rename to "password" to get through the localAuthGuards)
         const validCredential = await this.authsService.authenticateHandler(userCredential, lang);
-        console.log("valid credential 01: ", validCredential)
+        // console.log("valid credential 01: ", validCredential)
         if(!validCredential.validToken) {
             throw new HttpException(await this.i18n.translate("auths.AUTH_LOGIN_ERROR",{ lang: lang, }), 400);
         }
@@ -156,7 +156,7 @@ export class AuthsController {
     @UseGuards(LocalAuthGuard)
     @Post('auth/email/forgot-password')
     async sendEmailForgotPassword(@Request() req, @I18nLang() lang: string): Promise<any> {
-console.log('forgot pwd email:', req.body.email);
+// console.log('forgot pwd email:', req.body.email);
         try {
             const isEmailSent = await this.authsService.sendEmailForgotPwd(req.body.email, lang);
             if (isEmailSent) {
@@ -183,7 +183,7 @@ console.log('forgot pwd email:', req.body.email);
     @UseGuards(LocalAuthGuard)
     @Get('auth/email/reset-password/:token')
     async validateToken(@Param() params, @I18nLang() lang: string): Promise<any> {
-console.log("Param received:", params.token)
+// console.log("Param received:", params.token)
         let valideTkn;
         try {
             valideTkn = await this.authsService.verifyForgotPwdToken(params.token, lang);
@@ -206,7 +206,7 @@ console.log("Param received:", params.token)
         let user;
         try {
             valideTknObj = await this.authsService.verifyForgotPwdToken(params.token, lang);
-console.log('token valid:', valideTknObj);
+// console.log('token valid:', valideTknObj);
         } catch (error) {
             return {
                 success: false,
@@ -236,11 +236,11 @@ console.log('token valid:', valideTknObj);
             message: 'Invalid password'
         }
 
-console.log("User update")
+// console.log("User update")
 
         const userUpdated = await this.authsService.editForgotPwd(newPassword, user.id);
 
-console.log(userUpdated)
+// console.log(userUpdated)
 
         if (userUpdated ) return {
         // if (userUpdated && userUpdated.id) return {

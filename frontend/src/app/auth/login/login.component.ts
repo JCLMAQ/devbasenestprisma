@@ -62,7 +62,7 @@ export class LoginComponent implements OnInit {
 
   async login() {
     const { email, password } = this.loginForm.value;
-    console.log("login: ", email, password )
+    // console.log("login: ", email, password )
     const isOK = await this.authService.login(email, password);
     if (isOK) {
       this.router.navigate(['/']);

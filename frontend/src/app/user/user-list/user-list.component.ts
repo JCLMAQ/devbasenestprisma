@@ -89,7 +89,7 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   //   this.router.navigate([this.routeToDetail, id, 'view']);
   // }
   navigate(user: User, index: String) {
-    console.log("route transfert" , user)
+    // console.log("route transfert" , user)
     this.router.navigate([this.routeToDetail, user, 'view']);
   }
 
@@ -113,7 +113,7 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   // MatTable mgt
   // On click row action
   onRowClicked(row: Number) {
-    console.log('Row clicked: ', row);
+    // console.log('Row clicked: ', row);
   }
   // Filter the list
   applyFilter(event: Event) {

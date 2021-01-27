@@ -98,7 +98,7 @@ export class UsersController {
     @Param('id') id: string,
     // @Body() postData: { title: string; content?: string; authorEmail: string }): Promise<PostModel> {
     @Body() userData: Prisma.UserUpdateInput): Promise<User> {
-      console.log("Date dob: ", userData.dob);
+      // console.log("Date dob: ", userData.dob);
     return this.usersService.updateOneUser({
       where: { id: String(id) },
       data:  userData ,

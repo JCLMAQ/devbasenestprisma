@@ -45,7 +45,7 @@ export class UserProfileComponent implements OnInit {
     this.isAddMode = !this.id; // Only for User profil
     this.mode = this.route.snapshot.params['mode'];
     // if(this.mode == 'view' ) { this.form.disable()}
-  console.log("mode: ", this.mode);
+  // console.log("mode: ", this.mode);
     // TODO verify isAdmin from the User logged
     this.isAdmin = false;
     // password not required in update mode
@@ -163,7 +163,7 @@ export class UserProfileComponent implements OnInit {
   save() {
     const val = this.form.value;
     const dobIn = val.dob?.toISOString();
-    console.log("dobIn: ", dobIn)
+    // console.log("dobIn: ", dobIn)
     // const user: User = {
     //     ...this.user,
     //     ...this.form.value,
@@ -178,8 +178,8 @@ export class UserProfileComponent implements OnInit {
       dob: dobIn
     }
 
-    console.log("User updated: ", user)
-    console.log("dob ", this.user?.dob)
+    // console.log("User updated: ", user)
+    // console.log("dob ", this.user?.dob)
     if (this.mode == 'update') {
         this.userEntityService.update(user);
     } else if (this.mode == 'create') {

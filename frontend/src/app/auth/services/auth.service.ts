@@ -67,14 +67,14 @@ export class AuthService {
       localStorage.authJwtToken = access_token;
       // isOK = (!!authJwtToken);
       isOK = (!!access_token);
-      console.log("Retour login: ", isOK, email, fullName)
+      // console.log("Retour login: ", isOK, email, fullName)
       if (isOK) {
         this.fetchUser();
         const test =  this.currentUser$.next({
           username: email,
           fullName: fullName,
         });
-        console.log("currentUser: ", test )
+        // console.log("currentUser: ", test )
       }
     } catch (e) {
       isOK = false;
