@@ -11,7 +11,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 // import MilliSecond from 'ms';
-import * as MilliSecond from 'ms'
+import MilliSecond from 'ms'
 import { AcceptLanguageResolver, I18nContext, I18nRequestScopeService, I18nService } from 'nestjs-i18n';
 
 

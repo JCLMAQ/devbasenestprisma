@@ -5,7 +5,7 @@ import { File, Prisma } from '@prisma/client';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
