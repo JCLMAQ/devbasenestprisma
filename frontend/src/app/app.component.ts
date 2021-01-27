@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, of as observableOf, of } from 'rxjs';
+import { BehaviorSubject, Observable, of as observableOf, of, Subject } from 'rxjs';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
 import { AppState } from './reducers';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from './shared/theme/theme.service';
+import { ICurrentUser } from './auth/auth.model';
+import { AuthService } from './auth/services/auth.service';
+import { takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +20,8 @@ export class AppComponent implements OnInit{
   language = 'en'; // default
 
   // currentUser: any = { nickName: "JCM"};
-  currentUser: any = undefined;
+  currentUser!: ICurrentUser | null;
+  private unsubscribe$: Subject<void> = new Subject<void>();
 
   private readonly stylesBasePath = `node_modules/@angular/material/prebuilt-themes/`;
   // DarkThem Management
@@ -27,10 +31,30 @@ export class AppComponent implements OnInit{
     private router: Router,
     private store: Store<AppState>,
     public translate: TranslateService,
-    private themeService: ThemeService ) {
+    private themeService: ThemeService,
+    public authService: AuthService ) {
       translate.setDefaultLang('en');
       translate.use('en');
       translate.addLangs(['en','fr']);
+
+      authService.currentUser$
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        tap(u => (this.currentUser = u)),
+        tap(async (u) => {
+// Ability to show menus # Access to the data or the page underneath that Menu -> Guard.service
+          // this.canSeeTodosMenu = await authService.hasRole('BasicUsers');
+          // this.canSeeUsersMenu = await authService.hasRole('Admin');
+        }),
+        tap((user) => {
+          this.store.dispatch(login({ user }));
+        })
+      )
+      .subscribe();
+    this.authService.refreshUser();
+    // this.store.subscribe(state => console.log('store value', state));
+
+
   }
 
   ngOnInit(){

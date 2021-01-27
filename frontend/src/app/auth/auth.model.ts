@@ -11,21 +11,24 @@ export interface IUserRegister {
 }
 
 export interface ICurrentUser {
-  email: string;
-  lastName?: string;
-  firstName?: string;
+  username?: string;
+  fullName?: string;
 }
 
 export interface ILoginResponse {
   // authJwtToken: string;
   // user: User;
   access_token: string;
-  nickName:string;
+  fullName: string;
+  role: string;
 }
 
-export interface ICurrentUser {
-  email: string;
-  nickName?: string;
+export interface IJwt {
+  username?: string;
+  role?: string;
+  exp: string;
+  iat: string;
+  sub: string;
 }
 
 export interface IForgotEmail {

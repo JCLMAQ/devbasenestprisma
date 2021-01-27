@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { ICurrentUser, ILoginResponse } from '../auth.model';
+import { ICurrentUser, ILoginResponse, IJwt} from '../auth.model';
+import  jwt_decode from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -9,31 +10,72 @@ import { ICurrentUser, ILoginResponse } from '../auth.model';
 export class AuthService {
 
   authToken: string;
-  currentUser!: BehaviorSubject<ICurrentUser | null>;
-  // currentUser!: BehaviorSubject<ICurrentUser | null> = new BehaviorSubject(null);
+  currentUser$: BehaviorSubject<ICurrentUser | null> = new BehaviorSubject<ICurrentUser | null>(null);
+  // currentUser: BehaviorSubject<ICurrentUser | null> = new BehaviorSubject(null);
 
 
   constructor(
     private httpClient: HttpClient,
 
   ) {
+    // this.currentUser$ = new BehaviorSubject<ICurrentUser | null>(null)
     this.authToken = localStorage.authJwtToken || '';
+    this.fetchUser();
+  }
+
+
+  async fetchUser(): Promise<any> {
+    // const decodedJwt: Object | null = jwt_decode(this.authToken);
+    //   console.log(decodedJwt);
+    //  get user data from backend with authToken
+    if (this.authToken) {
+      const decodedJwt: IJwt = jwt_decode(this.authToken);
+      console.log("decodedJWT: ", decodedJwt);
+      const emailToCheck = decodedJwt.username;
+
+      const { fullName } = await this.httpClient.post<ICurrentUser>('api/auths/checkCredential/', { emailToCheck }).toPromise();
+      console.log("fullName from fetch user: ", fullName);
+      if (!fullName) {
+        this.currentUser$.next(null);
+      } else {
+        this.currentUser$.next({
+          username: decodedJwt.username,
+          fullName,
+        });
+      }
+    } else {
+      this.currentUser$.next(null);
+    }
+  }
+  async refreshUser() {
+    // this.roles = {};
+
+
+
+    // this.wakandaService.refreshUser();
+    // const u = await this.wakandaService.user;
+    // this.currentUser$.next(u);
+    // return u;
   }
 
   async login(email: string, password: string): Promise<boolean> {
     let isOK = false;
     try {
       // const { authJwtToken, user } = await this.httpClient.post<ILoginResponse>('api/auth/login/', { username, password }).toPromise();
-      const { access_token, nickName } = await this.httpClient.post<ILoginResponse>('api/auths/auth/loginwithpwd', { email, password }).toPromise();
+      const { access_token, fullName , role } = await this.httpClient.post<ILoginResponse>('api/auths/auth/loginwithpwd', { email, password }).toPromise();
+
       localStorage.authJwtToken = access_token;
       // isOK = (!!authJwtToken);
       isOK = (!!access_token);
+      console.log("Retour login: ", isOK, email, fullName)
       if (isOK) {
-        // this.refreshUser();
-        this.currentUser.next({
-          email: email,
-          nickName,
+        this.fetchUser();
+        debugger;
+       const test =  this.currentUser$.next({
+          username: email,
+          fullName: fullName,
         });
+        console.log("currentUser: ", test )
       }
     } catch (e) {
       isOK = false;
@@ -48,7 +90,7 @@ export class AuthService {
     try {
       const { user, authJwtToken } = await this.httpClient.post<any>('api/auth/logout', '').toPromise();
       isOK = (!authJwtToken) && (!user)
-      if (isOK) { this.currentUser.next(null) }
+      if (isOK) { this.currentUser$.next(null) }
     } catch (e) {
       isOK = false;
     }

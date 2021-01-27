@@ -33,7 +33,7 @@ export class AuthsController {
     }
 
     // Verify if the user exist (with his email)
-    @UseGuards(JwtAuthGuard)
+   @UseGuards(JwtAuthGuard) 
     @Post('checkCredential')
     async checkCredential(@Body('email') email: string) {
         // TODO To complete one day for profile user managment

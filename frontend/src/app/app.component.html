@@ -16,7 +16,7 @@
             <mat-icon>lock_open</mat-icon>
           </button>
             <span *ngIf="currentUser" (click)= "logout()">
-            logged as {{currentUser?.nicklName}}
+            logged as {{currentUser?.fullName}}
             </span>
 
           <button *ngIf="!currentUser" class="menu-button" mat-icon-button routerLink="login" >
