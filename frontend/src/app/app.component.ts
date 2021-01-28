@@ -10,6 +10,7 @@ import { AuthService } from './auth/services/auth.service';
 import { takeUntil, tap } from 'rxjs/operators';
 import { login, logout } from './auth/store/auth.actions';
 import { isLoggedIn, isLoggedOut } from './auth/store/auth.selectors';
+// import { MarkerParser} from '@biesbjerg/ngx-translate-extract';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,9 @@ export class AppComponent implements OnInit{
   // private readonly stylesBasePath = `node_modules/@angular/material/prebuilt-themes/`;
   // DarkThem Management
   isDarkTheme: boolean = true;
+
+// Example translate within ts file :
+  // messageBoxContent = MarkerParser('messagebox.warning.text');
 
   constructor(
     private router: Router,

@@ -31,6 +31,7 @@
     "prisma-migrate": "dotenv -e ../.development.env -- npx prisma migrate dev --preview-feature"
   },
   "dependencies": {
+    "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
     "@nestjs-modules/mailer": "^1.5.1",
     "@nestjs/common": "^7.6.7",
     "@nestjs/config": "^0.6.2",

@@ -7,6 +7,9 @@
     "start": "npm run config -- --environment=dev && ng serve --proxy-config proxy.conf.json --port 4200",
     "build": "npm run config -- --environment=prod && ng build",
     "preinstall": "typesync || :",
+    "extract-translations": "ngx-translate-extract --input ./src --output ./src/assets/i18n/*.json --clean --sort --format namespaced-json --marker _",
+    "i18n:init": "ngx-translate-extract --input ./src --output ./src/assets/i18n/template.json --key-as-default-value --replace --format json",
+    "i18n:extract": "ngx-translate-extract --input ./src --output ./src/assets/i18n/{en,da,de,fi,nb,nl,sv}.json --clean --format json",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -51,6 +54,7 @@
     "@angular/cli": "^11.1.1",
     "@angular/compiler-cli": "^11.1.0",
     "@angular/localize": "^11.1.0",
+    "@biesbjerg/ngx-translate-extract": "^7.0.3",
     "@ngrx/schematics": "^10.1.2",
     "@types/jasmine": "^3.6.3",
     "@types/karma": "^5.0.1",
