@@ -1,6 +1,8 @@
 
     export const environment = {
         production: false,
-        API_URL: "1234_API_KEY_5678",
-        ANOTHER_API_SECRET: "__ANOTHER__SECRET__"
+        API_URL: "localhost",
+        API_SECRET: "undefined",
+        AUTO_REGISTRATION_ENABLE: "0 # = NO, 1 = YES",
+        PWDLESS_LOGIN_ENABLE: "0"
     };

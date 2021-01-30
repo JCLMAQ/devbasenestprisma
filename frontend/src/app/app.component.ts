@@ -104,7 +104,7 @@ export class AppComponent implements OnInit{
     this.translate.use(lang);
   }
 
-  login() {}
+  // login() {}
 
   async logout() {
     localStorage.removeItem('authJwtToken');

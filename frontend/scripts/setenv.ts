@@ -6,7 +6,7 @@ require('dotenv').config();
 const environment = argv.environment;
 const isProduction = environment === 'prod';
 
-if (!process.env.API_URL || !process.env.ANOTHER_API_SECRET) {
+if (!process.env.API_URL || !process.env.API_SECRET || !process.env.AUTO_REGISTRATION_ENABLE || !process.env.PWDLESS_LOGIN_ENABLE) {
   console.error('All the required environment variables were not provided!');
   process.exit(-1);
 }
@@ -20,7 +20,9 @@ const environmentFileContent = `
     export const environment = {
         production: ${isProduction},
         API_URL: "${process.env.API_URL}",
-        ANOTHER_API_SECRET: "${process.env.ANOTHER_API_SECRET}"
+        API_SECRET: "${process.env.ANOTHER_API_SECRET}",
+        AUTO_REGISTRATION_ENABLE: "${process.env.AUTO_REGISTRATION_ENABLE}",
+        PWDLESS_LOGIN_ENABLE: "${process.env.PWDLESS_LOGIN_ENABLE}"
     };`;
 // write the content to the respective file
 writeFile(targetPath, environmentFileContent, function (err: any) {

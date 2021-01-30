@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "config": "dotenv -e ../.env ts-node ./scripts/setenv.ts",
+    "config": "dotenv -e ../backend/.env ts-node ./scripts/setenv.ts",
     "start": "npm run config -- --environment=dev && ng serve --proxy-config proxy.conf.json --port 4200",
     "build": "npm run config -- --environment=prod && ng build",
     "preinstall": "typesync || :",
