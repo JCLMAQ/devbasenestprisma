@@ -20,7 +20,7 @@ export class AuthService {
   ) {
     // this.currentUser$ = new BehaviorSubject<ICurrentUser | null>(null)
     this.authToken = localStorage.authJwtToken || '';
-    this.fetchUser();
+    // this.fetchUser();
   }
 
 
@@ -49,9 +49,6 @@ export class AuthService {
   }
   async refreshUser() {
     // this.roles = {};
-
-
-
     // this.wakandaService.refreshUser();
     // const u = await this.wakandaService.user;
     // this.currentUser$.next(u);

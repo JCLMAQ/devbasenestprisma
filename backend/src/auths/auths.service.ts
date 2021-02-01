@@ -77,6 +77,16 @@ export class AuthsService {
   Common utilities
 */
 
+  generateFullName(user: User): string {
+    // Full Name replacement
+    let fullName: string = user.firstName + " " + user.lastName
+    ;
+    if((user.firstName == "") || (user.lastName == "")) {
+      ( user.nickName == "") ? fullName = user.email : fullName = user.nickName
+    }
+    return fullName
+  }
+
   // Generate a random 8 digit number as the email token
   async generateEmailToken(): Promise<string> {
     let emailToken = Math.floor(10000000 + Math.random() * 90000000).toString();
@@ -443,19 +453,13 @@ export class AuthsService {
     // Buildup the payload for the access token
     const payload = { username: userFound.email, sub: userFound.id, role: userFound.Role };
     // Full Name replacement
-    let fullName: string = userFound.firstName + " " + userFound.lastName
-    ;
-    if((userFound.firstName == "") || (userFound.lastName == "")) {
-      ( userFound.nickName == "") ? fullName = userFound.email : fullName = userFound.nickName
-    }
+    const fullName = this.generateFullName(userFound)
     return {
       access_token: this.jwtService.sign(payload),
       fullName: fullName,
       roles: userFound.Role
     };
   }
-
-
 
   // Create one new user when register with a password and an email as username
   async registerWithPwd(userData, lang): Promise<any> {
