@@ -16,6 +16,7 @@ async function main() {
           published: true,
         },
       },
+      Roles: "USER"
     },
   })
 
@@ -39,6 +40,7 @@ async function main() {
           },
         ],
       },
+      Roles: "USER"
     },
   })
 
@@ -47,7 +49,8 @@ async function main() {
       firstName: 'Moi',
       lastName: 'MAQ',
       email: 'jcm@jcm.be',
-      nickName: 'JCM'
+      nickName: 'JCM',
+      Roles: "USER"
     },
   })
   await prismaClient.user.create({
@@ -55,7 +58,8 @@ async function main() {
       firstName: 'Toi',
       lastName: 'TOIT',
       email: 'toi@toit.be',
-      nickName: 'TOITOI'
+      nickName: 'TOITOI',
+      Roles: "USER"
     },
   })
   await prismaClient.user.create({
@@ -63,7 +67,8 @@ async function main() {
       firstName: 'Toto',
       lastName: 'THE BEST',
       email: 'toto@toto.be',
-      nickName: 'TOTO'
+      nickName: 'TOTO',
+      Roles: "USER"
     },
   })
   await prismaClient.user.create({
@@ -71,7 +76,8 @@ async function main() {
       firstName: 'Best',
       lastName: 'TOTO',
       email: 'best@toto.be',
-      nickName: 'BTOTO'
+      nickName: 'BTOTO',
+      Roles: "USER"
     },
   })
 

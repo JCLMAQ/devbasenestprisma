@@ -16,13 +16,14 @@ export class UsersService {
   ) {}
   
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
+    if(!data.Roles) { data.Roles = "USER" };
     return this.prisma.user.create({
       data,
     });
   }
 
   async findSomeUsers(params: Prisma.UserFindManyArgs
-  ): Promise<any> {
+  ): Promise<User[]> {
     const { select, include ,skip, take, cursor, where, orderBy } = params;
     return this.prisma.user.findMany({
       include,
@@ -31,7 +32,7 @@ export class UsersService {
       cursor,
       take,
       skip, 
-     });
+      });
   }
 
   async findUsers(params: {
@@ -83,8 +84,9 @@ export class UsersService {
     let userCreatedStatute = false;
     const fullName = userData.firstName + ' ' + userData.lastName;
     // WARNING A new User is always created as a USER, should be by default "GUEST" ?
-    // const roles: UserCreaterolesInput = Set['USER'];
-    const Role = 'USER';
+
+    if(!userData.Roles) { userData.Roles = 'USER';}
+    // const Role = 'USER';
     const result = await this.prisma.user.create({
         data: {
             salt,
@@ -94,6 +96,7 @@ export class UsersService {
             lastName: userData.lastName,
             firstName: userData.firstName,
             Gender: userData.Gender,
+            Roles: userData.Roles
             // manager: userData.manager
             //  manager: { connect: {email: userData.managerId} }
         }
