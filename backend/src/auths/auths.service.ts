@@ -120,7 +120,7 @@ export class AuthsService {
   }
 
   // Generate a signed JWT token with the tokenId in the payload
-  async generateAuthToken(userEmail: string, userId: string, role: string): Promise<any> {
+  async generateAuthToken(userEmail: string, userId: string, role: string[]): Promise<any> {
     const jwtPayload = { username: userEmail, sub: userId, role: role}
     return  {
       access_token: this.jwtService.sign(jwtPayload)
@@ -372,7 +372,7 @@ export class AuthsService {
     if(userNotDeleted.isDeleted != null) {
       throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
     }    
-    const validEmailToken= { email: email, userId: null, validToken: false, role: userNotDeleted.Role};  
+    const validEmailToken= { email: email, userId: null, validToken: false, role: userNotDeleted.Roles};  
     // Get short lived email token
     const fetchedEmailToken = await this.prismaService.token.findUnique({
       where: {
@@ -451,13 +451,23 @@ export class AuthsService {
       const createOrUpdateToken = await this.mgtAPIToken(userFound.id, "API", "", false )
     }
     // Buildup the payload for the access token
-    const payload = { username: userFound.email, sub: userFound.id, role: userFound.Role };
+
+
+    // Generate a signed JWT token with the tokenId in the payload
+  // async generateAuthToken(userEmail: string, userId: string, role: string): Promise<any> {
+  //   const jwtPayload = { username: userEmail, sub: userId, role: role}
+  //   return  {
+  //     access_token: this.jwtService.sign(jwtPayload)
+  //   }
+  // }
+
+    const payload = { username: userFound.email, sub: userFound.id, role: userFound.Roles };
     // Full Name replacement
     const fullName = this.generateFullName(userFound)
     return {
       access_token: this.jwtService.sign(payload),
       fullName: fullName,
-      roles: userFound.Role
+      roles: userFound.Roles
     };
   }
 

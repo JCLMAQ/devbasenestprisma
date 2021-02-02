@@ -39,8 +39,8 @@
             "null"
           ]
         },
-        "Role": {
-          "type": "string",
+        "Roles": {
+          "type": "array",
           "enum": [
             "GUEST",
             "USER",

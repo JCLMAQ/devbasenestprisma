@@ -33,7 +33,7 @@ model User {
   lastName    String?
   firstName   String?
   title       String?
-  Role        Role      @default(USER)
+  Roles       Role[]     // @default(USER)
   nickName    String?
   Gender      Gender?
   pwdHash     String?   

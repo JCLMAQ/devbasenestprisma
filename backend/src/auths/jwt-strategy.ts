@@ -48,6 +48,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }
     }
     // console.log("return Jwt-styrategy: ", payload.sub, payload.username, user.Role)
-    return { userId: payload.sub, username: payload.username, role: user.Role };
+    return { userId: payload.sub, username: payload.username, role: user.Roles };
   }
 }

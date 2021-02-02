@@ -8,7 +8,7 @@ export type UserPersonalData = Prisma.UserGetPayload<{
         createdAt: true;
         updatedAt: true;
         email: true;
-        Role: true;
+        Roles: true;
         nickName: true;
         lastName: true;
         firstName: true;
