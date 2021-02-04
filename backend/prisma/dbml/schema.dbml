@@ -11,7 +11,7 @@ Table User {
   lastName String
   firstName String
   title String
-  Roles Role
+  Roles Role [not null]
   nickName String
   Gender Gender
   pwdHash String
@@ -26,15 +26,15 @@ Table User {
   isAdmin Boolean [default: false]
   manager User
   managerId String
-  Team User
-  Profile Profile
-  Group Group
-  Post Post
-  Comment Comment
-  Todo Todo
-  UserTodoLink UserTodoLink
-  ChangesLog ChangesTracking
-  Token Token
+  Team User [not null]
+  Profile Profile [not null]
+  Group Group [not null]
+  Post Post [not null]
+  Comment Comment [not null]
+  Todo Todo [not null]
+  UserTodoLink UserTodoLink [not null]
+  ChangesLog ChangesTracking [not null]
+  Token Token [not null]
 }
 
 Table Token {
@@ -54,7 +54,7 @@ Table Profile {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   orderProfile Int [not null]
-  User User
+  User User [not null]
   bio String [not null]
   isDeleted DateTime
 }
@@ -65,8 +65,8 @@ Table Group {
   updatedAt DateTime [not null]
   orderGroup Int [not null]
   name String [not null]
-  User User
-  Todo Todo
+  User User [not null]
+  Todo Todo [not null]
   isDeleted DateTime
 }
 
@@ -82,10 +82,10 @@ Table Todo {
   public Boolean [not null, default: false]
   mainTodo Todo
   mainTodoId String
-  SubTodo Todo
-  User User
-  Group Group
-  UserTodoLink UserTodoLink
+  SubTodo Todo [not null]
+  User User [not null]
+  Group Group [not null]
+  UserTodoLink UserTodoLink [not null]
   isDeleted DateTime
 }
 
@@ -139,8 +139,8 @@ Table Post {
   content String
   author User [not null]
   authorId String [not null]
-  Category Category
-  Comment Comment
+  Category Category [not null]
+  Comment Comment [not null]
   isDeleted DateTime
 }
 
@@ -148,7 +148,7 @@ Table Category {
   id String [pk]
   orderCategory Int [not null]
   name String [not null]
-  Post Post
+  Post Post [not null]
   isDeleted DateTime
 }
 
