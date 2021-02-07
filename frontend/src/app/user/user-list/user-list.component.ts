@@ -16,7 +16,6 @@ import { UserEntityService } from '../store/user-entity.service';
 // import { selectAllUsers } from '../store/user.selectors';
 // import { usersUpload } from '../user.actions';
 import { User } from '../user.model';
-
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
