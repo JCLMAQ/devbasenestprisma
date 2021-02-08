@@ -12,7 +12,7 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
   previewFeatures = ["createMany"]
-  
+  output   = "../../prisma/client"
   // previewFeatures = ["connectOrCreate", "transactionApi"]
   // previewFeatures = ["uncheckedScalarInputs"]
 }
