@@ -19,7 +19,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "copy-assets": "cp -rv src/i18n dist/src/",
-    "copy-prisma": "cp -rv ../node_modules/.prisma ../../frontend/src/app/prisma",
+    "copy-prisma": "cp -rv ./node_modules/.prisma ../frontend/src/app/",
     "start": "nest start",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
