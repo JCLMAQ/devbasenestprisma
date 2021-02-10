@@ -6,6 +6,13 @@ import * as nodemailer from 'nodemailer';
 import { EmaildomainsService } from 'src/emaildomains/emaildomains.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+type emailData = {
+    fromEmail: string;
+    toEmail: string;
+    subjectEmail: string;
+    textEmail: string;
+    htmlEmail: string
+}
 @Injectable()
 export class UtilitiesService {
 
@@ -74,11 +81,12 @@ export class UtilitiesService {
 
 
     // Sending email
-    async sendEmailToken(emailData: any): Promise<boolean> {    
+    async sendEmailToken(emailData: emailData): Promise<boolean> {    
     // Step 1: buildup the transporter - connexion to the SMTP
         // Connexion - transporter data: EMAIL_HOST, EMAIL_PORT, EMAIL_NOREPLY, EMAIL_NOREPLY_PWD
         
         const transporter = nodemailer.createTransport({
+            // host: await this.searchConfigParam( "EMAIL_HOST"),
             host: await this.searchConfigParam( "EMAIL_HOST"),
             port: await this.searchConfigParam( "EMAIL_PORT"),
             auth: {
@@ -104,7 +112,7 @@ export class UtilitiesService {
         });        
     // Step 3: Sending email
         const sendMail = await new Promise<boolean>(async function (resolve, reject) {
-            return await transporter.sendMail(mailDetails, async (err: any, info: any) => {
+            return await transporter.sendMail(mailDetails, async (err: Error, info: string) => {
                 if (err) return reject(false);
                 return resolve(true);
             });

@@ -10,6 +10,7 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { promisify } from 'util';
+import { URL } from 'url';
 
 const readFileAsyc = promisify(fse.readFile);
 @Injectable()
@@ -81,7 +82,7 @@ export class FilesService {
       }
     }
 
-    async saveSizedImages (file): Promise<void> {
+    async saveSizedImages (file: { mimetype: { split: (arg0: string) => [any, any]; }; path: string | number | Buffer | URL; filename: string; }): Promise<void> {
       // Resize images to specific sizes : 
       // '25X25', '50X50', '100X100', '200X200', '400X400', '900X900'
       const lang = "en";
@@ -127,7 +128,7 @@ console.log("path to delete : ", fullPathDest)
       });
     }
 
-    async resizeImage (fileName, widthxheight: string ): Promise<string> {
+    async resizeImage (fileName: string, widthxheight: string ): Promise<string> {
       // Resize images to any sizes with yyyXzzz: ex 2500X200
       // width x height
       // Name of the resized fimage : fileName-widthxheight.ext
@@ -195,7 +196,7 @@ console.log("path to delete : ", fullPathDest)
       return destinationImages
     };
 
-    async illegalFileNameCharacterReplace(fileName) {
+    async illegalFileNameCharacterReplace(fileName: string) {
       // WithDraw and replace illegal characters in file name and replace it with _
       // filename = filename.replace(/[/\\?%*:|"<>]/g, '-');
       return fileName.replace(/[/\\?%*:|"<>]/g, '_');
@@ -247,7 +248,7 @@ console.log("path to delete : ", fullPathDest)
     * CRUD part for the file mgt in DB
     */
   
-    async createOneFileInDB(response){
+    async createOneFileInDB(response: { originalName?: string; fileName?: string; typeFile: string; size: number; originalname?: string; filename?: string; }){
       // Create the record in DB
       const dataFile = "";
       const ownerFile = "";
@@ -255,7 +256,7 @@ console.log("path to delete : ", fullPathDest)
       return await this.createOneFileRecord(data);
     }
 
-    async deleteOneFileInDB(storageName) {
+    async deleteOneFileInDB(storageName: string) {
       const dataFile = "";
       const ownerFile = "";
       const softDelete = this.configService.get<number>("ENABLE_SOFT_DELETE") === 1

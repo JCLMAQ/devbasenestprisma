@@ -10,6 +10,8 @@ import { fileMulterOptions } from './files-file-multer-options';
 import * as path from 'path';
 import { promisify } from 'util';
 import { readFile } from 'fs';
+import { File } from '@prisma/client';
+import { Response } from 'express';
 
 const readFileAsyc = promisify(readFile);
 
@@ -79,7 +81,7 @@ export class FilesController {
 
   // Get the original image (not sized)
   @Get('image/:imagename')
-  async getImage(@Param('imagename') image, @Res() res) {
+  async getImage(@Param('imagename') image: string, @Res() res: Response) {
     const storagePath = process.env.IMAGES_STORAGE_DEST;
     const response = res.sendFile(image, { root: storagePath });
     return {
@@ -90,7 +92,7 @@ export class FilesController {
 
   // Get the image for a specific predefined size
   @Get('imagesized/:imagename/:size')
-  async getImageSized(@Param('imagename') image, @Param('size') size, @Res() res) {
+  async getImageSized(@Param('imagename') image: string, @Param('size') size: string, @Res() res: Response) {
     // size ex '25X25', '50X50', '100X100', '200X200', '400X400', '900X900'
     const storagePath = process.env.IMAGES_STORAGE_DEST;
     const rootFolder = storagePath+path.sep+size
@@ -103,7 +105,7 @@ export class FilesController {
 
   // Get the image for a specific predefined size
   @Get('imagespecsized/:imagename/:size')
-  async getImageSpecSized(@Param('imagename') image, @Param('size') widthxheight, @Res() res) {
+  async getImageSpecSized(@Param('imagename') image: string, @Param('size') widthxheight: string, @Res() res: Response) {
     // size ex '150X100' but maintain proportion
     // Get the image to resize first
     const pathSep = path.sep
@@ -138,7 +140,7 @@ export class FilesController {
 
   // Delete one image (not a specific siezd one)
   @Post('file/deleteoneimage/:filename')
-  async deleteOneImage(@Param('filename') fileName, @I18nLang() lang: string) {
+  async deleteOneImage(@Param('filename') fileName: string, @I18nLang() lang: string) {
     // the delete corresponding record in the DB is done in deleteOneImage service 
     const response = await this.filesService.deleteOneImage(fileName, lang);
     return {
@@ -154,7 +156,7 @@ export class FilesController {
   // Upload a file
   @Post('uploadonefile')
   @UseInterceptors(FileInterceptor('file', fileMulterOptions))
-  async uploadedFile(@UploadedFile() file, @I18nLang() lang: string) {
+  async uploadedFile(@UploadedFile() file: {originalname: string, filename: string, mimetype: string, size: number}, @I18nLang() lang: string) {
     const response = {
       originalName: file.originalname,
       fileName: file.filename,
@@ -174,10 +176,10 @@ export class FilesController {
   // Upload multiple files
   @Post('uploadmultiplefiles')
   @UseInterceptors(FilesInterceptor('file', 10, fileMulterOptions))
-  async uploadMultipleFiles(@UploadedFiles() files, @I18nLang() lang: string) {
-    const response = [];
-    const resultdb = [];
-    files.forEach(file => {
+  async uploadMultipleFiles(@UploadedFiles() files: [], @I18nLang() lang: string) {
+    const response: { originalname: string; filename: string; typeFile: string; size: number; }[] = [];
+    const resultdb: Promise<File>[] = [];
+    files.forEach((file: { originalname: string; filename: string; mimetype: string; size: number; }) => {
       const fileReponse = {
         originalname: file.originalname,
         filename: file.filename,
@@ -199,7 +201,7 @@ export class FilesController {
 
   // Download one file
   @Get('file/:filename')
-  getFile(@Param('filename') file, @Res() res) {
+  getFile(@Param('filename') file: string, @Res() res: any) {
     const rootFolder = process.env.FILES_STORAGE_DEST;
     const response = res.sendFile(file, { root: rootFolder });
     return {
@@ -210,7 +212,7 @@ export class FilesController {
 
   // Delete one file and delete the DB record
   @Post('file/deleteonefile/:filename')
-  async deleteOneFile(@Param('filename') fileName, @I18nLang() lang: string) {
+  async deleteOneFile(@Param('filename') fileName: string, @I18nLang() lang: string) {
     // File has to be within the right directory (diskstorage directory define in .env)
     // the delete corresponding record in the DB is done in deleteOneFile service 
     const response = await this.filesService.deleteOneFile(fileName, lang);

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Request, HttpException, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Req, Res , HttpException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { AuthsService } from './auths.service';
@@ -11,6 +11,10 @@ import { User } from '@prisma/client';
 import { ExtractJwt } from 'passport-jwt';
 import { I18n, I18nContext, I18nLang, I18nService } from 'nestjs-i18n';
 import { UtilitiesService } from 'src/utilities/utilities.service';
+import { Request } from 'express';
+import { string } from 'joi';
+
+
 
 @Controller('auths')
 export class AuthsController {
@@ -155,7 +159,7 @@ export class AuthsController {
 
     @UseGuards(LocalAuthGuard)
     @Post('auth/email/forgot-password')
-    async sendEmailForgotPassword(@Request() req: any, @I18nLang() lang: string): Promise<any> {
+    async sendEmailForgotPassword(@Req() req: Request, @I18nLang() lang: string): Promise<any> {
 // console.log('forgot pwd email:', req.body.email);
         try {
             const isEmailSent = await this.authsService.sendEmailForgotPwd(req.body.email, lang);
