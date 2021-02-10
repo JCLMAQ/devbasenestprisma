@@ -2,20 +2,43 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   User,
-  Prisma
+  Prisma, 
 } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { randomBytes } from 'crypto';
 import { UpdateAuthDto } from 'src/auths/dto/update-auth.dto';
 
+type UsersWithPosts = Prisma.PromiseReturnType<typeof getUsersWithPosts>;
+
+async function getUsersWithPosts() {
+  const users = await this.prisma.user.findMany({ include: { Post: true } })
+  return users
+}
+
+// Define a type that includes the relation to `Post`
+type UserWithPosts = Prisma.UserGetPayload<{
+  include: { Post: true; salt: false; pwdHash: false }
+}>
+
+// Define a type that only contains a subset of the scalar fields
+type UserPersonalData = Prisma.UserGetPayload<{
+  select: { email: true; lastName: true; firstName: true; nickName: true }
+}>
 @Injectable()
 export class UsersService {
+  
 
   constructor(
     private prisma: PrismaService,
   ) {}
   
+  async getUsersWithPosts(): Promise<UsersWithPosts> {
+    const usersWithPosts: UsersWithPosts = await getUsersWithPosts()
+    return usersWithPosts
+  }
+
+
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     if(!data.Roles) { data.Roles = "USER" };
     return this.prisma.user.create({
@@ -162,6 +185,10 @@ export class UsersService {
     }
     return result;
   }
+
+  
+
+
 
 }
 
