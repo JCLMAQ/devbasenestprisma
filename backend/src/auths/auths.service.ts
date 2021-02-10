@@ -19,6 +19,7 @@ type UserCredential = {
   password?: string;
 }
 
+
 @Injectable()
 export class AuthsService {
 
@@ -476,7 +477,7 @@ export class AuthsService {
   }
 
   // Create one new user when register with a password and an email as username
-  async registerWithPwd(userData, lang): Promise<any> {
+  async registerWithPwd(userData: UserCredential, lang: string): Promise<any> {
     const registration = true;
     const autoRegistration = false;
     // Verify if the limitation to the email API is activeted and if the email is conform
@@ -513,7 +514,7 @@ export class AuthsService {
     return password;
   }
 
-  verifyPassword(user, plainTextPassword: string) {
+  verifyPassword(user: User, plainTextPassword: string) {
     const pwdHash = AuthsService.hashPassword(plainTextPassword, user.salt);
     const isOK = (pwdHash == user.pwdHash);
     // console.log("Password OK : ", isOK )

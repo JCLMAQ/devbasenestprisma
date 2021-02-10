@@ -7,7 +7,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
-import { User } from '@prisma/client';
+import { Prisma, Token, User } from '@prisma/client';
 import { ExtractJwt } from 'passport-jwt';
 import { I18n, I18nContext, I18nLang, I18nService } from 'nestjs-i18n';
 import { UtilitiesService } from 'src/utilities/utilities.service';
@@ -205,10 +205,10 @@ export class AuthsController {
 
     @UseGuards(LocalAuthGuard)
     @Post('auth/email/reset-password/:token')
-    async resetPwd(@Param() params: any, @Request() req: any, @I18nLang() lang: string): Promise<any> {
+    async resetPwd(@Param('Token') params: any, @Req() req: Request, @I18nLang() lang: string): Promise<any> {
         const { newPassword, verifyPassword } = req.body;
-        let valideTknObj;
-        let user;
+        let valideTknObj: Token;
+        let user: User;
         try {
             valideTknObj = await this.authsService.verifyForgotPwdToken(params.token, lang);
 // console.log('token valid:', valideTknObj);
@@ -224,7 +224,7 @@ export class AuthsController {
         }
 
         try {
-            user = await this.authsService.isUserExist(valideTknObj.email, lang);
+            user = await this.authsService.isUserExist(valideTknObj.emailToken, lang);
         } catch (error) {
             return {
                 success: false,
