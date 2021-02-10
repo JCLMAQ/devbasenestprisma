@@ -41,8 +41,8 @@ export class PrismaService extends PrismaClient
 //     return valueToReturn
 // }
 
-  async objectToArray(objectToConvert){
-    let arr = [];  
+  async objectToArray(objectToConvert: { [x: string]: any; }){
+    let arr: any[] = [];  
     Object.keys(objectToConvert).map(function(key){  
         arr.push({[key]:objectToConvert[key]})  
         return arr;  

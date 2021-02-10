@@ -7,6 +7,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { randomBytes } from 'crypto';
+import { UpdateAuthDto } from 'src/auths/dto/update-auth.dto';
 
 @Injectable()
 export class UsersService {
@@ -65,7 +66,7 @@ export class UsersService {
     });
   }
 
-  async getOneUserByEmail(userEmail): Promise<User> {
+  async getOneUserByEmail(userEmail: string): Promise<User> {
     return await this.prisma.user.findUnique({
         where: { email: userEmail }
     })
@@ -79,7 +80,7 @@ export class UsersService {
     }
       return user; 
   }
-  async createOneUserWithPwd(userData:Prisma.UserCreateInput, pwdHash, salt): Promise<boolean> {
+  async createOneUserWithPwd(userData:Prisma.UserCreateInput, pwdHash: string, salt: string): Promise<boolean> {
     // async createOneUser(userData): Promise<User> {
     let userCreatedStatute = false;
     const fullName = userData.firstName + ' ' + userData.lastName;
@@ -123,7 +124,7 @@ export class UsersService {
     });
   }
 
-  async returnUserPartial(userEmail) {
+  async returnUserPartial(userEmail: string) {
     const user = await this.getOneUserByEmail(userEmail);
     // const { pwdHash, salt, ...result } = user; // To remove pwdHash and salt from user: result = user less salt and pwdHash
     const { pwdHash, salt, isAdmin, ...result } = user;
@@ -139,7 +140,7 @@ export class UsersService {
       return user; // return the new user or the found user
   }
 
-  async userStillExist(userEmail) {
+  async userStillExist(userEmail: string) : Promise<Prisma.UserCreateInput> {
     const user = await this.getOneUserByEmail(userEmail);
     // Verify the user is not soft deleted !!!
     if( !user) {
@@ -153,7 +154,7 @@ export class UsersService {
     return result;
   }
 
-  async userExist(userEmail) {
+  async userExist(userEmail: string): Promise<boolean>{
     let result = false;
     const userExist = await this.getOneUserByEmail(userEmail);
     if(userExist != null) {

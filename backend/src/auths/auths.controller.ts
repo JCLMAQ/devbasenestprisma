@@ -24,13 +24,13 @@ export class AuthsController {
 
   // Common
     // Get the profile of the user
-    @UseGuards(JwtAuthGuard)
-    @Get('profile')
-    async getProfile(@Request() req) {
-        // Rturn the loged user
-    // console.log('Authcontroler (localstrategy): Profile return:', req.user);       
-        return req.user;
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Get('profile')
+    // async getProfile(@Request() req: any) {
+    //     // Rturn the loged user
+    // // console.log('Authcontroler (localstrategy): Profile return:', req.user);       
+    //     return req.user;
+    // }
 
     // Verify if the user exist (with his email)
    @UseGuards(JwtAuthGuard) 
@@ -155,7 +155,7 @@ export class AuthsController {
 
     @UseGuards(LocalAuthGuard)
     @Post('auth/email/forgot-password')
-    async sendEmailForgotPassword(@Request() req, @I18nLang() lang: string): Promise<any> {
+    async sendEmailForgotPassword(@Request() req: any, @I18nLang() lang: string): Promise<any> {
 // console.log('forgot pwd email:', req.body.email);
         try {
             const isEmailSent = await this.authsService.sendEmailForgotPwd(req.body.email, lang);
@@ -182,7 +182,7 @@ export class AuthsController {
 
     @UseGuards(LocalAuthGuard)
     @Get('auth/email/reset-password/:token')
-    async validateToken(@Param() params, @I18nLang() lang: string): Promise<any> {
+    async validateToken(@Param() params: any, @I18nLang() lang: string): Promise<any> {
 // console.log("Param received:", params.token)
         let valideTkn;
         try {
@@ -200,7 +200,7 @@ export class AuthsController {
 
     @UseGuards(LocalAuthGuard)
     @Post('auth/email/reset-password/:token')
-    async resetPwd(@Param() params, @Request() req, @I18nLang() lang: string): Promise<any> {
+    async resetPwd(@Param() params: any, @Request() req: any, @I18nLang() lang: string): Promise<any> {
         const { newPassword, verifyPassword } = req.body;
         let valideTknObj;
         let user;

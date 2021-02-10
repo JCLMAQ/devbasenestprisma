@@ -74,7 +74,7 @@ export class UtilitiesService {
 
 
     // Sending email
-    async sendEmailToken(emailData): Promise<boolean> {    
+    async sendEmailToken(emailData: any): Promise<boolean> {    
     // Step 1: buildup the transporter - connexion to the SMTP
         // Connexion - transporter data: EMAIL_HOST, EMAIL_PORT, EMAIL_NOREPLY, EMAIL_NOREPLY_PWD
         
@@ -104,7 +104,7 @@ export class UtilitiesService {
         });        
     // Step 3: Sending email
         const sendMail = await new Promise<boolean>(async function (resolve, reject) {
-            return await transporter.sendMail(mailDetails, async (err, info) => {
+            return await transporter.sendMail(mailDetails, async (err: any, info: any) => {
                 if (err) return reject(false);
                 return resolve(true);
             });

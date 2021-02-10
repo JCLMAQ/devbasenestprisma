@@ -18,5 +18,6 @@ export type UserPersonalData = Prisma.UserGetPayload<{
         salt: false;
         pwdHash: false;
         dob: true;
+        isDeleted: true;
     }
 }>

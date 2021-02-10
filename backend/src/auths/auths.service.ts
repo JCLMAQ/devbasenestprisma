@@ -50,7 +50,7 @@ export class AuthsService {
     }
   }
 
-  async logout(userEmail, lang: string): Promise<boolean> {
+  async logout(userEmail: string, lang: string): Promise<boolean> {
     // Search for the user token and reinit for the email send token - for PwdLess login
     // Verify that the user has not been deleted or soft deleted
     const userNotDeleted = await this.usersService.userStillExist(userEmail);
