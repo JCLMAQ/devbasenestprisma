@@ -10,9 +10,16 @@ import { fileMulterOptions } from './files-file-multer-options';
 import * as path from 'path';
 import { promisify } from 'util';
 import { readFile } from 'fs';
-import { File } from '@prisma/client';
+// import { File } from '@prisma/client';
 import { Response } from 'express';
+import { URL } from 'url';
 
+export type FileResponse = {
+  originalname: string;
+  filename: string;
+  typeFile: string;
+  size: number;
+};
 const readFileAsyc = promisify(readFile);
 
 /*
@@ -31,7 +38,7 @@ export class FilesController {
   // Upload one image file
   @Post('uploadoneimage')
   @UseInterceptors(FileInterceptor('image', imageMulterOptions))
-  async uploadedImage(@UploadedFile() file) {
+  async uploadedImage(@UploadedFile() file: any) {
     console.log("File data back: ", file)
     // Create the different image sizes
     await this.filesService.saveSizedImages(file);
@@ -55,20 +62,20 @@ export class FilesController {
   @Post('uploadmultipleimages')
   @UseInterceptors(
     FilesInterceptor('image', 10, imageMulterOptions))
-  async uploadMultipleImages(@UploadedFiles() files) {
-    const response = [];
-    const resultdb = [];
-    files.forEach(file => {
+  async uploadMultipleImages(@UploadedFiles() files: any) {
+    const response: FileResponse[] = [];
+    const resultdb: File[]= [];
+    files.forEach((file: any) => {
       this.filesService.saveSizedImages(file);
-      const fileReponse = {
+      const fileResponse: FileResponse = {
         originalname: file.originalname,
         filename: file.filename,
         typeFile: file.mimetype,
         size: file.size
       };
       // Create the record in DB
-      const fileResult = this.filesService.createOneFileInDB(fileReponse)
-      response.push(fileReponse);
+      const fileResult: any= this.filesService.createOneFileInDB(fileResponse)
+      response.push(fileResponse);
       resultdb.push(fileResult)
     });
     return {
@@ -178,7 +185,7 @@ export class FilesController {
   @UseInterceptors(FilesInterceptor('file', 10, fileMulterOptions))
   async uploadMultipleFiles(@UploadedFiles() files: [], @I18nLang() lang: string) {
     const response: { originalname: string; filename: string; typeFile: string; size: number; }[] = [];
-    const resultdb: Promise<File>[] = [];
+    const resultdb: any = [];
     files.forEach((file: { originalname: string; filename: string; mimetype: string; size: number; }) => {
       const fileReponse = {
         originalname: file.originalname,

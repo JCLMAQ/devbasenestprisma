@@ -1,7 +1,9 @@
 import { extname } from 'path';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { File, Prisma } from '@prisma/Client';
+import { FileResponse } from './files.controller'
 
-export const editFileName = (req, file, callback) => {
+export const editFileName = (req: Request, file: FileResponse , callback: (arg0: any, arg1: string) => void) => {
   // Add a random 10 number to the uploaded file name
   const name = file.originalname.split('.')[0];
   const fileExtName = extname(file.originalname);
@@ -13,9 +15,10 @@ export const editFileName = (req, file, callback) => {
 };
 
 // Allow only images
-export const imageFileFilter = (req, file, callback) => {
+export const imageFileFilter = (req: Request, file: FileResponse, callback: (arg0: HttpException, arg1: boolean) => void) => {
   // const listOfExtensions = "\.(jpg|jpeg|png|gif)$"
   // for the regex to work with the const .env var: scratch the first and the last /
+  
   const listOfExtensions = process.env.IMAGES_EXTENSIONS_REGEX;
   if (!file.originalname.match(`${listOfExtensions}`)) {
   console.log("list of extensions: ", listOfExtensions)
@@ -31,7 +34,7 @@ export const imageFileFilter = (req, file, callback) => {
   callback(null, true);
 };
 
-export const fileFileFilter = (req, file, callback) => {
+export const fileFileFilter = (req: Request, file: FileResponse, callback: (arg0: HttpException, arg1: boolean) => void) => {
   // const listOfExtensions = "\.(pdf|doc|docx|xlsx|xls|txt)$"
   // for the regex to work with the const .env var: scratch the first and the last /
   const listOfExtensions = process.env.FILES_EXTENSIONS_REGEX;
@@ -48,25 +51,25 @@ export const fileFileFilter = (req, file, callback) => {
   callback(null, true);
 };
 
-export const destinationFilePath = (req, file, callback) => {
+export const destinationFilePath = (req: Request, file: any, callback: (arg0: any, arg1: string) => void) => {
   const storagePath = process.env.FILES_STORAGE_DEST;
   const valueCallBack = storagePath; //'./uploadedfiles'
   callback(null, valueCallBack);
 };
 
-export const destinationImagePath = (req, file, callback) => {
+export const destinationImagePath = (req: Request, file: any, callback: (arg0: any, arg1: string) => void) => {
   const storagePath = process.env.IMAGES_STORAGE_DEST;
   const valueCallBack =storagePath // './uploadedimages'
   callback(null, valueCallBack);
 };
 
-export const fileMaxSize = (req, file, callback) => {
+export const fileMaxSize = (req: Request, file: any, callback: (arg0: any, arg1: string) => void) => {
   const fileMaxSize = process.env.FILES_MAX_SIZE;
   const valueCallBack =fileMaxSize // './uploadedimages'
   callback(null, valueCallBack);
 };
 
-export const imageMaxSize = (callback) => {
+export const imageMaxSize = (callback: (arg0: string) => void) => {
   const imageMaxSize = process.env.IMAGES_MAX_SIZE;
   console.log("maxsize = ", imageMaxSize)
   const valueCallBack = imageMaxSize;

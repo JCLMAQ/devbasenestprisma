@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { number } from 'joi';
 import * as nodemailer from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { EmaildomainsService } from 'src/emaildomains/emaildomains.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -84,22 +85,20 @@ export class UtilitiesService {
     async sendEmailToken(emailData: emailData): Promise<boolean> {    
     // Step 1: buildup the transporter - connexion to the SMTP
         // Connexion - transporter data: EMAIL_HOST, EMAIL_PORT, EMAIL_NOREPLY, EMAIL_NOREPLY_PWD
-        
         const transporter = nodemailer.createTransport({
-            // host: await this.searchConfigParam( "EMAIL_HOST"),
-            host: await this.searchConfigParam( "EMAIL_HOST"),
-            port: await this.searchConfigParam( "EMAIL_PORT"),
-            auth: {
-                user: await this.searchConfigParam( "EMAIL_NOREPLY"), 
-                pass: await this.searchConfigParam( "EMAIL_NOREPLY_PWD"), 
-            }
-            // host: this.configService.get("EMAIL_HOST"),
-            // port: this.configService.get("EMAIL_PORT"),
-            // auth: {
-            //     user: this.configService.get("EMAIL_NOREPLY"), 
-            //     pass: this.configService.get("EMAIL_NOREPLY_PWD"), 
-            // }
-        });
+                host: await this.searchConfigParam("EMAIL_HOST"),
+                port: await this.searchConfigParam("EMAIL_PORT"),
+                auth: {
+                    user: await this.searchConfigParam("EMAIL_NOREPLY"),
+                    pass: await this.searchConfigParam("EMAIL_NOREPLY_PWD"),
+                }
+                // host: this.configService.get("EMAIL_HOST"),
+                // port: this.configService.get("EMAIL_PORT"),
+                // auth: {
+                //     user: this.configService.get("EMAIL_NOREPLY"), 
+                //     pass: this.configService.get("EMAIL_NOREPLY_PWD"), 
+                // }
+            } as unknown as SMTPTransport.Options);
     // Step 2: buildup the email
         const {fromEmail, toEmail, subjectEmail, textEmail, htmlEmail } = emailData
         // Email to send with defined transport object
