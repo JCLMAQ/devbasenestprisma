@@ -11,7 +11,7 @@
     "start:db": "npm run prisma:generate && npm run prisma-migrate",
     "start:dev": "nest start --watch",
     "start:dev-i18copy": "npm run copy-assets && npm run start:dev",
-    "prisma:studio": "dotenv -e ../../.env -- npx prisma studio",
+    "prisma:studio": "dotenv -e ../.env -- npx prisma studio",
     "seed": "dotenv -e ../.env ts-node prisma/seed.ts",
     "prebuild": "rimraf dist",
     "build": "nest build",

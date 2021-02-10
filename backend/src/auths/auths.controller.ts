@@ -92,7 +92,8 @@ export class AuthsController {
         if(!validCredential.validToken) {
             throw new HttpException(await this.i18n.translate("auths.AUTH_LOGIN_ERROR",{ lang: lang, }), 400);
         }
-        const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, validCredential.role);
+        const roleString = validCredential.role.toString();
+        const authToken = await this.authsService.generateAuthToken(validCredential.email, validCredential.userId, roleString);
         return authToken;
     }
 

@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User,TokenType, Prisma, Token } from '@prisma/client';
+import { User,TokenType, Prisma, Token, Role } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { UtilitiesService } from 'src/utilities/utilities.service';
 
@@ -14,6 +14,10 @@ import { pbkdf2Sync, randomBytes } from 'crypto';
 import MilliSecond from 'ms'
 import { AcceptLanguageResolver, I18nContext, I18nRequestScopeService, I18nService } from 'nestjs-i18n';
 
+type UserCredential = {
+  email: string;
+  password?: string;
+}
 
 @Injectable()
 export class AuthsService {
@@ -120,7 +124,7 @@ export class AuthsService {
   }
 
   // Generate a signed JWT token with the tokenId in the payload
-  async generateAuthToken(userEmail: string, userId: string, role: string[]): Promise<any> {
+  async generateAuthToken(userEmail: string, userId: string, role: string): Promise<any> {
     const jwtPayload = { username: userEmail, sub: userId, role: role}
     return  {
       access_token: this.jwtService.sign(jwtPayload)
@@ -364,7 +368,7 @@ export class AuthsService {
   }
     
   // Step 2: Verify the validity of the short token linked to the email of the user
-  async authenticateHandler(userCredential, lang) {
+  async authenticateHandler(userCredential: UserCredential, lang: string) {
     // The emailToken is the "password"
     const { email, password } = userCredential;
     // Verify that the user has not been deleted or soft deleted
@@ -372,7 +376,7 @@ export class AuthsService {
     if(userNotDeleted.isDeleted != null) {
       throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400)
     }    
-    const validEmailToken= { email: email, userId: null, validToken: false, role: userNotDeleted.Roles};  
+    const validEmailToken= { email: email, userId: "", validToken: false, role: userNotDeleted.Roles};  
     // Get short lived email token
     const fetchedEmailToken = await this.prismaService.token.findUnique({
       where: {
