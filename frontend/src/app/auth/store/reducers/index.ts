@@ -8,7 +8,7 @@ import {
   MetaReducer,
   on
 } from '@ngrx/store';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../environments/environment';
 import { AuthActions } from '../action-types';
 import { ICurrentUser } from '@app/auth/auth.model';
 

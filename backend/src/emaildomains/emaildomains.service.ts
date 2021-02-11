@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Emaildomain, Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateEmaildomainDto } from './dto/create-emaildomain.dto';
-import { UpdateEmaildomainDto } from './dto/update-emaildomain.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class EmaildomainsService {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import {
   User,
   Prisma, 
@@ -7,7 +7,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { randomBytes } from 'crypto';
-import { UpdateAuthDto } from 'src/auths/dto/update-auth.dto';
+import { UpdateAuthDto } from '../auths/dto/update-auth.dto';
 
 type UsersWithPosts = Prisma.PromiseReturnType<typeof getUsersWithPosts>;
 

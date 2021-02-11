@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { first, takeUntil, tap } from 'rxjs/operators';
-import { AppState } from 'src/app/reducers';
+import { AppState } from '../../reducers';
 import { UserEntityService } from '../store/user-entity.service';
 // import { selectAll } from '../store/user.reducer';
 // import { selectAllUsers } from '../store/user.selectors';

@@ -4,8 +4,8 @@ import { Prisma } from '@prisma/client';
 import { number } from 'joi';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { EmaildomainsService } from 'src/emaildomains/emaildomains.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { EmaildomainsService } from '../emaildomains/emaildomains.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 type emailData = {
     fromEmail: string;

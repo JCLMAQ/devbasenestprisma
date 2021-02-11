@@ -3,7 +3,7 @@ import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
-import { UtilitiesService } from 'src/utilities/utilities.service';
+import { UtilitiesService } from '../utilities/utilities.service';
 import { I18nLang } from 'nestjs-i18n';
 import { imageMulterOptions } from './files-image-multer-options';
 import { fileMulterOptions } from './files-file-multer-options';

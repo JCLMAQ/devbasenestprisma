@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { File, Prisma } from '@prisma/client';
-import { UtilitiesService } from 'src/utilities/utilities.service';
+import { UtilitiesService } from '../utilities/utilities.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import sharp from 'sharp';

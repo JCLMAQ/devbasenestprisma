@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Req, Res , HttpException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { AuthsService } from './auths.service';
 import { AuthDto } from './dto/auth.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -10,7 +10,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { Prisma, Token, User } from '@prisma/client';
 import { ExtractJwt } from 'passport-jwt';
 import { I18n, I18nContext, I18nLang, I18nService } from 'nestjs-i18n';
-import { UtilitiesService } from 'src/utilities/utilities.service';
+import { UtilitiesService } from '../utilities/utilities.service';
 import { Request } from 'express';
 import { string } from 'joi';
 
