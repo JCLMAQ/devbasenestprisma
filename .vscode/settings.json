@@ -18,5 +18,8 @@
     "peacock.color": "#ff3d00",
     "editor.snippetSuggestions": "top",
     "editor.suggestSelection": "first",
-    "editor.find.seedSearchStringFromSelection": false
+    "editor.find.seedSearchStringFromSelection": false,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
 }

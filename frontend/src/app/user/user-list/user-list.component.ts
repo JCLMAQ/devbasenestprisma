@@ -1,21 +1,21 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SelectionModel } from '@angular/cdk/collections';
-import { ResourceLoader } from '@angular/compiler';
-
-import { AfterViewInit, Component, ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { first, takeUntil, tap } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { AppState } from '../../reducers';
 import { UserEntityService } from '../store/user-entity.service';
 // import { selectAll } from '../store/user.reducer';
 // import { selectAllUsers } from '../store/user.selectors';
 // import { usersUpload } from '../user.actions';
 import { User } from '../user.model';
+
+
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
