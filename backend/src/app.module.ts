@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { MulterModule } from '@nestjs/platform-express';
+import * as Joi from 'joi';
+import { AcceptLanguageResolver, HeaderResolver, I18nJsonParser, I18nModule, QueryResolver } from 'nestjs-i18n';
+import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { UtilitiesModule } from './utilities/utilities.module';
 import { AuthsModule } from './auths/auths.module';
-import { PrismaModule } from './prisma/prisma.module';
-import * as Joi from 'joi';
-import * as path from 'path';
-import { I18nModule, I18nJsonParser, QueryResolver, HeaderResolver, AcceptLanguageResolver } from 'nestjs-i18n';
 import { EmaildomainsModule } from './emaildomains/emaildomains.module';
 import { FilesModule } from './files/files.module';
-import { MulterModule } from '@nestjs/platform-express';
+import { PrismaModule } from './prisma/prisma.module';
+import { UsersModule } from './users/users.module';
+import { UtilitiesModule } from './utilities/utilities.module';
 
 @Module({
   imports: [

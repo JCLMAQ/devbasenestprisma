@@ -9,7 +9,7 @@
     "docker:up": "docker-compose -f '../db/docker-compose.yml' --env-file ../.env up -d --build",
     "docker:down": "docker-compose -f '../db/docker-compose.yml' --env-file ../.env down",
     "start:db": "npm run prisma:generate && npm run prisma-migrate",
-    "start:dev": "nest start --watch",
+    "start:dev": "dotenv -e ../.env -- nest start --watch",
     "start:dev-i18copy": "npm run copy-assets && npm run start:dev",
     "prisma:studio": "dotenv -e ../.env -- npx prisma studio",
     "seed": "dotenv -e ../.env ts-node prisma/seed-old.ts",
