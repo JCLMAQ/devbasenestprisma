@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@angular/forms';
+import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { first, map } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { UserEntityService } from '../store/user-entity.service';
-import { IUserRegister, Role, User } from '../user.model';
+import { User } from '../user.model';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 import { userEmailValidator, userNickNameValidator } from '../validators/user-async.validator';
@@ -184,7 +184,7 @@ export class UserProfileComponent implements OnInit {
         this.userEntityService.update(user);
     } else if (this.mode == 'create') {
 
-        this.userEntityService.add(user)
+        this.userEntityService.add(user, {isOptimistic: false})
             .subscribe(
                 // newUser => {
                 //     console.log('New Usere', newUser);
