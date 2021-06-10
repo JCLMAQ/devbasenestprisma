@@ -1,7 +1,5 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
-import { number } from 'joi';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { EmaildomainsService } from '../emaildomains/emaildomains.service';
@@ -111,7 +109,7 @@ export class UtilitiesService {
         });        
     // Step 3: Sending email
         const sendMail = await new Promise<boolean>(async function (resolve, reject) {
-            return await transporter.sendMail(mailDetails, async (err: Error, info: string) => {
+            return await transporter.sendMail(mailDetails, async (err: Error, info: nodemailer.SentMessageInfo) => {
                 if (err) return reject(false);
                 return resolve(true);
             });
