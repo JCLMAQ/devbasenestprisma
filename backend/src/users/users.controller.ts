@@ -1,15 +1,18 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  ApiBearerAuth, ApiOperation, ApiResponse, ApiTags
+} from '@nestjs/swagger';
+import {
+  Prisma
+} from '@prisma/client';
+// import { domain } from 'process';
+import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { 
-  User as UserModel,
-  Prisma,
-} from '@prisma/client';
-import { domain } from 'process';
-import { User } from './entities/user.entity';
 
+
+@ApiBearerAuth()
+@ApiTags('users')
 @Controller()
 export class UsersController {
   constructor(
@@ -17,6 +20,9 @@ export class UsersController {
 
    // Create a new user
   @Post('user')
+  @ApiOperation({ summary: 'Create cat' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+
   async createOneUser( @Body() userData: Prisma.UserCreateInput ): Promise<User> {
     // const { name, email } = userData;
     return this.usersService.createUser(
@@ -25,6 +31,11 @@ export class UsersController {
   }
 
   @Get('allusersbis')
+  @ApiResponse({
+    status: 200,
+    description: 'The found records',
+    type: User,
+  })
   async getAllUsersbis(): Promise<User[]> {
     const users = this.usersService.findUsers({ select: { lastName: true}
     });
