@@ -20,7 +20,7 @@ export class UsersController {
 
    // Create a new user
   @Post('user')
-  @ApiOperation({ summary: 'Create cat' })
+  @ApiOperation({ summary: 'Create user' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
 
   async createOneUser( @Body() userData: Prisma.UserCreateInput ): Promise<User> {
