@@ -62,7 +62,7 @@ export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{
   }
 
   ngOnDestroy(): void {
-    this._isDead$.next();
+    // this._isDead$.next();
   }
 
   ngAfterViewInit() {

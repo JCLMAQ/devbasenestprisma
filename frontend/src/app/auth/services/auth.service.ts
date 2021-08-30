@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { ICurrentUser, ILoginResponse, IJwt} from '../auth.model';
-import  jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { ICurrentUser, IJwt, ILoginResponse } from '../auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,7 @@ export class AuthService {
       // console.log("decodedJWT: ", decodedJwt);
       const emailToCheck = decodedJwt.username;
 
-      const { fullName } = await this.httpClient.post<ICurrentUser>('api/auths/checkCredential/', { emailToCheck }).toPromise();
+      const { fullName } = await firstValueFrom(this.httpClient.post<ICurrentUser>('api/auths/checkCredential/', { emailToCheck }));
       // console.log("fullName from fetch user: ", fullName);
       if (!fullName) {
         this.currentUser$.next(null);
@@ -59,7 +59,7 @@ export class AuthService {
     let isOK = false;
     try {
       // const { authJwtToken, user } = await this.httpClient.post<ILoginResponse>('api/auth/login/', { username, password }).toPromise();
-      const { access_token, fullName , role } = await this.httpClient.post<ILoginResponse>('api/auths/auth/loginwithpwd', { email, password }).toPromise();
+      const { access_token, fullName , role } = await firstValueFrom(this.httpClient.post<ILoginResponse>('api/auths/auth/loginwithpwd', { email, password }));
 
       localStorage.authJwtToken = access_token;
       // isOK = (!!authJwtToken);
@@ -84,7 +84,7 @@ export class AuthService {
     let isOK = false;
     // Send the logout to the backend
     try {
-      const { user, authJwtToken } = await this.httpClient.post<any>('api/auths/auth/logoutwithpwd', '').toPromise();
+      const { user, authJwtToken } = await firstValueFrom(this.httpClient.post<any>('api/auths/auth/logoutwithpwd', ''));
       isOK = (!authJwtToken) && (!user)
       if (isOK) { this.currentUser$.next(null) }
     } catch (e) {
