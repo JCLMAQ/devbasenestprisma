@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import {
-  User,
-  Prisma, 
+  Prisma, User
 } from '@prisma/client';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { randomBytes } from 'crypto';
-import { UpdateAuthDto } from '../auths/dto/update-auth.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 type UsersWithPosts = Prisma.PromiseReturnType<typeof getUsersWithPosts>;
 
@@ -64,7 +59,7 @@ export class UsersService {
     take?: number;
     cursor?: Prisma.UserWhereUniqueInput;
     where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByInput;
+    orderBy?: Prisma.UserMaxOrderByAggregateInput;
     select?: Prisma.UserSelect;
     include?: Prisma.UserInclude;
   }): Promise<User[]> {

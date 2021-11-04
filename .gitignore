@@ -50,3 +50,6 @@ package-lock.json
 frontend/node_modules/
 
 backend/prisma/migrations/
+
+# Angular cache
+/frontend/.angular
