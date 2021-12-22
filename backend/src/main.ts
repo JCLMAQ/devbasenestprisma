@@ -8,9 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port: number = configService.get('NEST_SERVER_PORT');
-  await app.listen(port, () => {
-    Logger.log('Listening at http://localhost:' + port);
-  });
+
   const config = new DocumentBuilder()
   .setTitle('Cats example')
   .setDescription('The cats API description')
@@ -20,6 +18,11 @@ async function bootstrap() {
   ;
 const document = SwaggerModule.createDocument(app, config);
 SwaggerModule.setup('api', app, document);
+
+await app.listen(port, () => {
+  Logger.log('Listening at http://localhost:' + port);
+});
+  
 
 }
 bootstrap();
