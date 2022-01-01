@@ -8,8 +8,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port: number = configService.get('NEST_SERVER_PORT');
+  const globalPrefix = process.env.NEST_SERVER_GLOBAL_PREFIX ||'api';
+  app.setGlobalPrefix(globalPrefix);
   await app.listen(port, () => {
-    Logger.log('Listening at http://localhost:' + port);
+    Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
   });
   const config = new DocumentBuilder()
   .setTitle('Cats example')
@@ -18,7 +20,9 @@ async function bootstrap() {
   .addTag('cats')
   .build()
   ;
-const document = SwaggerModule.createDocument(app, config);
+const document = SwaggerModule.createDocument(app, config,{
+  ignoreGlobalPrefix: true
+});
 SwaggerModule.setup('api', app, document);
 
 }
