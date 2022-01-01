@@ -13,7 +13,7 @@ import { UsersService } from './users.service';
 
 @ApiBearerAuth()
 @ApiTags('users')
-@Controller()
+@Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService) {}
@@ -50,7 +50,7 @@ export class UsersController {
   //  console.log("result include: ", result)
   //  return result
   // }
-  @Get('users')
+  @Get()
   async getAllUsers(): Promise<User> {
     // return this.usersbisService.findUsers({});
     // const result = await this.usersService.findUsers({include: { manager: true, Team: true, Todo: true, Group: true, Comment: true, Profile: true, }} );
