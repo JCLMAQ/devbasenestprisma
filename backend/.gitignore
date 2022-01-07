@@ -47,3 +47,6 @@ package-lock.json
 /uploadedimages
 /uploadedfiles
 /uploadedtempimages
+
+#Documentation
+/documentation

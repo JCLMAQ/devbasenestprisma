@@ -16,5 +16,7 @@
     "url": "https://github.com/JCLMAQ/devbasenestprisma/issues"
   },
   "homepage": "https://github.com/JCLMAQ/devbasenestprisma#readme",
-  "devDependencies": {}
+  "devDependencies": {
+    "@compodoc/compodoc": "^1.1.16"
+  }
 }
