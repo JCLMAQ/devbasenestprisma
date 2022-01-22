@@ -4,22 +4,47 @@ import {
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-type UsersWithPosts = Prisma.PromiseReturnType<typeof getUsersWithPosts>;
+// Define a type that includes the relation to `Post` for users
+type UsersWithPosts = Prisma.PromiseReturnType<typeof getUsersWithPostsFunct>;
+//  https://www.prisma.io/docs/concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types
 
-async function getUsersWithPosts() {
-  const users = await this.prisma.user.findMany({ include: { Post: true } })
-  return users
+
+async function getUsersWithPostsFunct() {
+  const usersWithPosts = await this.prisma.user.findMany({ include: { Post: true } })
+  return usersWithPosts
 }
 
-// Define a type that includes the relation to `Post`
+// Define a type that includes the relation to `Post` for one user
 type UserWithPosts = Prisma.UserGetPayload<{
   include: { Post: true; salt: false; pwdHash: false }
 }>
 
 // Define a type that only contains a subset of the scalar fields
 type UserPersonalData = Prisma.UserGetPayload<{
-  select: { email: true; lastName: true; firstName: true; nickName: true }
+  select: {email: true; lastName: true; firstName: true; nickName: true}
 }>
+
+type UserWithoutSecret = Prisma.UserGetPayload<{
+  select: {pwdHash: false}
+}>
+
+// Select generated type
+const selectUserWithEmail = Prisma.validator<Prisma.UserSelect>()({
+  email: true
+})
+// Include generated type
+const includePosts = Prisma.validator<Prisma.UserInclude> () ({
+  Post: true,
+})
+
+const findSpecificUserByEmail = (email: string) => {
+  return Prisma.validator<Prisma.UserWhereInput>()({
+    email,
+  })
+}
+
+type UserWithoutPwd =  Omit<User, "salt" | "pwdHash">;
+
 @Injectable()
 export class UsersService {
   
@@ -28,8 +53,19 @@ export class UsersService {
     private prisma: PrismaService,
   ) {}
   
+
+
+// Find the specific user based on email
+async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> {
+  const oneUser = await this.prisma.user.findUnique({
+    where: findSpecificUserByEmail(userEmailToSearch),
+  })
+  return oneUser
+}
+
+
   async getUsersWithPosts(): Promise<UsersWithPosts> {
-    const usersWithPosts: UsersWithPosts = await getUsersWithPosts()
+    const usersWithPosts: UsersWithPosts = await getUsersWithPostsFunct()
     return usersWithPosts
   }
 
@@ -89,6 +125,15 @@ export class UsersService {
         where: { email: userEmail }
     })
   } 
+
+  async getOneUserByEmailwithoutPwd(userEmail: string): Promise<UserWithoutPwd> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: userEmail }
+  })
+  // const userWithoutPassword = exclude(user, 'pwdHash', 'salt')
+    return user
+  } 
+
 
   async findOrCreateOneUser(email: string): Promise<User> { // If user does not exist, create one
     let user = await this.prisma.user.findUnique({ where: { email } })

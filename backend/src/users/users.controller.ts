@@ -51,7 +51,7 @@ export class UsersController {
   //  return result
   // }
   @Get()
-  async getAllUsers(): Promise<User> {
+  async getAllUsers(): Promise<User[]> {
     // return this.usersbisService.findUsers({});
     // const result = await this.usersService.findUsers({include: { manager: true, Team: true, Todo: true, Group: true, Comment: true, Profile: true, }} );
     const result = await this.usersService.findUsers({});
