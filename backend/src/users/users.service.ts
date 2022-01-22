@@ -72,7 +72,7 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     if(!data.Roles) { data.Roles = "USER" };
-    return this.prisma.user.create({
+    return await this.prisma.user.create({
       data,
     });
   }
