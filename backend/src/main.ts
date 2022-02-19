@@ -10,9 +10,9 @@ async function bootstrap() {
   const port: number = configService.get('NEST_SERVER_PORT');
   const globalPrefix = process.env.NEST_SERVER_GLOBAL_PREFIX ||'api';
   app.setGlobalPrefix(globalPrefix);
-  await app.listen(port, () => {
-    Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
-  });
+
+  
+
   const config = new DocumentBuilder()
   .setTitle('Cats example')
   .setDescription('The cats API description')
@@ -25,10 +25,13 @@ const document = SwaggerModule.createDocument(app, config,{
 });
 SwaggerModule.setup('api', app, document);
 
-await app.listen(port, () => {
-  Logger.log('Listening at http://localhost:' + port);
-});
+// await app.listen(port, () => {
+//   Logger.log('Listening at http://localhost:' + port);
+// });
   
+await app.listen(port, () => {
+  Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
+});
 
 }
 bootstrap();
