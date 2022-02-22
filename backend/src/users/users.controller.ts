@@ -1,7 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import {
-  ApiBearerAuth, ApiOperation, ApiResponse, ApiTags
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   Prisma
 } from '@prisma/client';
