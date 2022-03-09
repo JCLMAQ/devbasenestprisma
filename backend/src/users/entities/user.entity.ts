@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client'
 
-export class User {}
 
 export type UserPersonalData = Prisma.UserGetPayload<{
     select: {

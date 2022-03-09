@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  Prisma
+  Prisma, User
 } from '@prisma/client';
 // import { domain } from 'process';
-import { User } from './entities/user.entity';
+//import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 
@@ -41,13 +41,9 @@ export class UsersController {
     return users;
   }
 
-  // @Get('allusers')
-  // async getAllUsers(): Promise<User> {
-  //  // return this.usersbisService.findUsers({});
-  //  const result = await this.usersService.findUsers({include: { Profile: true, }} );
-  //  console.log("result include: ", result)
-  //  return result
-  // }
+ 
+  
+
   @Get()
   async getAllUsers(): Promise<User[]> {
     // return this.usersbisService.findUsers({});

@@ -3,6 +3,7 @@ import {
   Prisma, User
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { exclude } from './users.utilities';
 /*
 The following example uses the Prisma.validator to create two type-safe objects and then uses the Prisma.UserGetPayload utility function 
 to create a type that can be used to return all users and their posts.
@@ -76,8 +77,11 @@ export class UsersService {
 async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> {
   const oneUser = await this.prisma.user.findUnique({
     where: findSpecificUserByEmail(userEmailToSearch),
-  })
-  return oneUser
+  });
+  const userWithoutSecret = exclude( oneUser, 'salt', 'pwdHash' )
+  console.log(userWithoutSecret);
+  
+  return userWithoutSecret
 }
 
 

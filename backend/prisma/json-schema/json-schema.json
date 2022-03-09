@@ -79,7 +79,11 @@
         },
         "social": {
           "type": [
+            "number",
+            "string",
+            "boolean",
             "object",
+            "array",
             "null"
           ]
         },
@@ -99,7 +103,11 @@
         },
         "address": {
           "type": [
+            "number",
+            "string",
+            "boolean",
             "object",
+            "array",
             "null"
           ]
         },
@@ -506,10 +514,24 @@
           "type": "string"
         },
         "newData": {
-          "type": "object"
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "oldData": {
-          "type": "object"
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         }
       }
     },
