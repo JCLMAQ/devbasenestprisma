@@ -59,11 +59,11 @@ model User {
   Team         User[]            @relation("ManagerTeams")
 
   //Outside relations
-  Profile     Profile[]         @relation(references: [id]) // implicit m:n 
-  Group        Group[]           @relation(references: [id])   // implicit m:n
+  Profile     Profile[]         @relation() // implicit m:n 
+  Group        Group[]           @relation()   // implicit m:n
   Post         Post[]   // 1:n
   Comment      Comment[]   // 1:n
-  Todo         Todo[]            @relation(references: [id])   // Explicit m:n
+  Todo         Todo[]            @relation()   // Explicit m:n
   UserTodoLink UserTodoLink[]
   ChangesLog   ChangesTracking[]
   
@@ -98,7 +98,7 @@ model Profile {
   updatedAt    DateTime @updatedAt
   orderProfile Int
   // implicit m:n
-  User         User[]   @relation(references: [id])
+  User         User[]   @relation()
   bio          String
   isDeleted    DateTime? // Null = not deleted
 }
@@ -110,11 +110,11 @@ model Group {
   orderGroup   Int
   name         String
   // implicit m:n
-  User         User[]   @relation(references: [id])
+  User         User[]   @relation()
   // todo       Todo      @relation("groupTodo", fields: [todoId], references: [id])
   // todoId     String       // relation scalar field  (used in the `@relation` attribute above
   // implicit m:n
-  Todo         Todo[]   @relation(references: [id])
+  Todo         Todo[]   @relation()
   isDeleted    DateTime? // Null = not deleted
 }
 
@@ -132,9 +132,9 @@ model Todo {
   mainTodoId   String?        @map("mainTodo")
   SubTodo      Todo[]         @relation("MainSubTodo")
   // Explicit m:n
-  User         User[]         @relation(references: [id])
+  User         User[]         @relation()
   // implicit m:n
-  Group        Group[]        @relation(references: [id])
+  Group        Group[]        @relation()
   UserTodoLink UserTodoLink[]
   isDeleted    DateTime? // Null = not deleted
 }
@@ -217,7 +217,7 @@ model Post {
   // relation scalar field  (used in the `@relation` attribute above
   authorId    String
   // implicit m:n
-  Category    Category[] @relation(references: [id])
+  Category    Category[] @relation()
   Comment     Comment[]
   isDeleted   DateTime? // Null = not deleted
 }
@@ -227,7 +227,7 @@ model Category {
   orderCategory Int
   name          String
   // implicit m:n
-  Post          Post[]  @relation(references: [id])
+  Post          Post[]  @relation()
   isDeleted     DateTime? // Null = not deleted
 }
 

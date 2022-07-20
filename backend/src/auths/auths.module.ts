@@ -1,26 +1,23 @@
 import { Module } from '@nestjs/common';
-import { AuthsService } from './auths.service';
 import { AuthsController } from './auths.controller';
-import { ConfigService } from '@nestjs/config';
+import { AuthsService } from './auths.service';
+
 
 // import { ConfigModule } from '@nestjs/config';// 
-import { PrismaService } from '../prisma/prisma.service';
 import { PrismaModule } from '../prisma/prisma.module';
-import { UtilitiesModule } from '../utilities/utilities.module';
 import { UsersModule } from '../users/users.module';
+import { UtilitiesModule } from '../utilities/utilities.module';
 
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt-strategy';
 import { LocalStrategy } from './local.strategy';
-import { UsersService } from '../users/users.service';
 
 @Module({
   imports: [
     PrismaModule,
     UtilitiesModule,
     UsersModule,
-    ConfigService,
     // ConfigModule.forRoot(
     //   { envFilePath: '../.env' }),
     // PassportModule,
@@ -37,7 +34,7 @@ import { UsersService } from '../users/users.service';
     AuthsController
   ],
   providers: [
-    ConfigService,
+
     // PrismaService,
     AuthsService,
     // UsersService,

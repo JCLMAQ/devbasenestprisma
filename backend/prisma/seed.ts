@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { PrismaClient, Role } from '@prisma/client';
 
 const prisma = new PrismaClient();

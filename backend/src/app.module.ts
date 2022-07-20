@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import * as Joi from 'joi';
-import { AcceptLanguageResolver, HeaderResolver, I18nJsonParser, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { AcceptLanguageResolver, HeaderResolver, I18nJsonLoader, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -37,8 +37,8 @@ import { UtilitiesModule } from './utilities/utilities.module';
         'fr-*': 'fr',
         pt: 'pt-BR',
       },
-      parser: I18nJsonParser,
-      parserOptions: {
+      loader: I18nJsonLoader,
+      loaderOptions: {
         path: path.join(__dirname, '/i18n/'),
         watch: true,
       },

@@ -11,7 +11,7 @@ Table User {
   lastName String
   firstName String
   title String
-  Roles Role [not null]
+  Roles Role[] [not null]
   nickName String
   Gender Gender
   pwdHash String

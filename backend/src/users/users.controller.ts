@@ -32,7 +32,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The found records',
-    type: User,
+    type: "User",
   })
   async getAllUsersbis(): Promise<User[]> {
     const users = this.usersService.findUsers({ select: { lastName: true}
