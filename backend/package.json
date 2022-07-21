@@ -14,7 +14,7 @@
     "prisma:studio": "dotenv -e ../.env -- npx prisma studio",
     "seedold": "dotenv -e ../.env ts-node prisma/seed-old.ts",
     "seed": "ts-node prisma/seed.ts",
-    "seedFromFiles": "npx prisma db seed --preview-feature",
+    "seedFromFiles": "npx prisma db seed",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -71,6 +71,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "7.3.0",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.1",
     "@nestjs/testing": "^9.0.5",
@@ -95,13 +96,12 @@
     "@types/sharp": "^0.30.4",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^8.3.4",
-    "@types/validator":"13.7.4",
+    "@types/validator": "13.7.4",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "@faker-js/faker": "7.3.0",
     "jest": "^28.1.3",
     "nestjs-prisma": "^0.16.0",
     "prettier": "^2.7.1",
@@ -130,6 +130,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "prisma": {
+      "seed": "ts-node prisma/seed.ts"
+    }
   }
 }
