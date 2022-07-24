@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
-    "@nestjs-modules/mailer": "^1.7.1",
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.5",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.5",
@@ -45,7 +45,7 @@
     "@nestjs/platform-express": "^9.0.5",
     "@nestjs/swagger": "^6.0.4",
     "@prisma/client": "^4.1.0",
-    "acorn": "8.7.1",
+    "acorn": "8.8.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
