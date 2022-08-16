@@ -1,18 +1,15 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Token, TokenType, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { User,TokenType, Prisma, Token, Role } from '@prisma/client';
 import { UsersService } from '../users/users.service';
 import { UtilitiesService } from '../utilities/utilities.service';
 
-import { AuthDto } from './dto/auth.dto';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 // import MilliSecond from 'ms';
-import MilliSecond from 'ms'
-import { AcceptLanguageResolver, I18nContext, I18nRequestScopeService, I18nService } from 'nestjs-i18n';
+import MilliSecond from 'ms';
+import { I18nService } from 'nestjs-i18n';
 
 type UserCredential = {
   email: string;
@@ -456,16 +453,6 @@ export class AuthsService {
       const createOrUpdateToken = await this.mgtAPIToken(userFound.id, "API", "", false )
     }
     // Buildup the payload for the access token
-
-
-    // Generate a signed JWT token with the tokenId in the payload
-  // async generateAuthToken(userEmail: string, userId: string, role: string): Promise<any> {
-  //   const jwtPayload = { username: userEmail, sub: userId, role: role}
-  //   return  {
-  //     access_token: this.jwtService.sign(jwtPayload)
-  //   }
-  // }
-
     const payload = { username: userFound.email, sub: userFound.id, role: userFound.Roles };
     // Full Name replacement
     const fullName = this.generateFullName(userFound)
@@ -475,6 +462,7 @@ export class AuthsService {
       roles: userFound.Roles
     };
   }
+
 
   // Create one new user when register with a password and an email as username
   async registerWithPwd(userData: UserCredential, lang: string): Promise<any> {

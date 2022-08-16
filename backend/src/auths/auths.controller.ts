@@ -1,18 +1,14 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Req, Res , HttpException, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Param, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Token, User } from '@prisma/client';
+import { Request } from 'express';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 import { UsersService } from '../users/users.service';
+import { UtilitiesService } from '../utilities/utilities.service';
 import { AuthsService } from './auths.service';
 import { AuthDto } from './dto/auth.dto';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
-import { Prisma, Token, User } from '@prisma/client';
-import { ExtractJwt } from 'passport-jwt';
-import { I18n, I18nContext, I18nLang, I18nService } from 'nestjs-i18n';
-import { UtilitiesService } from '../utilities/utilities.service';
-import { Request } from 'express';
-import { string } from 'joi';
 
 
 
@@ -52,7 +48,7 @@ export class AuthsController {
     }
 
     /* 
-    Password less part
+    PasswordLess part
     */
 
     // PasswordLess Login
