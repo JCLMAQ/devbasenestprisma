@@ -26,13 +26,13 @@ generator dbml {
   provider = "prisma-dbml-generator"
 }
 
-generator crud {
-  provider = "prisma-crud-generator"
-  output = "./generated/#{model}"
+// generator crud {
+//   provider = "prisma-crud-generator"
+//   output = "./generated/#{model}"
 
- // dryRun = true / false
- strict = true
-}
+//  // dryRun = true / false
+//  strict = true
+// }
 
 model User {
   id          String    @default(uuid()) @id
