@@ -21,7 +21,7 @@ async function bootstrap() {
   .build()
   ;
 const document = SwaggerModule.createDocument(app, config,{
-  ignoreGlobalPrefix: true
+  ignoreGlobalPrefix: false
 });
 SwaggerModule.setup('api', app, document);
 
