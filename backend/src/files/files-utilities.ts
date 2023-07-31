@@ -1,7 +1,7 @@
-import { extname } from 'path';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { File, Prisma } from '@prisma/Client';
-import { FileResponse } from './files.controller'
+import { extname } from 'path';
+// import { File, Prisma } from '@prisma/Client';
+import { FileResponse } from './files.controller';
 
 export const editFileName = (req: Request, file: FileResponse , callback: (arg0: any, arg1: string) => void) => {
   // Add a random 10 number to the uploaded file name

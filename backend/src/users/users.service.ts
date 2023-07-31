@@ -92,7 +92,7 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
 
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    if(!data.Roles) { data.Roles = "USER" };
+    if(!data.Roles) { data.Roles = ["USER"] };
     return await this.prisma.user.create({
       data,
     });
@@ -170,7 +170,7 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
     const fullName = userData.firstName + ' ' + userData.lastName;
     // WARNING A new User is always created as a USER, should be by default "GUEST" ?
 
-    if(!userData.Roles) { userData.Roles = 'USER';}
+    if(!userData.Roles) { userData.Roles = ["USER"];}
     // const Role = 'USER';
     const result = await this.prisma.user.create({
         data: {

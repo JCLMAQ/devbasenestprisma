@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 
 
 const prismaClient = new PrismaClient();
@@ -16,7 +16,7 @@ async function main() {
           published: true,
         },
       },
-      Roles: "USER"
+      Roles: [Role.USER]
     },
   })
 
@@ -40,7 +40,7 @@ async function main() {
           },
         ],
       },
-      Roles: "USER"
+      Roles: [Role.USER]
     },
   })
 
@@ -51,28 +51,28 @@ async function main() {
         lastName: 'MAQ',
         email: 'jcm@jcm.be',
         nickName: 'JCM',
-        Roles: "USER"
+        Roles: [Role.USER]
       },
       {
         firstName: 'Toi',
         lastName: 'TOIT',
         email: 'toi@toit.be',
         nickName: 'TOITOI',
-        Roles: "USER"
+        Roles: [Role.USER]
       },
       {
         firstName: 'Toto',
         lastName: 'THE BEST',
         email: 'toto@toto.be',
         nickName: 'TOTO',
-        Roles: "USER"
+        Roles: [Role.USER]
       },
       {
         firstName: 'Best',
         lastName: 'TOTO',
         email: 'best@toto.be',
         nickName: 'BTOTO',
-        Roles: "USER"
+        Roles: [Role.USER]
       },
     ]
   })
