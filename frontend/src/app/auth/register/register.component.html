@@ -7,7 +7,7 @@
     </mat-card-title>
     <mat-card-content>
       <form [formGroup]="registerForm" class="register-form">
-          <mat-form-field appearance="standard">
+          <mat-form-field >
             <mat-label>Enter your email</mat-label>
               <input matInput type="email"
                       placeholder="Email"
@@ -21,7 +21,7 @@
               <mat-error *ngIf="email.errors?.email">This is not a valid email.</mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="standard">
+          <mat-form-field >
             <mat-label>Enter your password</mat-label>
             <input matInput [type]="hidePassword ? 'password' : 'text'"
                   placeholder="Password"
@@ -41,7 +41,7 @@
               <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
           </mat-form-field>
-          <mat-form-field appearance="standard">
+          <mat-form-field >
             <mat-label>Confirm your password</mat-label>
             <input matInput [type]="hideConfirmPassword ? 'password' : 'text'"
                   placeholder="Confirm Password"
@@ -52,7 +52,7 @@
             <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
           </mat-form-field>
-          <mat-checkbox type="checkbox" formControlName="acceptTerms" id="acceptTerms" appearance="standard">
+          <mat-checkbox type="checkbox" formControlName="acceptTerms" id="acceptTerms" >
             <label for="acceptTerms" class="form-check-label">Accept Terms & Conditions</label>
           </mat-checkbox>
         </form>

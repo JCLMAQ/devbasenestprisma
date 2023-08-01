@@ -6,7 +6,7 @@
   <mat-card-content>
   <br>
       <form [formGroup]="forgotPwdForm" class="forgotpwd-form">
-          <mat-form-field appearance="standard">
+          <mat-form-field>
               <input matInput placeholder="Your Email"
                     formControlName="email">
               <mat-error *ngIf="email?.errors?.required">The email is mandatory.</mat-error>

@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ReactiveComponentModule } from '@ngrx/component';
+import { LetDirective } from '@ngrx/component';
 import { EntityDataService, EntityDefinitionService, EntityMetadataMap } from '@ngrx/data';
 import { SharedModule } from '../shared/shared.module';
 import { UserDataService } from './store/user-data.service';
@@ -36,7 +36,7 @@ export const entityConfig = {
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
-    ReactiveComponentModule
+    LetDirective
   ],
   exports: [],
   providers: [

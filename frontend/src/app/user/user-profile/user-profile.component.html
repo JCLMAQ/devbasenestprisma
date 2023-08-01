@@ -6,14 +6,14 @@
     <mat-card-subtitle>User Id : {{user?.id}}</mat-card-subtitle>
   </mat-card-header>
     <mat-card-content>
-      <mat-form-field appearance="standard" floatLabel="auto">
+      <mat-form-field  floatLabel="auto">
         <mat-label>Standard form field</mat-label>
         <input matInput placeholder="Placeholder">
         <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
         <mat-hint align="end">Hint</mat-hint>
       </mat-form-field>
       <br>
-      <mat-form-field appearance="standard" >
+      <mat-form-field  >
         <mat-label>Your email</mat-label>
         <input matInput placeholder="Your email" formControlName="email" type="email" name="email">
           <mat-icon matSuffix>email</mat-icon>
@@ -22,7 +22,7 @@
             This email is already being used.</mat-error>
           <mat-error *ngIf="formField.email.errors?.required">The email is mandatory.</mat-error>
       </mat-form-field>
-      <mat-form-field appearance="standard">
+      <mat-form-field >
          <mat-label>Your NickName</mat-label>
         <input matInput placeholder="Your NickName" formControlName="nickName">
           <mat-hint>Hint</mat-hint>
@@ -38,13 +38,13 @@
           </mat-error>
       </mat-form-field>
        <br>
-      <mat-form-field appearance="standard">
+      <mat-form-field >
         <mat-label>Your Last Name</mat-label>
         <input matInput placeholder="Your Last Namel" formControlName="lastName">
           <!-- <mat-icon matSuffix>email</mat-icon> -->
           <mat-hint>Hint</mat-hint>
       </mat-form-field>
-       <mat-form-field appearance="standard">
+       <mat-form-field >
         <mat-label>Your First Name</mat-label>
         <input matInput placeholder="Your First Name" formControlName="firstName">
           <mat-hint>Hint</mat-hint>

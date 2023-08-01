@@ -5,7 +5,7 @@
     </mat-card-title>
     <mat-card-content>
       <form [formGroup]="loginForm" class="login-form">
-        <mat-form-field appearance="standard">
+        <mat-form-field >
           <mat-label>Enter your email</mat-label>
             <input matInput type="email"
                     placeholder="Email"
@@ -14,7 +14,7 @@
             <mat-error *ngIf="email.errors?.required">The email is mandatory.</mat-error>
             <mat-error *ngIf="email.errors?.email">This is not a valid email.</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="standard">
+        <mat-form-field >
           <mat-label>Enter your password</mat-label>
           <input  matInput [type]="hidePassword ? 'password' : 'text'"
                   placeholder="Password"
