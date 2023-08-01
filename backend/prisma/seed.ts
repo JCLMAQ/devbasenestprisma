@@ -13,8 +13,8 @@ const prisma = new PrismaClient();
 // }
 
 const data = Array.from({ length: 10 }).map(()=> ({
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
     email: faker.internet.email(),
     Roles: [Role.USER]
 

@@ -41,6 +41,7 @@ lerna-debug.log*
 
 # Package-lock
 package-lock.json
+pnpm-lock.yaml
 
 #Uploaded files
 /uploaded
