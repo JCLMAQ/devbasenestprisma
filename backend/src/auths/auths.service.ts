@@ -262,10 +262,6 @@ export class AuthsService {
     let userFound = await this.usersService.findUniqueUser({email});
     if(autoRegistration && !userFound) { // Registration
       userFound = await this.usersService.createUser({email}); // registration auto of a new user
-      // if(!userFound) {
-      //   // Registration failed
-      //   throw new HttpException(await this.i18n.translate("users.USER_REGISTRATION_FAIL",{ lang: lang, }), 400);
-      // }
     } else {
       if(!userFound && !registration) {  
         throw new HttpException(await this.i18n.translate("auths.REGISTER_FIRST",{ lang: lang, }), 400);
@@ -281,10 +277,6 @@ export class AuthsService {
       // Registration failed
       throw new HttpException(await this.i18n.translate("users.USER_REGISTRATION_FAIL",{ lang: lang, }), 400);
     }
-    if(!userFound) {
-        // Registration failed
-        throw new HttpException(await this.i18n.translate("users.USER_REGISTRATION_FAIL",{ lang: lang, }), 400);
-      }
     return userFound;
   }
   
