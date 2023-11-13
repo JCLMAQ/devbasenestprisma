@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ICurrentUser, IJwt, ILoginResponse } from '../auth.model';
 
@@ -29,7 +29,7 @@ export class AuthService {
     //   console.log(decodedJwt);
     //  get user data from backend with authToken
     if (this.authToken) {
-      const decodedJwt: IJwt = jwt_decode(this.authToken);
+      const decodedJwt: IJwt = jwtDecode(this.authToken);
       // console.log("decodedJWT: ", decodedJwt);
       const emailToCheck = decodedJwt.username;
 
