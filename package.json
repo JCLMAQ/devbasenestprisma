@@ -17,8 +17,6 @@
   },
   "homepage": "https://github.com/JCLMAQ/devbasenestprisma#readme",
   "devDependencies": {
-    "@compodoc/compodoc": "^1.1.22",
-    "@faker-js/faker": "^6.3.1"
   },
   "dependencies": {
   }
