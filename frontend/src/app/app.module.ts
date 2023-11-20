@@ -18,57 +18,55 @@ import { AuthModule } from './auth/auth.module';
 import { entityConfig } from './entity-metadata';
 import { HomeComponent } from './home/home.component';
 import { metaReducers, reducers } from "./reducers";
-import { SharedModule } from './shared/shared.module';
+
+import { MaterialModule } from './shared/sharedmodules/material.module';
 import { ThemeComponent } from './shared/theme/theme.component';
 import { ThemeService } from './shared/theme/theme.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    ThemeComponent
-  ],
-  imports: [
+    declarations: [AppComponent],
+    imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    SharedModule,
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    MaterialModule,
     AuthModule,
     TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: httpTranslateLoader,
-        deps: [HttpClient]
-      }
+        loader: {
+            provide: TranslateLoader,
+            useFactory: httpTranslateLoader,
+            deps: [HttpClient]
+        }
     }),
     // StoreModule.forRoot({}, {}),
     StoreModule.forRoot(reducers, {
-      metaReducers,
-      runtimeChecks: {
-        strictStateImmutability: true,
-        strictActionImmutability: true,
-        strictActionSerializability: true,
-        strictStateSerializability:true
-      },
+        metaReducers,
+        runtimeChecks: {
+            strictStateImmutability: true,
+            strictActionImmutability: true,
+            strictActionSerializability: true,
+            strictStateSerializability: true
+        },
     }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
     EffectsModule.forRoot([]),
     StoreRouterConnectingModule.forRoot({
-      stateKey: 'router',
-      routerState: RouterState.Minimal
+        stateKey: 'router',
+        routerState: RouterState.Minimal
     }),
     EntityDataModule.forRoot(entityConfig),
-
-  ],
-  providers: [
-    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
-    ThemeService,
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  bootstrap: [AppComponent]
+    HomeComponent,
+    ThemeComponent,
+],
+    providers: [
+        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
+        ThemeService,
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    bootstrap: [AppComponent]
 })
 export class AppModule{}
 

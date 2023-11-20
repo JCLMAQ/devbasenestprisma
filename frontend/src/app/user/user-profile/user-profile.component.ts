@@ -1,18 +1,28 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControlOptions, FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { UserEntityService } from '../store/user-entity.service';
 import { User } from '../user.model';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
 import { userEmailValidator, userNickNameValidator } from '../validators/user-async.validator';
+import { JsonPipe } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
-  selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss']
+    selector: 'app-user-profile',
+    templateUrl: './user-profile.component.html',
+    styleUrls: ['./user-profile.component.scss'],
+    standalone: true,
+    imports: [FormsModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatIconModule, MatDatepickerModule, MatButtonModule, MatTooltipModule, RouterLink, JsonPipe]
 })
 export class UserProfileComponent implements OnInit {
   private errorMsg?: string;

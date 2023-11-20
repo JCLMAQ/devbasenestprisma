@@ -8,8 +8,8 @@ describe('YourprofilComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ YourprofilComponent ]
-    })
+    imports: [YourprofilComponent]
+})
     .compileComponents();
   }));
 

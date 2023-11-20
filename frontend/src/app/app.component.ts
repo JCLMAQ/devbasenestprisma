@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, of as observableOf, of, Subject } from 'rxjs';
-import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
-import { AppState } from './reducers';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
+import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { ThemeService } from './shared/theme/theme.service';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 import { ICurrentUser } from './auth/auth.model';
 import { AuthService } from './auth/services/auth.service';
-import { takeUntil, tap } from 'rxjs/operators';
 import { login, logout } from './auth/store/auth.actions';
 import { isLoggedIn, isLoggedOut } from './auth/store/auth.selectors';
+import { AppState } from './reducers';
+import { ThemeService } from './shared/theme/theme.service';
 // import { MarkerParser} from '@biesbjerg/ngx-translate-extract';
 
 @Component({

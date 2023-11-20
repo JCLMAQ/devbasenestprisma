@@ -8,8 +8,8 @@ describe('ForgotpwdComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ForgotpwdComponent ]
-    })
+    imports: [ForgotpwdComponent]
+})
     .compileComponents();
   });
 

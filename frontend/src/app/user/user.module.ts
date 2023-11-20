@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LetDirective } from '@ngrx/component';
 import { EntityDataService, EntityDefinitionService, EntityMetadataMap } from '@ngrx/data';
-import { SharedModule } from '../shared/shared.module';
+
 import { UserDataService } from './store/user-data.service';
 import { UserEntityService } from './store/user-entity.service';
 import { UserResolver } from './store/user.resolver';
@@ -24,26 +24,23 @@ export const entityConfig = {
 };
 
 @NgModule({
-  declarations: [
-    UserComponent,
-    UserListComponent,
-    UserProfileComponent,
-  ],
-  imports: [
+    imports: [
     CommonModule,
     UserRoutingModule,
     HttpClientModule,
-    SharedModule,
     FormsModule,
     ReactiveFormsModule,
-    LetDirective
-  ],
-  exports: [],
-  providers: [
-    UserEntityService,
-    UserResolver,
-    UserDataService
-  ]
+    LetDirective,
+    UserComponent,
+    UserListComponent,
+    UserProfileComponent
+],
+    exports: [],
+    providers: [
+        UserEntityService,
+        UserResolver,
+        UserDataService
+    ]
 })
 export class UserModule {
 

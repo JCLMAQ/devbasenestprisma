@@ -6,7 +6,7 @@ import { LetDirective } from '@ngrx/component';
 import { EntityDataService, EntityDefinitionService, EntityMetadataMap } from '@ngrx/data';
 import { StoreModule } from '@ngrx/store';
 import { OnlyOneErrorPipe } from '../pipes/only-one-error.pipe';
-import { SharedModule } from '../shared/shared.module';
+
 import { UserDataService } from '../user/store/user-data.service';
 import { AuthRoutingModule } from './auth-routing.module';
 import { ChangepwdComponent } from './changepwd/changepwd.component';
@@ -29,7 +29,13 @@ export const entityConfig = {
   entityMetadata
 };
 @NgModule({
-  declarations: [
+    imports: [
+    CommonModule,
+    AuthRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.authReducer),
+    LetDirective,
     LoginComponent,
     ChangepwdComponent,
     ForgotpwdComponent,
@@ -37,29 +43,20 @@ export const entityConfig = {
     ResetpwdComponent,
     YourprofilComponent,
     OnlyOneErrorPipe
-  ],
-  imports: [
-    CommonModule,
-    AuthRoutingModule,
-    SharedModule,
-    FormsModule,
-    ReactiveFormsModule,
-    StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.authReducer),
-    LetDirective
-  ],
-  // entryComponents: [
-  //   LoginComponent,
-  //   RegisterComponent,
-  //   ChangepwdComponent,
-  //   ForgotpwdComponent,
-  //   ResetpwdComponent,
-  //   YourprofilComponent
-  // ],
-  providers: [
-    AuthService,
-    RegisterService,
-    ChangePwdService
-  ]
+],
+    // entryComponents: [
+    //   LoginComponent,
+    //   RegisterComponent,
+    //   ChangepwdComponent,
+    //   ForgotpwdComponent,
+    //   ResetpwdComponent,
+    //   YourprofilComponent
+    // ],
+    providers: [
+        AuthService,
+        RegisterService,
+        ChangePwdService
+    ]
 })
 export class AuthModule {
 
