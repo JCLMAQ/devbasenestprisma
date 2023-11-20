@@ -12,48 +12,64 @@
           </a>
           <span class="app-toolbar-filler"></span>
 
-          <button mat-icon-button class="menu-button" *ngIf="currentUser" (click)="logout()" >
+          @if (currentUser) {
+<button mat-icon-button class="menu-button" (click)="logout()" >
             <mat-icon>lock_open</mat-icon>
           </button>
-            <span *ngIf="currentUser" (click)= "logout()">
+}
+            @if (currentUser) {
+<span (click)= "logout()">
             logged as {{currentUser.fullName}}
             </span>
+}
 
-          <button *ngIf="!currentUser" class="menu-button" mat-icon-button routerLink="login" >
+          @if (!currentUser) {
+<button class="menu-button" mat-icon-button routerLink="login" >
             <mat-icon>lock</mat-icon>
           </button>
+}
 
-          <button *ngIf="currentUser" class="menu-button" mat-icon-button [matMenuTriggerFor]="submenusetting">
+          @if (currentUser) {
+<button class="menu-button" mat-icon-button [matMenuTriggerFor]="submenusetting">
             <mat-icon>settings</mat-icon>
           </button>
+}
           <mat-menu #submenusetting>
-            <button class="menu-button" mat-menu-item *ngIf="!currentUser" routerLink="login">
+            @if (!currentUser) {
+<button class="menu-button" mat-menu-item routerLink="login">
               <!-- <mat-icon style="margin-right: 10px; font-size: 1.5em;">file_upload</mat-icon> -->
               <span style="margin-right: 10px; font-size: 1.5em;">
                 <i class="fas fa-sign-in-alt"></i>
               </span>
               <span>Login</span>
             </button>
+}
             <mat-divider></mat-divider>
-            <button mat-menu-item *ngIf="currentUser" (click)="logout()">
+            @if (currentUser) {
+<button mat-menu-item (click)="logout()">
               <span style="margin-right: 10px; font-size: 1.5em;">
                   <i class="fas fa-sign-out-alt"></i>
                 </span>
               <span>Logout</span>
             </button>
+}
             <mat-divider></mat-divider>
-            <button mat-menu-item *ngIf="currentUser" (click)="changepwd()">
+            @if (currentUser) {
+<button mat-menu-item (click)="changepwd()">
               <mat-icon style="margin-right: 10px;">vpn_key</mat-icon>
               <!-- <mat-icon style="margin-right: 10px; color:blue;">vpn_key</mat-icon> -->
               <span>Changement de mot de passe</span>
             </button>
+}
             <mat-divider></mat-divider>
-            <button mat-menu-item *ngIf="currentUser" (click)="yourprofil()">
+            @if (currentUser) {
+<button mat-menu-item (click)="yourprofil()">
                 <span style="margin-right: 10px; font-size: 1.5em;">
                     <i class="fas fa-id-card"></i>
                   </span>
               <span>Votre profil</span>
             </button>
+}
           </mat-menu>
           <button
             mat-icon-button
@@ -63,9 +79,11 @@
           </button>
 
           <mat-menu #menulanguage="matMenu" >
-            <button mat-menu-item *ngFor="let lang of translate.getLangs()" [value]="lang" (click)="translate.use(lang)">
+            @for (lang of translate.getLangs(); track lang) {
+  <button mat-menu-item [value]="lang" (click)="translate.use(lang)">
               {{ lang.toUpperCase() }}
             </button>
+}
           </mat-menu>
 
           <app-theme>
@@ -135,9 +153,11 @@
             </mat-nav-list>
         </mat-sidenav>
         <mat-sidenav-content class="main-content">
-          <div class="spinner-container" *ngIf="loading">
+          @if (loading) {
+<div class="spinner-container">
             <mat-spinner></mat-spinner>
           </div>
+}
             <router-outlet></router-outlet>
         </mat-sidenav-content>
       </mat-sidenav-container >

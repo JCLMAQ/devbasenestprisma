@@ -9,26 +9,35 @@
         <mat-form-field >
           <mat-label>Enter your new password</mat-label>
           <input matInput [type]="hidePassword ? 'newPassword' : 'text'" placeholder="Password" formControlName="newPassword">
-          <mat-error *ngIf="newPassword.errors?.required">The password is mandatory.</mat-error>
+          @if (newPassword.errors?.required) {
+<mat-error>The password is mandatory.</mat-error>
+}
           <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
         </mat-form-field>
-        <ng-container
-            *ngIf="newPassword.errors | onlyOneError:['minlength','passwordStrength'] as error">
-            <div class="field-message" *ngIf="error.minlength">
+        @if (newPassword.errors | onlyOneError:['minlength','passwordStrength']; as error) {
+
+            @if (error.minlength) {
+<div class="field-message">
                 Your password must have minimum {{error.minlength.requiredLength}} chars,
                 but it only has {{error.minlength.actualLength}}.
             </div>
-            <div class="field-message" *ngIf="error.passwordStrength">
+}
+            @if (error.passwordStrength) {
+<div class="field-message">
                 Your password must have lower case, upper case and numeric characters.
             </div>
-        </ng-container>
+}
+        
+}
 
           <mat-form-field >
             <mat-label>Confirm your password</mat-label>
             <input matInput [type]="hideConfirmPassword ? 'confirmNewPassword' : 'text'" placeholder="Confirm Password" formControlName="confirmNewPassword">
-            <mat-error *ngIf="confirmNewPassword.errors?.required">The password is mandatory.</mat-error>
+            @if (confirmNewPassword.errors?.required) {
+<mat-error>The password is mandatory.</mat-error>
+}
             <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirmPassword">
               <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>

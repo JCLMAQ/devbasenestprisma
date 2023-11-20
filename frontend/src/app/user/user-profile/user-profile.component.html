@@ -18,24 +18,36 @@
         <input matInput placeholder="Your email" formControlName="email" type="email" name="email">
           <mat-icon matSuffix>email</mat-icon>
           <mat-hint>Hint</mat-hint>
-           <mat-error *ngIf="formField.email.errors?.emailExists">
+           @if (formField.email.errors?.emailExists) {
+<mat-error>
             This email is already being used.</mat-error>
-          <mat-error *ngIf="formField.email.errors?.required">The email is mandatory.</mat-error>
+}
+          @if (formField.email.errors?.required) {
+<mat-error>The email is mandatory.</mat-error>
+}
       </mat-form-field>
       <mat-form-field >
          <mat-label>Your NickName</mat-label>
         <input matInput placeholder="Your NickName" formControlName="nickName">
           <mat-hint>Hint</mat-hint>
-          <mat-error *ngIf="formField.nickName.errors?.required">The nickName is mandatory.</mat-error>
-          <mat-error *ngIf="formField.nickName.errors?.nickNameExists">This nickName is already being used.</mat-error>
-          <mat-error *ngIf="formField.nickName.errors?.minlength">
+          @if (formField.nickName.errors?.required) {
+<mat-error>The nickName is mandatory.</mat-error>
+}
+          @if (formField.nickName.errors?.nickNameExists) {
+<mat-error>This nickName is already being used.</mat-error>
+}
+          @if (formField.nickName.errors?.minlength) {
+<mat-error>
             Your NickName must have minimum {{formField.nickName.errors?.minlength.requiredLength}} chars,
             but it only has {{formField.nickName.errors?.minlength.actualLength}}.
           </mat-error>
-          <mat-error *ngIf="formField.nickName.errors?.maxlength">
+}
+          @if (formField.nickName.errors?.maxlength) {
+<mat-error>
               Your NickName must have maximum {{formField.nickName.errors?.maxlength.requiredLength}} chars,
               but it has {{formField.nickName.errors?.maxlength.actualLength}}.
           </mat-error>
+}
       </mat-form-field>
        <br>
       <mat-form-field >
@@ -59,13 +71,17 @@
     </mat-form-field>
   </mat-card-content>
   <mat-card-actions class="user-actions">
-     <button mat-icon-button matTooltip="Permanent Delete" *ngIf="isAdmin" [disabled]="!isAdmin" (click)="remove()">
+     @if (isAdmin) {
+<button mat-icon-button matTooltip="Permanent Delete" [disabled]="!isAdmin" (click)="remove()">
       <mat-icon>delete_forever </mat-icon>
     </button>
-    <button mat-icon-button (click)="virtualRemove()" *ngIf="isAdmin" [disabled]="!isAdmin" matTooltip="Virtual Delete">
+}
+    @if (isAdmin) {
+<button mat-icon-button (click)="virtualRemove()" [disabled]="!isAdmin" matTooltip="Virtual Delete">
     <!-- <button mat-icon-button (click)="virtualRemove(user?.id)"> -->
       <mat-icon>delete</mat-icon>
     </button>
+}
    <button mat-icon-button matTooltip="Add record" [disabled]="!isAdmin" (click)="add()">
       <mat-icon>add_circle</mat-icon>
     </button>

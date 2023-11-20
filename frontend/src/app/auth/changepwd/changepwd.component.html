@@ -11,7 +11,9 @@
                 placeholder="Votre mot de passe actuel"
                 autocomplete="of"
                 formControlName="oldPassword">
-        <mat-error *ngIf="oldPassword?.errors?.required">Password is mandatory.</mat-error>
+        @if (oldPassword?.errors?.required) {
+<mat-error>Password is mandatory.</mat-error>
+}
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
         </button>
@@ -22,21 +24,28 @@
                 placeholder="Votre nouveau mot de passe"
                 autocomplete="of"
                 formControlName="newPassword">
-        <mat-error *ngIf="newPassword?.errors?.required">Password is mandatory.</mat-error>
+        @if (newPassword?.errors?.required) {
+<mat-error>Password is mandatory.</mat-error>
+}
         <button mat-icon-button matSuffix (click)="hidePassword2 = !hidePassword2" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword2">
             <mat-icon>{{hidePassword2 ? 'visibility_off' : 'visibility'}}</mat-icon>
         </button>
         </mat-form-field>
-        <ng-container
-            *ngIf="newPassword?.errors | onlyOneError:['minlength','passwordStrength'] as error">
-            <div class="field-message" *ngIf="error.minlength">
+        @if (newPassword?.errors | onlyOneError:['minlength','passwordStrength']; as error) {
+
+            @if (error.minlength) {
+<div class="field-message">
                 Your password must have minimum {{error.minlength.requiredLength}} chars,
                 but it only has {{error.minlength.actualLength}}.
             </div>
-            <div class="field-message" *ngIf="error.passwordStrength">
+}
+            @if (error.passwordStrength) {
+<div class="field-message">
                 Your password must have lower case, upper case and numeric characters.
             </div>
-        </ng-container>
+}
+        
+}
       <mat-form-field>
         <input  matInput [type]="hidePassword3 ? 'password' : 'text'"
                 placeholder="Ré-encoder votre nouveau mot de passe"
