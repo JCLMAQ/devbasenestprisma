@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/JCLMAQ/devbasenestprisma#readme",
   "devDependencies": {
+    "nx": "19.8.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {},
+  "nx": {}
 }

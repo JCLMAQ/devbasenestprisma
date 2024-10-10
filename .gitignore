@@ -54,3 +54,8 @@ backend/prisma/migrations/
 
 # Angular cache
 /frontend/.angular
+
+
+
+.nx/cache
+.nx/workspace-data
