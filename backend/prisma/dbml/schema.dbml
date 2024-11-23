@@ -183,6 +183,31 @@ Table Emaildomain {
   allowed Boolean [not null]
 }
 
+Table ProfileToUser {
+  profileId String [ref: > Profile.id]
+  userId String [ref: > User.id]
+}
+
+Table GroupToUser {
+  groupId String [ref: > Group.id]
+  userId String [ref: > User.id]
+}
+
+Table TodoToUser {
+  todoId String [ref: > Todo.id]
+  userId String [ref: > User.id]
+}
+
+Table GroupToTodo {
+  todoId String [ref: > Todo.id]
+  groupId String [ref: > Group.id]
+}
+
+Table CategoryToPost {
+  categoryId String [ref: > Category.id]
+  postId String [ref: > Post.id]
+}
+
 Enum TokenType {
   EMAIL
   API
