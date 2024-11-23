@@ -19,7 +19,6 @@ import { MatCardModule } from '@angular/material/card';
     selector: 'app-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
-    standalone: true,
     imports: [MatCardModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatTooltipModule, JsonPipe, OnlyOneErrorPipe]
 })
 export class RegisterComponent implements OnInit {

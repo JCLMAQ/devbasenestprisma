@@ -13,7 +13,6 @@ import { MatCardModule } from '@angular/material/card';
     selector: 'app-forgotpwd',
     templateUrl: './forgotpwd.component.html',
     styleUrls: ['./forgotpwd.component.scss'],
-    standalone: true,
     imports: [MatCardModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, JsonPipe]
 })
 export class ForgotpwdComponent implements OnInit {

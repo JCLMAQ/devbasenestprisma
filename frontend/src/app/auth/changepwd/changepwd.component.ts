@@ -18,7 +18,6 @@ import { MatCardModule } from '@angular/material/card';
     selector: 'app-changepwd',
     templateUrl: './changepwd.component.html',
     styleUrls: ['./changepwd.component.scss'],
-    standalone: true,
     imports: [MatCardModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, JsonPipe, OnlyOneErrorPipe]
 })
 export class ChangepwdComponent implements OnInit {

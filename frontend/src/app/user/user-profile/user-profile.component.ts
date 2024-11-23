@@ -21,7 +21,6 @@ import { MatCardModule } from '@angular/material/card';
     selector: 'app-user-profile',
     templateUrl: './user-profile.component.html',
     styleUrls: ['./user-profile.component.scss'],
-    standalone: true,
     imports: [FormsModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatIconModule, MatDatepickerModule, MatButtonModule, MatTooltipModule, RouterLink, JsonPipe]
 })
 export class UserProfileComponent implements OnInit {

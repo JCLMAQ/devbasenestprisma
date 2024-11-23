@@ -18,7 +18,6 @@ import { MatCardModule } from '@angular/material/card';
     selector: 'app-resetpwd',
     templateUrl: './resetpwd.component.html',
     styleUrls: ['./resetpwd.component.scss'],
-    standalone: true,
     imports: [MatCardModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, JsonPipe, OnlyOneErrorPipe]
 })
 export class ResetpwdComponent implements OnInit {

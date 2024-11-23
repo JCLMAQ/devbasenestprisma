@@ -6,7 +6,6 @@ import { UserListComponent } from './user-list/user-list.component';
     selector: 'app-user',
     templateUrl: './user.component.html',
     styleUrls: ['./user.component.scss'],
-    standalone: true,
     imports: [UserListComponent, RouterOutlet]
 })
 export class UserComponent implements OnInit {

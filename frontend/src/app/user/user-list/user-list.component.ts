@@ -34,7 +34,6 @@ import { MatCardModule } from '@angular/material/card';
         ]),
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [MatCardModule, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatPaginatorModule]
 })
 export class UserListComponent implements OnDestroy, OnInit, AfterViewInit{

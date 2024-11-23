@@ -12,7 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
     selector: 'app-theme',
     templateUrl: './theme.component.html',
     styleUrls: ['./theme.component.scss'],
-    standalone: true,
     imports: [MatButtonModule, MatMenuModule, MatIconModule, MatCheckboxModule, FormsModule]
 })
 export class ThemeComponent implements OnInit {
