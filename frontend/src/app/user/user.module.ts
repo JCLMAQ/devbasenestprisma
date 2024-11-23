@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LetDirective } from '@ngrx/component';
 import { EntityDataService, EntityDefinitionService, EntityMetadataMap } from '@ngrx/data';
@@ -23,25 +23,19 @@ export const entityConfig = {
   entityMetadata
 };
 
-@NgModule({
-    imports: [
-    CommonModule,
-    UserRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    LetDirective,
-    UserComponent,
-    UserListComponent,
-    UserProfileComponent
-],
-    exports: [],
-    providers: [
+@NgModule({ exports: [], imports: [CommonModule,
+        UserRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        LetDirective,
+        UserComponent,
+        UserListComponent,
+        UserProfileComponent], providers: [
         UserEntityService,
         UserResolver,
-        UserDataService
-    ]
-})
+        UserDataService,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class UserModule {
 
   constructor(

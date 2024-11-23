@@ -1,4 +1,4 @@
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -23,51 +23,45 @@ import { MaterialModule } from './shared/sharedmodules/material.module';
 import { ThemeComponent } from './shared/theme/theme.component';
 import { ThemeService } from './shared/theme/theme.service';
 
-@NgModule({
-    declarations: [AppComponent],
-    imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MaterialModule,
-    AuthModule,
-    TranslateModule.forRoot({
-        loader: {
-            provide: TranslateLoader,
-            useFactory: httpTranslateLoader,
-            deps: [HttpClient]
-        }
-    }),
-    // StoreModule.forRoot({}, {}),
-    StoreModule.forRoot(reducers, {
-        metaReducers,
-        runtimeChecks: {
-            strictStateImmutability: true,
-            strictActionImmutability: true,
-            strictActionSerializability: true,
-            strictStateSerializability: true
-        },
-    }),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
-    EffectsModule.forRoot([]),
-    StoreRouterConnectingModule.forRoot({
-        stateKey: 'router',
-        routerState: RouterState.Minimal
-    }),
-    EntityDataModule.forRoot(entityConfig),
-    HomeComponent,
-    ThemeComponent,
-],
-    providers: [
+@NgModule({ declarations: [AppComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MaterialModule,
+        AuthModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: httpTranslateLoader,
+                deps: [HttpClient]
+            }
+        }),
+        // StoreModule.forRoot({}, {}),
+        StoreModule.forRoot(reducers, {
+            metaReducers,
+            runtimeChecks: {
+                strictStateImmutability: true,
+                strictActionImmutability: true,
+                strictActionSerializability: true,
+                strictStateSerializability: true
+            },
+        }),
+        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+        EffectsModule.forRoot([]),
+        StoreRouterConnectingModule.forRoot({
+            stateKey: 'router',
+            routerState: RouterState.Minimal
+        }),
+        EntityDataModule.forRoot(entityConfig),
+        HomeComponent,
+        ThemeComponent], providers: [
         { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
         ThemeService,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    bootstrap: [AppComponent]
-})
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule{}
 
 export function httpTranslateLoader(http: HttpClient) {
