@@ -10,12 +10,12 @@ to create a type that can be used to return all users and their posts.
 */
 
 // 1: Define a type that includes the relation to `Post`
-const userWithPosts = Prisma.validator<Prisma.UserArgs>()({
+const userWithPosts = Prisma.validator<Prisma.UserDefaultArgs>()({
   include: { Post: true },
 })
 
 // 2: Define a type that only contains a subset of the scalar fields
-const userPersonalData = Prisma.validator<Prisma.UserArgs>()({
+const userPersonalData = Prisma.validator<Prisma.UserDefaultArgs>()({
   select: { email: true, nickName: true ,  salt: false, pwdHash: false },
 })
 
