@@ -1,19 +1,19 @@
+import { JsonPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControlOptions, FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControlOptions, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
+import { OnlyOneErrorPipe } from '../../pipes/only-one-error.pipe';
 import { IUserRegister } from '../auth.model';
 import { RegisterService } from '../services/register.service';
 import { MustMatch } from '../validators/mustMatch.validator';
 import { createPasswordStrengthValidator } from '../validators/password-strength.validator';
-import { OnlyOneErrorPipe } from '../../pipes/only-one-error.pipe';
-import { JsonPipe } from '@angular/common';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCardModule } from '@angular/material/card';
 
 @Component({
     selector: 'app-register',
@@ -40,6 +40,7 @@ export class RegisterComponent implements OnInit {
     gender: '',
     role: '',
     title: '',
+    language: ''
   };
 
   constructor(
