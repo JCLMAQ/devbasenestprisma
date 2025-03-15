@@ -8,7 +8,7 @@ import { UtilitiesService } from '../utilities/utilities.service';
 
 import { pbkdf2Sync, randomBytes } from 'crypto';
 // import MilliSecond from 'ms';
-import MilliSecond from 'ms';
+import MilliSecond, { StringValue } from 'ms';
 import { I18nService } from 'nestjs-i18n';
 
 type UserCredential = {
@@ -115,7 +115,7 @@ export class AuthsService {
     let expirationTime: string;
     forPwdLess ? expirationTime = "EMAIL_TOKEN_EXPIRATION" : expirationTime = "FORGOT_TOKEN_EXPIRATION"
     let tokenExpirationTime = await this.utilitiesService.searchConfigParam( expirationTime );
-    const milliSecondToAdd = MilliSecond(tokenExpirationTime);
+    const milliSecondToAdd = MilliSecond(tokenExpirationTime as StringValue);
     const currentDate = new Date();
     const emailTokenExpirationDate = new Date(currentDate.getTime()+ milliSecondToAdd);
     return emailTokenExpirationDate
@@ -134,7 +134,7 @@ export class AuthsService {
   async jwtTokenExpiration() {
     const delayToAdd = await this.utilitiesService.searchConfigParam( "JWT_VALIDITY_DURATION" );
     // const delayToAdd = this.configService.get<string>("JWT_VALIDITY_DURATION")
-    let milliSecondToAdd = MilliSecond(delayToAdd);  
+    let milliSecondToAdd = MilliSecond(delayToAdd as StringValue);  
     const currentDate = new Date();
     const jwtTokenExpirationDate =  new Date(currentDate.getTime()+ milliSecondToAdd);
     return jwtTokenExpirationDate
@@ -193,7 +193,7 @@ export class AuthsService {
     let delayStillRunning = false; // Allow new email to be send
     const delayToTest = await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW" )
   //  const delayToTest = this.configService.get<string>("EMAIL_DELAY_BTW");
-    const milliSecondToAdd = MilliSecond(delayToTest);
+    const milliSecondToAdd = MilliSecond(delayToTest as StringValue);
     delayStillRunning =  await this.utilitiesService.timeStampDelay(expirationTime, milliSecondToAdd)
     // Verify delay between emailbase on the updateAt field
     if ( delayStillRunning) {
@@ -221,7 +221,7 @@ export class AuthsService {
       const tokenEmailId = tokenEmailExist.id;
       // const delayMilliSecond = 
       const delayValue = await this.utilitiesService.searchConfigParam( "EMAIL_TOKEN_EXPIRATION" )
-      const delayMilliSecond = (MilliSecond(delayValue))*2;
+      const delayMilliSecond = (MilliSecond(delayValue as StringValue))*2;
       // const delayMilliSecond = (MilliSecond(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION")))*2;
       const newExpirationDate = await this.utilitiesService.dateLessDelay(tokenEmailExist.expiration, delayMilliSecond)
     // Update a longlived token record
@@ -390,7 +390,7 @@ export class AuthsService {
     }
     // If evrything is in order, continue the process
     // Invalidate the email token after it's been used
-    const delayMilliSecond = MilliSecond(await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW" ));
+    const delayMilliSecond = MilliSecond(await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW" ) as StringValue);
     // const delayMilliSecond = MilliSecond(this.configService.get<string>("EMAIL_DELAY_BTW"));
     const newExpirationDate= await this.utilitiesService.dateLessDelay(fetchedEmailToken.expiration, delayMilliSecond)
     await this.prismaService.token.update({
