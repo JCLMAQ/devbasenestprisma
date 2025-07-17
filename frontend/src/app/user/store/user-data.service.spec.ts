@@ -19,7 +19,7 @@ describe('UserDataService', () => {
   });
 
   beforeEach(() => {
-    service = TestBed.get(UserDataService)
+    service = TestBed.inject(UserDataService)
   });
 
   it('should create an instance', () => {
