@@ -44,7 +44,7 @@ export class AppComponent implements OnInit{
     private themeService: ThemeService,
     public authService: AuthService
     ) {
-      translate.setDefaultLang('en');
+      translate.setFallbackLang('en');
       translate.use('en');
       translate.addLangs(['en','fr']);
 

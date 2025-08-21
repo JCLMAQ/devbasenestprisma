@@ -7,6 +7,6 @@ import { TranslateService } from "@ngx-translate/core";
 })
 export class I18nDatePipe extends DatePipe {
   constructor(translateService: TranslateService) {
-    super(translateService.currentLang);
+    super(translateService.getCurrentLang());
   }
 }
