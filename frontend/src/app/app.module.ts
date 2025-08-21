@@ -33,8 +33,8 @@ import { ThemeService } from './shared/theme/theme.service';
         MaterialModule,
         AuthModule,
         TranslateModule.forRoot({
-          fallbackLang: 'en',
-          loader: provideTranslateHttpLoader({prefix:"./i18n/", suffix:".json"}),
+          // fallbackLang: 'en',
+          loader: provideTranslateHttpLoader({prefix:"../assets/i18n/", suffix:".json"}),
         }),
         // StoreModule.forRoot({}, {}),
         StoreModule.forRoot(reducers, {
