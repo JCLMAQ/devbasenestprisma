@@ -6,25 +6,24 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
-  // previewFeatures = ["createMany"]
-  
-  // previewFeatures = ["connectOrCreate", "transactionApi"]
-  // previewFeatures = ["uncheckedScalarInputs"]
+  provider = "prisma-client"
+  output   = "../prisma/generated/prisma"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
 }
 
-generator jsonSchema {
-  provider = "node node_modules/prisma-json-schema-generator"
-  // output = "custom-output-path"
-}
+// generator jsonSchema {
+//   provider = "node node_modules/prisma-json-schema-generator"
+//   // output = "custom-output-path"
+// }
 
-generator dbml {
-  provider = "prisma-dbml-generator"
-}
+// generator dbml {
+//   provider = "prisma-dbml-generator"
+// }
 
 // generator crud {
 //   provider = "prisma-crud-generator"

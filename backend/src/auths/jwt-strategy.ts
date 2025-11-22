@@ -1,17 +1,17 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy  } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { UsersService } from '../users/users.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { PrismaClientService } from '../prisma/prisma-client.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   
   constructor(
     private usersService: UsersService,
-    private prismaService: PrismaService, 
+    private prismaClientService: PrismaClientService, 
     private configService: ConfigService
     ) {
     super({
@@ -35,7 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // Only if JWT LOGOUT enable
     if(this.configService.get("JWT_LOGOUT_ENABLE") == 1) {
-      let tokenExist = await this.prismaService.token.findFirst({
+      let tokenExist = await this.prismaClientService.token.findFirst({
         where: {
           userId: { equals: user.id },
           type: { equals: "API" },

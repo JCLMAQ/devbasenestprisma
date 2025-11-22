@@ -2,7 +2,8 @@ import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   Prisma, User
-} from '@prisma/client';
+} from '../../prisma/index';
+;
 // import { domain } from 'process';
 //import { User } from './entities/user.entity';
 import { UsersService } from './users.service';

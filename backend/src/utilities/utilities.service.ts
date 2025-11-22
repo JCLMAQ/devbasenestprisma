@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { EmaildomainsService } from '../emaildomains/emaildomains.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaClientService } from '../prisma/prisma-client.service';
 
 type emailData = {
     fromEmail: string;
@@ -17,7 +17,7 @@ export class UtilitiesService {
 
     constructor(
         private configService: ConfigService, 
-        private prisma: PrismaService,
+        private prismaClientService: PrismaClientService,
         private emailDomainsService: EmaildomainsService,
         ) {}
 
@@ -28,7 +28,7 @@ export class UtilitiesService {
     async searchConfigParam(configItemName: string): Promise<string | null> {
         // Search for config parameter in the DB, and if not found use the one in the .env config file
          // Return "" if no value found
-        const configItem = await this.prisma.configParam.findUnique({where: { name: configItemName },})
+        const configItem = await this.prismaClientService.configParam.findUnique({where: { name: configItemName },})
         let valueToReturn = null;
         if(!configItem) {
             valueToReturn = this.configService.get<string>(configItemName);
@@ -47,7 +47,7 @@ export class UtilitiesService {
         let configItem = null;
         const valueFromEnvFile = this.configService.get<string>(configItemName);
         if(valueFromEnvFile == "") {
-            configItem = await this.prisma.configParam.findUnique({where: { name: configItemName },});
+            configItem = await this.prismaClientService.configParam.findUnique({where: { name: configItemName },});
             configItem?.value == null ? valueToReturn = "" : valueToReturn = configItem?.value 
         } else {
             valueToReturn = valueFromEnvFile;

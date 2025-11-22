@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpException, Param, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Token, User } from '@prisma/client';
 import { Request } from 'express';
 import { I18nLang, I18nService } from 'nestjs-i18n';
+import { Token, User } from '../../prisma/index';
 import { UsersService } from '../users/users.service';
 import { UtilitiesService } from '../utilities/utilities.service';
 import { AuthsService } from './auths.service';

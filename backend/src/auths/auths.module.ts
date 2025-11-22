@@ -4,7 +4,7 @@ import { AuthsService } from './auths.service';
 
 
 // import { ConfigModule } from '@nestjs/config';// 
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../prisma/prisma-client.module';
 import { UsersModule } from '../users/users.module';
 import { UtilitiesModule } from '../utilities/utilities.module';
 
@@ -35,7 +35,7 @@ import { LocalStrategy } from './local.strategy';
   ],
   providers: [
 
-    // PrismaService,
+    // PrismaClientService,
     AuthsService,
     // UsersService,
     JwtStrategy,

@@ -9,7 +9,7 @@ import { AppService } from './app.service';
 import { AuthsModule } from './auths/auths.module';
 import { EmaildomainsModule } from './emaildomains/emaildomains.module';
 import { FilesModule } from './files/files.module';
-import { PrismaModule } from './prisma/prisma.module';
+import { PrismaModule } from './prisma/prisma-client.module';
 import { UsersModule } from './users/users.module';
 import { UtilitiesModule } from './utilities/utilities.module';
 

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { FilesService } from './files.service';
-import { FilesController } from './files.controller';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../prisma/prisma-client.module';
 import { UtilitiesModule } from '../utilities/utilities.module';
+import { FilesController } from './files.controller';
+import { FilesService } from './files.service';
 
 @Module({
   imports: [

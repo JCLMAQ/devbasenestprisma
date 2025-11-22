@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -13,6 +13,14 @@
     "baseUrl": "./",
     "incremental": true,
     "noImplicitAny": true,
-    "alwaysStrict": true
-  }
+    "alwaysStrict": true,
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "node_modules",
+    "prisma/generated"
+  ],
+  "include": [
+    "src"
+  ]
 }

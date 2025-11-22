@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Emaildomain, Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { Emaildomain, Prisma } from '../../prisma/index';
+import { PrismaClientService } from '../prisma/prisma-client.service';
 
 @Injectable()
 export class EmaildomainsService {
 
   constructor(
-    private prisma: PrismaService,
+    private prismaClientService: PrismaClientService,
     private configService: ConfigService,
   ) {}
 
   async findOneUnique(emaildomainWhereUniqueInput: Prisma.EmaildomainWhereUniqueInput): Promise<Emaildomain | null> {
-    return this.prisma.emaildomain.findUnique({
+    return this.prismaClientService.emaildomain.findUnique({
       where: emaildomainWhereUniqueInput,
     })
   }

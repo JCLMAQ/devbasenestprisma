@@ -4,7 +4,7 @@
 
   // Fetch the token from DB to verify it's valid
   // async verifyDBTokenMatch(tokenId) {       
-  //     const fetchedToken = await this.prismaService.token.findUnique({
+  //     const fetchedToken = await this.prismaClientService.token.findUnique({
   //         where: {
   //             id: tokenId,
   //         },

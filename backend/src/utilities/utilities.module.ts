@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UtilitiesService } from './utilities.service';
-import { UtilitiesController } from './utilities.controller';
-import { PrismaModule } from '../prisma/prisma.module';
-import { Emaildomain } from '../emaildomains/entities/emaildomain.entity';
 import { EmaildomainsModule } from '../emaildomains/emaildomains.module';
+import { PrismaModule } from '../prisma/prisma-client.module';
+import { UtilitiesController } from './utilities.controller';
+import { UtilitiesService } from './utilities.service';
 
 @Module({
   imports: [

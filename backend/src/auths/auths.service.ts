@@ -1,8 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Token, TokenType, User } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { Token, TokenType, User } from '../../prisma/index';
+import { PrismaClientService } from '../prisma/prisma-client.service';
 import { UsersService } from '../users/users.service';
 import { UtilitiesService } from '../utilities/utilities.service';
 
@@ -23,7 +23,7 @@ export class AuthsService {
   constructor(
     private readonly usersService: UsersService,
     private readonly utilitiesService: UtilitiesService,
-    private prismaService: PrismaService,
+    private prismaClientService: PrismaClientService,
     private configService: ConfigService, 
     private jwtService: JwtService,
     // private i18n: I18nRequestScopeService
@@ -92,7 +92,7 @@ export class AuthsService {
   // Generate a random 8 digit number as the email token
   async generateEmailToken(): Promise<string> {
     let emailToken = Math.floor(10000000 + Math.random() * 90000000).toString();
-    let tokenAlreadyExist = await this.prismaService.token.findFirst({
+    let tokenAlreadyExist = await this.prismaClientService.token.findFirst({
       where: {
         emailToken: { equals: emailToken }
       }
@@ -102,7 +102,7 @@ export class AuthsService {
       tokenAlreadyExist != null && typeof(tokenAlreadyExist) == "object"
     ) {
       emailToken = Math.floor(10000000 + Math.random() * 90000000).toString()
-      tokenAlreadyExist = await this.prismaService.token.findFirst({
+      tokenAlreadyExist = await this.prismaClientService.token.findFirst({
       where: {
         emailToken: { equals: emailToken}
       }});
@@ -147,7 +147,7 @@ export class AuthsService {
     if(emailToken === ""){ emailToken = userId };
     
     // Find the token with the userid and the type
-    let tokenExist = await this.prismaService.token.findFirst({
+    let tokenExist = await this.prismaClientService.token.findFirst({
       where: {
         userId: { equals: userId },
         type: { equals:tokenType },
@@ -168,7 +168,7 @@ export class AuthsService {
       tokenType == TokenType.API ? tokenExpiration = await this.jwtTokenExpiration() : tokenExpiration = await this.emailTokenExpiration( false )
     }
     // Create or update a longlived token record
-    tokenExist = await this.prismaService.token.upsert({
+    tokenExist = await this.prismaClientService.token.upsert({
       where: {
         id: tokenId
       },
@@ -211,7 +211,7 @@ export class AuthsService {
 
   async logoutInvalidEmailToken(userId: string){
     // Reinit the emailToken
-    let tokenEmailExist = await this.prismaService.token.findFirst({
+    let tokenEmailExist = await this.prismaClientService.token.findFirst({
       where: {
         userId: { equals: userId },
         type: { equals:TokenType.EMAIL },
@@ -225,7 +225,7 @@ export class AuthsService {
       // const delayMilliSecond = (MilliSecond(this.configService.get<string>("EMAIL_TOKEN_EXPIRATION")))*2;
       const newExpirationDate = await this.utilitiesService.dateLessDelay(tokenEmailExist.expiration, delayMilliSecond)
     // Update a longlived token record
-      const tokenEmailReInit = await this.prismaService.token.update({
+      const tokenEmailReInit = await this.prismaClientService.token.update({
         where: {
           id: tokenEmailId
         },
@@ -309,7 +309,7 @@ export class AuthsService {
       htmlEmail: `Hello <br> Please, use this token to confirm your login : ${emailToken} <br>`
     }
     // Need to verify that the short token exist or not
-    const tokenExist = await this.prismaService.token.findFirst({
+    const tokenExist = await this.prismaClientService.token.findFirst({
       where: {
         userId: { equals: userFound.id },
         type: { equals:TokenType.EMAIL },
@@ -330,7 +330,7 @@ export class AuthsService {
     // Define the emailToken expiration time
     const tokenExpiration = await this.emailTokenExpiration( true );
     // Create or Update the email token
-    const tokenCreatedorupdated = await this.prismaService.token.upsert({
+    const tokenCreatedorupdated = await this.prismaClientService.token.upsert({
       where: {
         id: tokenId
       },
@@ -368,7 +368,7 @@ export class AuthsService {
     }    
     const validEmailToken= { email: email, userId: "", validToken: false, role: userNotDeleted.Roles};  
     // Get short lived email token
-    const fetchedEmailToken = await this.prismaService.token.findUnique({
+    const fetchedEmailToken = await this.prismaClientService.token.findUnique({
       where: {
           emailToken: password,
       },
@@ -393,7 +393,7 @@ export class AuthsService {
     const delayMilliSecond = MilliSecond(await this.utilitiesService.searchConfigParam( "EMAIL_DELAY_BTW" ) as StringValue);
     // const delayMilliSecond = MilliSecond(this.configService.get<string>("EMAIL_DELAY_BTW"));
     const newExpirationDate= await this.utilitiesService.dateLessDelay(fetchedEmailToken.expiration, delayMilliSecond)
-    await this.prismaService.token.update({
+    await this.prismaClientService.token.update({
       where: {
           id: fetchedEmailToken.id,
       },
@@ -506,7 +506,7 @@ export class AuthsService {
 */
 
   async createForgotToken(email: string, userId: string, lang:string ): Promise<any> {
-    const forgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userId }, type: { equals:TokenType.FORGOT },}});
+    const forgotPwd = await this.prismaClientService.token.findFirst({where: {userId: { equals: userId }, type: { equals:TokenType.FORGOT },}});
     let isForgotPwdTokenDelayOver = true;
     // forgotPwd token exist, need to verify if it is stiil within validity delay
     if(forgotPwd){
@@ -518,7 +518,7 @@ export class AuthsService {
 
     if(!createOrUpdateToken) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_ERROR",{ lang: lang, }), 400);
 
-    const newForgotPwd = await this.prismaService.token.findFirst({where: {userId: { equals: userId }, type: { equals:TokenType.FORGOT },}});
+    const newForgotPwd = await this.prismaClientService.token.findFirst({where: {userId: { equals: userId }, type: { equals:TokenType.FORGOT },}});
 
     if (newForgotPwd) {
       return newForgotPwd
@@ -532,7 +532,7 @@ export class AuthsService {
     // Verify the email is an email and is from an accepted domain
     const emailValidation = await this.emailValidationProcess(emailForgotPwd, lang);
     // Verify if the user exist
-    const userExist = await this.prismaService.user.findUnique({ where: { email: emailForgotPwd } });
+    const userExist = await this.prismaClientService.user.findUnique({ where: { email: emailForgotPwd } });
     if (!userExist) throw new HttpException(await this.i18n.translate("users.USER_EMAIL_NOT_FOUND",{ lang: lang, }), 400);
     // Need to manage soft deleted user
     if(userExist?.isDeleted != null) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400);
@@ -565,7 +565,7 @@ export class AuthsService {
   // Verify that the token received with the forgot password link is valid and in delay (used by controlers)
   async verifyForgotPwdToken(token: string, lang: string): Promise<Token> {
     // Search for the token
-    const forgotPwdModel = await this.prismaService.token.findUnique({ where: { emailToken: token } });
+    const forgotPwdModel = await this.prismaClientService.token.findUnique({ where: { emailToken: token } });
     // No token found : 
     if (!forgotPwdModel) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
     // Verify the token still valid (valid = true)
@@ -573,7 +573,7 @@ export class AuthsService {
     const isForgotPwdTokenDelayOver = (forgotPwdModel.expiration < new Date());
     if (isForgotPwdTokenDelayOver || !forgotPwdModel.valid ) throw new HttpException(await this.i18n.translate("auths.FORGOT_PWD_BAD_TOKEN",{ lang: lang, }), 400);
     // Need to unvalid the token (token only one use)
-    await this.prismaService.token.update({
+    await this.prismaClientService.token.update({
       where: {
           id: forgotPwdModel.id,
       },
@@ -589,7 +589,7 @@ export class AuthsService {
   async editForgotPwd(pwd: string, userId: string): Promise<User> {
     const salt = randomBytes(16).toString('base64');
     const pwdHash = AuthsService.hashPassword(pwd, salt);
-    const result = await this.prismaService.user.update({
+    const result = await this.prismaClientService.user.update({
       where: { id: userId },
       data: {
         salt,
@@ -600,13 +600,13 @@ export class AuthsService {
   }
   
   async isUserExist(email: string, lang: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({ where: { email } })
+    const user = await this.prismaClientService.user.findUnique({ where: { email } })
     if (!user) throw new HttpException(await this.i18n.translate("users.USER_NOT_FOUND",{ lang: lang, }), 400);
     return user;
   }
 
   async isUserSoftDeleted(email: string, lang: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({ where: { email } })
+    const user = await this.prismaClientService.user.findUnique({ where: { email } })
     if (!user?.isDeleted) throw new HttpException(await this.i18n.translate("users.USER_DELETED",{ lang: lang, }), 400);
     return user;
   }

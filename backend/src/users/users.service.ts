@@ -1,34 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import {
   Prisma, User
-} from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
-import { exclude } from './users.utilities';
-/*
-The following example uses the Prisma.validator to create two type-safe objects and then uses the Prisma.UserGetPayload utility function 
-to create a type that can be used to return all users and their posts.
-*/
+} from '../../prisma/index';
 
+import { PrismaClientService } from '../prisma/prisma-client.service';
+import { exclude } from './users.utilities';
 // 1: Define a type that includes the relation to `Post`
-const userWithPosts = Prisma.validator<Prisma.UserDefaultArgs>()({
+const userWithPosts = {
   include: { Post: true },
-})
+} satisfies Prisma.UserDefaultArgs
 
 // 2: Define a type that only contains a subset of the scalar fields
-const userPersonalData = Prisma.validator<Prisma.UserDefaultArgs>()({
-  select: { email: true, nickName: true ,  salt: false, pwdHash: false },
-})
+const userPersonalData = {
+  select: { email: true, nickName: true, salt: false, pwdHash: false },
+} satisfies Prisma.UserDefaultArgs
 
 // 3: This type will include a user and all their posts
 type UserWithPostsbis = Prisma.UserGetPayload<typeof userWithPosts>
 
 // Define a type that includes the relation to `Post` for users
-type UsersWithPosts = Prisma.PromiseReturnType<typeof getUsersWithPostsFunct>;
-//  https://www.prisma.io/docs/concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types
+type UsersWithPosts = Awaited<ReturnType<typeof getUsersWithPostsFunct>>;
 
 // Function definition that returns a partial structure
-async function getUsersWithPostsFunct() {
-  const usersWithPosts = await this.prisma.user.findMany({ include: { Post: true } })
+// Function definition that returns a partial structure
+async function getUsersWithPostsFunct(prismaService: PrismaClientService) {
+  const usersWithPosts = await prismaService.user.findMany({ include: { Post: true } })
   return usersWithPosts
 }
 
@@ -47,18 +43,19 @@ type UserWithoutSecret = Prisma.UserGetPayload<{
 }>
 
 // Select generated type
-const selectUserWithEmail = Prisma.validator<Prisma.UserSelect>()({
+const selectUserWithEmail = {
   email: true
-})
+} satisfies Prisma.UserSelect
+
 // Include generated type
-const includePosts = Prisma.validator<Prisma.UserInclude> () ({
+const includePosts = {
   Post: true,
-})
+} satisfies Prisma.UserInclude
 
 const findSpecificUserByEmail = (email: string) => {
-  return Prisma.validator<Prisma.UserWhereInput>()({
+  return {
     email,
-  })
+  } satisfies Prisma.UserWhereInput
 }
 
 type UserWithoutPwd =  Omit<User, "salt" | "pwdHash">;
@@ -68,14 +65,14 @@ export class UsersService {
   
 
   constructor(
-    private prisma: PrismaService,
+    private prismaClientService: PrismaClientService,
   ) {}
   
 
 
 // Find the specific user based on email
 async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> {
-  const oneUser = await this.prisma.user.findUnique({
+  const oneUser = await this.prismaClientService.user.findUnique({
     where: findSpecificUserByEmail(userEmailToSearch),
   });
   const userWithoutSecret = exclude( oneUser, 'salt', 'pwdHash' )
@@ -86,14 +83,14 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
 
 
   async getUsersWithPosts(): Promise<UsersWithPosts> {
-    const usersWithPosts: UsersWithPosts = await getUsersWithPostsFunct()
+    const usersWithPosts: UsersWithPosts = await getUsersWithPostsFunct(this.prismaClientService)
     return usersWithPosts
   }
 
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     if(!data.Roles) { data.Roles = ["USER"] };
-    return await this.prisma.user.create({
+    return await this.prismaClientService.user.create({
       data,
     });
   }
@@ -101,7 +98,7 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
   async findSomeUsers(params: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     const { select, include ,skip, take, cursor, where, orderBy } = params;
-    return this.prisma.user.findMany({
+    return this.prismaClientService.user.findMany({
       include,
       where,
       orderBy,
@@ -121,7 +118,7 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
     include?: Prisma.UserInclude;
   }): Promise<User[]> {
     const { skip, take, cursor, where, orderBy, select, include} = params;
-    return this.prisma.user.findMany({
+    return this.prismaClientService.user.findMany({
       skip,
       take,
       cursor,
@@ -132,23 +129,23 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
   }
 
   async allUsers(): Promise<User[]> {
-    return this.prisma.user.findMany()
+    return this.prismaClientService.user.findMany()
   }
 
   async findUniqueUser(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    return this.prismaClientService.user.findUnique({
       where: userWhereUniqueInput,
     });
   }
 
   async getOneUserByEmail(userEmail: string): Promise<User> {
-    return await this.prisma.user.findUnique({
+    return await this.prismaClientService.user.findUnique({
         where: { email: userEmail }
     })
   } 
 
   async getOneUserByEmailwithoutPwd(userEmail: string): Promise<UserWithoutPwd> {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prismaClientService.user.findUnique({
       where: { email: userEmail }
   })
   // const userWithoutPassword = exclude(user, 'pwdHash', 'salt')
@@ -157,10 +154,10 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
 
 
   async findOrCreateOneUser(email: string): Promise<User> { // If user does not exist, create one
-    let user = await this.prisma.user.findUnique({ where: { email } })
+    let user = await this.prismaClientService.user.findUnique({ where: { email } })
     if (!user) {
       // Create a new user
-      user = await this.prisma.user.create({ data: { email: email },})
+      user = await this.prismaClientService.user.create({ data: { email: email },})
     }
       return user; 
   }
@@ -172,7 +169,7 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
 
     if(!userData.Roles) { userData.Roles = ["USER"];}
     // const Role = 'USER';
-    const result = await this.prisma.user.create({
+    const result = await this.prismaClientService.user.create({
         data: {
             salt,
             pwdHash,
@@ -196,14 +193,14 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
     data: Prisma.UserUpdateInput;
   }): Promise<User> {
     const { where, data } = params;
-    return this.prisma.user.update({
+    return this.prismaClientService.user.update({
       data,
       where,
     });
   }
 
   async deleteOneUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
-    return this.prisma.user.delete({
+    return this.prismaClientService.user.delete({
       where,
     });
   }
@@ -216,10 +213,10 @@ async findOneUserByEmail(userEmailToSearch: string ): Promise<UserPersonalData> 
   }
 
   async userExistOrCreate(email: string): Promise<User> { // If user does not exist, create one
-    let user = await this.prisma.user.findUnique({ where: { email } })
+    let user = await this.prismaClientService.user.findUnique({ where: { email } })
     if (!user) {
       // Create a new user
-      user = await this.prisma.user.create({ data: { email }})
+      user = await this.prismaClientService.user.create({ data: { email }})
     }
       return user; // return the new user or the found user
   }

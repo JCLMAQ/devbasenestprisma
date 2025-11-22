@@ -1,16 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { I18nService } from 'nestjs-i18n';
-import { PrismaService } from '../prisma/prisma.service';
-import { File, Prisma } from '@prisma/client';
-import { UtilitiesService } from '../utilities/utilities.service';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
-import sharp from 'sharp';
-import * as fse from 'fs-extra';
-import * as path from 'path';
+import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { promisify } from 'util';
+import * as fse from 'fs-extra';
+import { I18nService } from 'nestjs-i18n';
+import * as path from 'path';
+import sharp from 'sharp';
 import { URL } from 'url';
+import { promisify } from 'util';
+import { File, Prisma } from '../../prisma/index';
+import { PrismaClientService } from '../prisma/prisma-client.service';
+import { UtilitiesService } from '../utilities/utilities.service';
 
 const readFileAsyc = promisify(fse.readFile);
 @Injectable()
@@ -18,7 +16,7 @@ export class FilesService {
   private readonly sizes: string[];
   static destinationFilePath: any;
   constructor(
-    private prisma: PrismaService,
+    private prismaClientService: PrismaClientService,
     private utilitiesService: UtilitiesService,
     private i18n: I18nService,
     private configService: ConfigService
@@ -274,12 +272,12 @@ console.log("path to delete : ", fullPathDest)
     }
     
     async createOneFileRecord(data: Prisma.FileCreateInput): Promise<File> {
-        return this.prisma.file.create({ data,
+        return this.prismaClientService.file.create({ data,
         });
       }
 
     async findUniqueFile(where: Prisma.FileWhereUniqueInput): Promise<File | null> {
-      return this.prisma.file.findUnique({
+      return this.prismaClientService.file.findUnique({
         where,
       });
     }
@@ -289,21 +287,21 @@ console.log("path to delete : ", fullPathDest)
       data: Prisma.FileUpdateInput;
     }): Promise<File> {
       const { where, data } = params;
-      return this.prisma.file.update({
+      return this.prismaClientService.file.update({
         data,
         where,
       });
     }
   
     async deleteOneFileRecord(where: Prisma.FileWhereUniqueInput): Promise<File> {
-      return this.prisma.file.delete({
+      return this.prismaClientService.file.delete({
         where,
       });
     }
 
     async createOrUpdateFile( data: Prisma.FileUpsertArgs): Promise<File> {
       const {where, create, update} = data
-      return this.prisma.file.upsert({
+      return this.prismaClientService.file.upsert({
         where,
         create,
         update,
