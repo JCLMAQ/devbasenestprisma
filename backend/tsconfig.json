@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+     "types": ["node", "uuid"],
+    "typeRoots": ["node_modules/@types"],
     "removeComments": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -22,6 +24,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "ignoreDeprecations": "5.0",
+
   },
   "exclude": [
     "node_modules",
