@@ -1,13 +1,13 @@
+import { JsonPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { JsonPipe } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCardModule } from '@angular/material/card';
 
 @Component({
     selector: 'app-forgotpwd',
@@ -41,9 +41,9 @@ export class ForgotpwdComponent implements OnInit {
   }
 
   async sendforget() {
-    // const res = await this.authService.sendEmailForgotPwd(email.value);
-    // alert(res.message);
-    // this.router.navigate(['portal']);
+    const res = await this.authService.sendEmailForgotPwd(email.value);
+    alert(res.message);
+    this.router.navigate(['portal']);
   }
 
   backhome() {
